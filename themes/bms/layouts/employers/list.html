@@ -1,0 +1,200 @@
+{{ define "main" }}
+
+<!-- Hero Section -->
+{{ with .Params.hero }}
+<section class="hero">
+  <div class="container">
+    <div class="hero__content">
+      <h1 class="hero__title">{{ .title }}</h1>
+      <p class="hero__subtitle">{{ .subtitle }}</p>
+      <div class="hero__buttons">
+        {{ with .primary_cta }}
+        <a href="{{ .url }}" class="btn btn--primary btn--large">{{ .text }}</a>
+        {{ end }}
+        {{ with .secondary_cta }}
+        <a href="{{ .url }}" class="btn btn--secondary btn--large">{{ .text }}</a>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+<!-- Why Matters Section -->
+{{ with .Params.why_matters }}
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2>{{ .title }}</h2>
+      <p>{{ .subtitle }}</p>
+    </div>
+    
+    <div class="services-grid">
+      {{ range .points }}
+      <div class="card card--bordered service-card">
+        <div class="service-card__icon">
+          {{ partial (printf "icons/%s.html" .icon) }}
+        </div>
+        <h3 class="card__title">{{ .title }}</h3>
+        <p class="card__text">{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+<!-- Employee Benefits Section -->
+{{ with .Params.employee_benefits }}
+<section class="section section--cream" id="how-it-works">
+  <div class="container">
+    <div class="section__header">
+      <h2>{{ .title }}</h2>
+      <p>{{ .subtitle }}</p>
+    </div>
+    
+    <div class="services-grid">
+      {{ range .items }}
+      <div class="card card--elevated">
+        <div class="card__icon">
+          {{ partial (printf "icons/%s.html" .icon) }}
+        </div>
+        <h3 class="card__title">{{ .title }}</h3>
+        <p class="card__text">{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+<!-- Pillars Section -->
+{{ with .Params.pillars }}
+<section class="section">
+  <div class="container">
+    <div class="wellness-content">
+      <div>
+        <h2>{{ .title }}</h2>
+        <p class="section__subtitle">{{ .subtitle }}</p>
+        <p>{{ .description }}</p>
+        
+        <div class="pillar-visual">
+          {{ range .items }}
+          <div class="pillar">
+            {{ partial (printf "icons/%s.html" .icon) }}
+            <p class="pillar__title">{{ .name }}</p>
+          </div>
+          {{ end }}
+        </div>
+        
+        <p>{{ .conclusion }}</p>
+      </div>
+      
+      <div class="wellness-preview">
+        {{ partial "wellness-card-preview.html" . }}
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+<!-- Life Stages Section -->
+{{ with .Params.life_stages }}
+<section class="section section--cream">
+  <div class="container">
+    <div class="section__header">
+      <h2>{{ .title }}</h2>
+      <p>{{ .subtitle }}</p>
+    </div>
+    
+    <div class="life-stages-grid">
+      {{ range .stages }}
+      <div class="life-stage">
+        {{ partial (printf "icons/%s.html" .icon) }}
+        <h4>{{ .name }}</h4>
+        <p>{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+    
+    <p class="section__note">{{ .note }}</p>
+  </div>
+</section>
+{{ end }}
+
+<!-- How It Works Section -->
+{{ with .Params.how_it_works }}
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2>{{ .title }}</h2>
+      <p>{{ .subtitle }}</p>
+    </div>
+    
+    <div class="process__steps">
+      {{ range $index, $step := .steps }}
+      <div class="process__step">
+        <div class="process__number">{{ add $index 1 }}</div>
+        <h3>{{ $step.title }}</h3>
+        <p>{{ $step.description }}</p>
+      </div>
+      {{ end }}
+    </div>
+    
+    <p class="section__note">{{ .note }}</p>
+  </div>
+</section>
+{{ end }}
+
+<!-- Trust Section -->
+{{ with .Params.trust }}
+<section class="section section--charcoal">
+  <div class="container">
+    <div class="section__header">
+      <h2>{{ .title }}</h2>
+    </div>
+    
+    <div class="trust-grid">
+      {{ range .points }}
+      <div class="trust-item">
+        {{ partial (printf "icons/%s.html" .icon) }}
+        <h4>{{ .title }}</h4>
+        <p>{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+<!-- CTA Section -->
+{{ with .Params.cta }}
+<section class="section section--peach">
+  <div class="container">
+    <div class="cta-section">
+      <h2>{{ .title }}</h2>
+      <p>{{ .subtitle }}</p>
+      
+      <div class="cta-section__buttons">
+        {{ with .primary_cta }}
+        <a href="{{ .url }}" class="btn btn--primary btn--large">{{ .text }}</a>
+        {{ end }}
+        {{ with .secondary_cta }}
+        <a href="{{ .url }}" class="btn btn--charcoal btn--large">{{ .text }}</a>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+<!-- Disclaimer -->
+{{ with .Params.disclaimer }}
+<section class="section--disclaimer">
+  <div class="container">
+    <p>{{ . }}</p>
+  </div>
+</section>
+{{ end }}
+
+{{ end }}

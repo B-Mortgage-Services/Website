@@ -1,0 +1,2 @@
+{{ $rating := . | default 5 }}
+{{ range seq $rating }}★{{ end }}

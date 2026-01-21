@@ -1,0 +1,88 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <!-- Brand Column -->
+      <div class="footer__brand">
+        <a href="/" class="logo">
+          <svg class="logo__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="48" height="48" rx="8" fill="#F05B28"/>
+            <path d="M12 12h8c6 0 10 3 10 8s-4 8-10 8h-8V12zm8 12c3 0 5-1.5 5-4s-2-4-5-4h-3v8h3z" fill="white"/>
+            <path d="M12 32h8c6 0 10 3 10 8v4H12v-4c0-5 4-8 10-8h-2z" fill="white" opacity="0.8"/>
+          </svg>
+          <div class="logo__text">
+            Mortgage<br><span>Services</span>
+          </div>
+        </a>
+        <p>Expert mortgage and insurance advice, built on trust. Part of Brunsdon Financial, providing quality financial services for over 90 years.</p>
+        <div class="footer__social">
+          <a href="#" aria-label="Facebook">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- For Individuals -->
+      <div>
+        <h4>For Individuals</h4>
+        <ul class="footer__links">
+          <li><a href="/individuals/">Mortgages</a></li>
+          <li><a href="/individuals/first-time-buyers/">First-Time Buyers</a></li>
+          <li><a href="/individuals/remortgaging/">Remortgaging</a></li>
+          <li><a href="/individuals/buy-to-let/">Buy to Let</a></li>
+          <li><a href="/individuals/protection/">Protection</a></li>
+        </ul>
+      </div>
+
+      <!-- For Employers -->
+      <div>
+        <h4>For Employers</h4>
+        <ul class="footer__links">
+          <li><a href="/employers/">Workplace Advice</a></li>
+          <li><a href="/employers/financial-wellness/">Financial Wellness</a></li>
+          <li><a href="/resources/lunch-learn/">Lunch &amp; Learn</a></li>
+          <li><a href="/contact/?type=employer">Partner With Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4>Contact Us</h4>
+        <ul class="footer__links">
+          <li>
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            {{ .Site.Params.phone }}
+          </li>
+          <li>
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6" stroke="var(--color-secondary)" stroke-width="2" fill="none"/></svg>
+            {{ .Site.Params.email }}
+          </li>
+          <li>
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ .Site.Params.address }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>&copy; {{ now.Year }} B Mortgage Services Ltd. Part of <a href="https://brunsdonfinancial.co.uk" target="_blank" rel="noopener">Brunsdon Financial</a></p>
+      <div class="footer__legal">
+        <a href="/privacy-policy/">Privacy Policy</a>
+        <a href="/terms-conditions/">Terms &amp; Conditions</a>
+        <a href="/cookie-policy/">Cookie Policy</a>
+        <a href="/regulatory-information/">Regulatory Information</a>
+      </div>
+    </div>
+
+    <div class="footer__disclaimer">
+      <p><strong>Your property may be repossessed if you do not keep up repayments on your mortgage.</strong></p>
+      <p>B Mortgage Services Ltd is authorised and regulated by the Financial Conduct Authority. Unlike most other mortgage advice, advice on buy-to-let mortgages is not regulated by the Financial Conduct Authority (FCA). This assessment tool is designed to support informed conversations and does not constitute mortgage or financial advice. Individual lender criteria may vary.</p>
+    </div>
+  </div>
+</footer>

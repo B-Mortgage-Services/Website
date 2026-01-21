@@ -1,0 +1,45 @@
+{{ define "main" }}
+
+<section class="hero">
+  <div class="container">
+    <div class="hero__content">
+      <h1>{{ .Title }}</h1>
+      <p class="hero__subtitle">{{ .Description }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="services-grid">
+      {{ range .Params.resources }}
+      <div class="card card--elevated">
+        <div class="card__icon card__icon--primary">
+          {{ partial (printf "icons/%s.html" .icon) }}
+        </div>
+        <h3 class="card__title">{{ .title }}</h3>
+        <p class="card__text">{{ .description }}</p>
+        {{ if .link_url }}
+        <a href="{{ .link_url }}" class="card__link">{{ .link_text }} →</a>
+        {{ else }}
+        <span class="card__link card__link--disabled">{{ .link_text }}</span>
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+{{ with .Params.cta }}
+<section class="section section--cream">
+  <div class="container">
+    <div class="cta-section">
+      <h2>{{ .title }}</h2>
+      <p>{{ .subtitle }}</p>
+      <a href="{{ .cta_url }}" class="btn btn--primary btn--large">{{ .cta_text }}</a>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ end }}

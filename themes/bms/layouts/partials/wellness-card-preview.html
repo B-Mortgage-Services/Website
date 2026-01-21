@@ -1,0 +1,53 @@
+<div class="wellness-card">
+  <div class="wellness-card__header">
+    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Your Financial Wellness Score
+  </div>
+  
+  <div class="wellness-card__score">
+    <div class="score-gauge-wrapper">
+      <svg class="score-gauge-svg" viewBox="0 0 200 120">
+        <path class="score-gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100" />
+        <path class="score-gauge-fill" d="M 20 100 A 80 80 0 0 1 180 100" 
+              stroke="url(#gaugeGradientPreview)" 
+              stroke-dasharray="251.2" 
+              stroke-dashoffset="70" />
+        <defs>
+          <linearGradient id="gaugeGradientPreview" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#C0392B" />
+            <stop offset="35%" style="stop-color:#F05B28" />
+            <stop offset="65%" style="stop-color:#D4A017" />
+            <stop offset="100%" style="stop-color:#2E7D5A" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-gauge-value">
+        <span class="score-gauge-value__number">72</span>
+        <span class="score-gauge-value__max">/100</span>
+        <div class="score-gauge-label score-gauge-label--good">Good</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="wellness-card__status">
+    <h4>On Track – Minor Gaps</h4>
+    <p>You're broadly on track for a mortgage, with some areas to improve.</p>
+  </div>
+  
+  <div class="wellness-card__strengths">
+    <h5>✓ Strengths</h5>
+    <div class="wellness-card__tags">
+      <span class="wellness-tag wellness-tag--success">✓ Steady income</span>
+      <span class="wellness-tag wellness-tag--success">✓ Good budget</span>
+      <span class="wellness-tag wellness-tag--success">✓ Solid deposit</span>
+    </div>
+  </div>
+  
+  <div class="wellness-card__improvements">
+    <h5>⚠ Areas to improve</h5>
+    <div class="wellness-card__tags">
+      <span class="wellness-tag wellness-tag--warning">Emergency savings</span>
+      <span class="wellness-tag wellness-tag--warning">Income protection</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+# Theme metadata
+name = "B Mortgage Services Theme"
+license = "MIT"
+licenselink = "https://github.com/yourusername/bms-theme/blob/master/LICENSE"
+description = "Custom theme for B Mortgage Services website"
+homepage = "https://bmortgageservices.co.uk"
+tags = ["mortgage", "financial", "business", "responsive", "modern"]
+features = ["responsive", "custom-css", "accessibility"]
+min_version = "0.120.0"
+
+[author]
+  name = "B Mortgage Services"
+  homepage = "https://bmortgageservices.co.uk"

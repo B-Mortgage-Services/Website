@@ -1,0 +1,42 @@
+baseURL = 'https://bmortgageservices.co.uk/'
+languageCode = 'en-gb'
+title = 'B Mortgage Services'
+theme = 'bms'
+
+[params]
+  description = "Expert Mortgage & Insurance Advice, Built on Trust"
+  tagline = "We Make Your Mortgage Simple"
+  phone = "01452 623623"
+  email = "mortgages@brunsdonfinancial.co.uk"
+  address = "Goodridge House, Goodridge Avenue, Gloucester, GL2 5EA"
+
+[menu]
+  [[menu.main]]
+    name = "Individuals"
+    url = "/individuals/"
+    weight = 1
+  [[menu.main]]
+    name = "Employers"
+    url = "/employers/"
+    weight = 2
+  [[menu.main]]
+    name = "Financial Wellness"
+    url = "/wellness-check/"
+    weight = 3
+  [[menu.main]]
+    name = "Resources"
+    url = "/resources/"
+    weight = 4
+  [[menu.main]]
+    name = "About"
+    url = "/about/"
+    weight = 5
+  [[menu.main]]
+    name = "Contact"
+    url = "/contact/"
+    weight = 6
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
