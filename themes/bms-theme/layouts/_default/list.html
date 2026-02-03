@@ -1,0 +1,34 @@
+{{ define "main" }}
+{{ if .Content }}
+{{ .Content }}
+{{ else }}
+<header class="page-header">
+  <div class="container">
+    {{ with .Params.eyebrow }}<span class="page-header__eyebrow">{{ . }}</span>{{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.subtitle }}<p class="page-header__subtitle">{{ . }}</p>{{ end }}
+  </div>
+</header>
+
+<section class="section--white">
+  <div class="container">
+    {{ if .Pages }}
+    <div class="services-grid">
+      {{ range .Pages }}
+      <article class="card card--bordered">
+        <h3 class="card__title">{{ .Title }}</h3>
+        <p class="card__text">{{ .Summary }}</p>
+        <a href="{{ .Permalink }}" class="card__link">
+          Read more
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+{{ end }}

@@ -1,0 +1,518 @@
+{{ define "head" }}
+<!-- Calendly widget -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+{{ end }}
+
+{{ define "main" }}
+
+<!-- Hero Section with Ambient Glow -->
+<section class="hero hero--ambient">
+  <!-- Ambient Glow Background -->
+  <div class="ambient-glow">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--3"></div>
+  </div>
+
+  <div class="container hero__container">
+    <div class="hero__grid">
+      <div class="hero__content">
+        <h1 class="hero__title">Finally, a mortgage process that speaks your language.</h1>
+        <p class="hero__subtitle">No jargon, no hidden fees. Just expert advice to help you secure your home with confidence—whether it's your first or your forever.</p>
+        <div class="hero__actions">
+          <a href="/wellness/" class="btn btn--primary btn--large">
+            Check My Eligibility
+            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;" class="btn btn--secondary btn--large">Book With Me</a>
+        </div>
+      </div>
+      <div class="hero__visual">
+        <img src="{{ "images/clientmeeting.jpg" | relURL }}" alt="Mortgage Assessment Preview" class="hero__image">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Lender Trust Bar -->
+<section class="trust-bar">
+  <div class="container">
+    <p class="trust-bar__title">Access to the UK's leading lenders</p>
+    <div class="trust-bar__logos">
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/halifax.png" | relURL }}" alt="Halifax">
+      </div>
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/santander.png" | relURL }}" alt="Santander">
+      </div>
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/barclays.png" | relURL }}" alt="Barclays">
+      </div>
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/hsbc.png" | relURL }}" alt="HSBC">
+      </div>
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/coventry.png" | relURL }}" alt="Coventry Building Society">
+      </div>
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/natwest.jpg" | relURL }}" alt="NatWest">
+      </div>
+      <div class="trust-bar__logo">
+        <img src="{{ "images/lenders/nationwide.png" | relURL }}" alt="Nationwide">
+      </div>
+    </div>
+    <p class="trust-bar__note">Plus 90+ more lenders</p>
+  </div>
+</section>
+
+<!-- Borrower Journey Section -->
+<section class="section--off-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2>What Are You Looking to Achieve?</h2>
+    </div>
+    
+    <div class="services-grid">
+      <article class="card card--bordered">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <path d="M9 22V12h6v10"/>
+            <circle cx="12" cy="9" r="2"/>
+          </svg>
+        </div>
+        <h3 class="card__title">First-Time Buyers</h3>
+        <p class="card__text">Getting you onto the property ladder with confidence. We navigate deposits, Help to Buy schemes, and explain every step clearly.</p>
+        <a href="/individuals/first-time-buyers/" class="card__link">
+          Learn more
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+      
+      <article class="card card--bordered">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Remortgaging</h3>
+        <p class="card__text">Your current deal is ending soon. We compare the whole market to stop you rolling onto expensive standard rates, potentially saving you hundreds a month.</p>
+        <a href="/individuals/remortgaging/" class="card__link">
+          Learn more
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+      
+      <article class="card card--bordered">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="3" width="15" height="13"/>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/>
+            <circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Home Movers</h3>
+        <p class="card__text">Whether you are upsizing, downsizing, or relocating, we manage the complex process of "porting" your mortgage or finding a new one.</p>
+        <a href="/individuals/home-movers/" class="card__link">
+          Learn more
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+      
+      <article class="card card--bordered">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Buy-to-Let &amp; Investors</h3>
+        <p class="card__text">Specialist advice for landlords. From first-time investments to managing large portfolios and limited company mortgages.</p>
+        <a href="/individuals/buy-to-let/" class="card__link">
+          Learn more
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="cta-banner cta-banner--warm">
+  <div class="container">
+    <p class="cta-banner__hook"><strong>Honest</strong>, <strong>jargon-free</strong> advice at <em class="cta-banner__highlight">every stage</em> of your mortgage journey.</p>
+    <div class="cta-banner__actions">
+      <a href="/wellness/" class="btn btn--primary btn--large">
+        Check My Eligibility
+        <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+      <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;" class="btn btn--white btn--large">Book With Me</a>
+    </div>
+  </div>
+</section>
+
+<!-- Affordability Calculator Section -->
+<section class="calculator-section" id="calculator">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2>How Much Could You Borrow?</h2>
+      <p class="calculator-intro">Get an instant estimate based on your income. Lenders typically offer between 3.5x and 5x your annual salary.</p>
+    </div>
+
+    <div class="affordability-calculator">
+      <div class="calculator-inputs">
+        <!-- Application Type Toggle -->
+        <div class="form-group">
+          <label class="form-label">Application Type</label>
+          <div class="toggle-group">
+            <button type="button" class="toggle-btn toggle-btn--active" data-type="single" onclick="setApplicationType('single')">Single</button>
+            <button type="button" class="toggle-btn" data-type="joint" onclick="setApplicationType('joint')">Joint</button>
+          </div>
+        </div>
+
+        <!-- Mortgage Purpose -->
+        <div class="form-group">
+          <label for="mortgagePurpose" class="form-label">Mortgage Purpose</label>
+          <select id="mortgagePurpose" class="form-select">
+            <option value="first-time">First Time Buyer</option>
+            <option value="moving">Moving Home</option>
+            <option value="remortgage">Re-mortgage</option>
+          </select>
+        </div>
+
+        <!-- Your Income -->
+        <div class="form-group">
+          <label for="yourIncome" class="form-label">Your Annual Income</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="yourIncome" class="form-input" placeholder="Enter amount" oninput="formatAndCalculate(this)">
+          </div>
+        </div>
+
+        <!-- Partner Income (hidden by default) -->
+        <div class="form-group" id="partnerIncomeGroup" style="display: none;">
+          <label for="partnerIncome" class="form-label">Partner's Annual Income</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="partnerIncome" class="form-input" placeholder="Enter amount" oninput="formatAndCalculate(this)">
+          </div>
+        </div>
+
+        <!-- Regular Commitments Section -->
+        <div class="commitments-section">
+          <label class="form-label">Regular Commitments <span class="form-label__optional">(monthly)</span></label>
+
+          <div class="form-group">
+            <label for="creditCards" class="form-label form-label--small">Credit Card Balances (to remain)</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">£</span>
+              <input type="text" id="creditCards" class="form-input" placeholder="0" oninput="formatAndCalculate(this)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="loansHP" class="form-label form-label--small">Loans / HP / Leases & Cars</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">£</span>
+              <input type="text" id="loansHP" class="form-input" placeholder="0" oninput="formatAndCalculate(this)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="otherOutgoings" class="form-label form-label--small">Other Outgoings <span class="form-label__hint">(childcare, school fees, maintenance)</span></label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">£</span>
+              <input type="text" id="otherOutgoings" class="form-input" placeholder="0" oninput="formatAndCalculate(this)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="calculator-results">
+        <h3 class="results-title">Your Estimated Borrowing Range</h3>
+
+        <div class="result-tiers">
+          <div class="result-tier result-tier--conservative">
+            <div class="result-tier__header">
+              <span class="result-tier__label">Conservative</span>
+              <span class="result-tier__multiplier">3.5x income</span>
+            </div>
+            <div class="result-tier__amount" id="result-conservative">£0</div>
+            <p class="result-tier__desc">Standard high street lending</p>
+          </div>
+
+          <div class="result-tier result-tier--standard">
+            <div class="result-tier__header">
+              <span class="result-tier__label">Standard</span>
+              <span class="result-tier__multiplier">4.5x income</span>
+            </div>
+            <div class="result-tier__amount" id="result-standard">£0</div>
+            <p class="result-tier__desc">Most common lending criteria</p>
+          </div>
+
+          <div class="result-tier result-tier--maximum">
+            <div class="result-tier__header">
+              <span class="result-tier__label">Maximum</span>
+              <span class="result-tier__multiplier">5x income</span>
+            </div>
+            <div class="result-tier__amount" id="result-maximum">£0</div>
+            <p class="result-tier__desc">Subject to eligibility criteria</p>
+          </div>
+        </div>
+
+        <p class="results-disclaimer">These estimates are for guidance only. Your actual borrowing capacity depends on credit history, outgoings, and individual lender criteria.</p>
+      </div>
+    </div>
+
+    <div class="text-center" style="margin-top: 2rem;">
+      <a href="/contact/" class="btn btn--primary btn--large">
+        Get Your Personalised Quote
+        <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- Broker vs Bank Comparison -->
+<section class="section--white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2>Why Choose an Independent Broker vs. Your Bank?</h2>
+    </div>
+    
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Going Direct to a Bank</th>
+          <th>Using B Mortgage Services</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Access to Deals</strong></td>
+          <td>Limited to their own products only.</td>
+          <td class="check"><strong>✓</strong> Whole of Market access (100+ lenders).</td>
+        </tr>
+        <tr>
+          <td><strong>Exclusive Rates</strong></td>
+          <td>No access to broker-only deals.</td>
+          <td class="check"><strong>✓</strong> Access to exclusive intermediary rates.</td>
+        </tr>
+        <tr>
+          <td><strong>Advice Quality</strong></td>
+          <td>Often biased toward their products.</td>
+          <td class="check"><strong>✓</strong> Unbiased, regulated advice focused on you.</td>
+        </tr>
+        <tr>
+          <td><strong>Availability</strong></td>
+          <td>Often 9-5, long waits for appointments.</td>
+          <td class="check"><strong>✓</strong> Flexible hours, including evenings &amp; weekends.</td>
+        </tr>
+        <tr>
+          <td><strong>Paperwork</strong></td>
+          <td>You handle most of the chasing.</td>
+          <td class="check"><strong>✓</strong> We manage the entire application to completion.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- AIP Fast Track -->
+<section class="section--charcoal">
+  <div class="container">
+    <div class="wellness-grid" style="align-items: center;">
+      <div class="wellness-content">
+        <h2>Ready to Make an Offer on a House?</h2>
+        <p style="font-size: 1.1rem;">In today's market, speed matters. We can often secure a Decision in Principle (DIP) within 24 hours, putting you in the strongest position with sellers.</p>
+        <div style="margin-top: 2rem;">
+          <a href="/contact/" class="btn btn--primary btn--large">
+            Fast-Track My Decision in Principle
+            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div style="text-align: center;">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="var(--brand-orange)" stroke-width="1.5" style="opacity: 0.8;">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+    
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>How much deposit do I really need in 2026?</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div class="faq-answer">
+          <p>While 5% deposit mortgages exist, having 10% or 15% opens up access to significantly better interest rates. We can review your savings and help you understand the best tier for your budget.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>What if I'm self-employed or a contractor?</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div class="faq-answer">
+          <p>High street banks can sometimes struggle with complex incomes. We have access to specialist lenders who understand self-employment, using net profit or day rates to calculate your affordability.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Do you charge a fee for your advice?</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div class="faq-answer">
+          <p>We offer an initial free consultation. If you choose to proceed, our fee structure is always transparent and agreed upfront before any work begins. We'll explain all costs clearly so there are no surprises.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Will checking my eligibility affect my credit score?</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div class="faq-answer">
+          <p>No. When we do an initial fact-find, we use a "soft search" which is visible to you but does not leave a footprint for other lenders to see.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Still Have Questions?</h2>
+    <p>Mortgage advice isn't one-size-fits-all. Book a relaxed, no-obligation chat to discuss your specific needs.</p>
+    <a href="/contact/" class="btn btn--white btn--large">Book a 15-Minute Chat</a>
+  </div>
+</section>
+
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+let applicationType = 'single';
+
+function setApplicationType(type) {
+  applicationType = type;
+
+  // Update toggle buttons
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.classList.remove('toggle-btn--active');
+    if (btn.dataset.type === type) {
+      btn.classList.add('toggle-btn--active');
+    }
+  });
+
+  // Show/hide partner income
+  const partnerGroup = document.getElementById('partnerIncomeGroup');
+  if (type === 'joint') {
+    partnerGroup.style.display = 'block';
+  } else {
+    partnerGroup.style.display = 'none';
+    document.getElementById('partnerIncome').value = '';
+  }
+
+  calculateAffordability();
+}
+
+function formatAndCalculate(input) {
+  // Remove non-numeric characters except for the value
+  let value = input.value.replace(/[^0-9]/g, '');
+
+  // Format with commas
+  if (value) {
+    value = parseInt(value).toLocaleString('en-GB');
+  }
+
+  input.value = value;
+  calculateAffordability();
+}
+
+function parseFormattedNumber(str) {
+  if (!str) return 0;
+  return parseInt(str.replace(/,/g, '')) || 0;
+}
+
+function formatCurrency(num) {
+  return '£' + num.toLocaleString('en-GB', { maximumFractionDigits: 0 });
+}
+
+function calculateAffordability() {
+  const yourIncome = parseFormattedNumber(document.getElementById('yourIncome').value);
+  const partnerIncome = applicationType === 'joint'
+    ? parseFormattedNumber(document.getElementById('partnerIncome').value)
+    : 0;
+
+  // Total income
+  const totalIncome = yourIncome + partnerIncome;
+
+  // Calculate the three tiers
+  const conservative = totalIncome * 3.5;
+  const standard = totalIncome * 4.5;
+  const maximum = totalIncome * 5;
+
+  // Update display
+  document.getElementById('result-conservative').textContent = formatCurrency(conservative);
+  document.getElementById('result-standard').textContent = formatCurrency(standard);
+  document.getElementById('result-maximum').textContent = formatCurrency(maximum);
+}
+
+function toggleFaq(element) {
+  const item = element.parentElement;
+  item.classList.toggle('faq-item--open');
+}
+
+// Initialize calculator on page load
+document.addEventListener('DOMContentLoaded', function() {
+  calculateAffordability();
+});
+</script>
+{{ end }}

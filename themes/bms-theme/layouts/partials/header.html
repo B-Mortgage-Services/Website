@@ -1,0 +1,35 @@
+<header class="header" id="header">
+  <div class="container">
+    <div class="header__inner">
+      <a href="{{ .Site.BaseURL }}" class="header__logo" aria-label="B Mortgage Services Home">
+        <img src="{{ "images/BMS_logo.jpg" | relURL }}" alt="B Mortgage Services" width="180" height="45">
+      </a>
+      
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav__toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-list">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span class="visually-hidden">Menu</span>
+        </button>
+        
+        <ul class="nav__list" id="nav-list">
+          {{ range .Site.Menus.main }}
+          <li>
+            <a href="{{ .URL }}" class="nav__link{{ if $.IsMenuCurrent "main" . }} nav__link--active{{ end }}">
+              {{ .Name }}
+            </a>
+          </li>
+          {{ end }}
+        </ul>
+        
+        <a href="/contact/" class="btn btn--primary btn--small">
+          Get Started
+          <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>

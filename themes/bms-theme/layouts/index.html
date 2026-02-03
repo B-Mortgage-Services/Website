@@ -1,0 +1,439 @@
+{{ define "main" }}
+
+<!-- Hero Section -->
+<section class="hero hero--home">
+  <div class="hero__decoration hero__decoration--1"></div>
+  <div class="hero__decoration hero__decoration--2"></div>
+  <div class="container">
+    <div class="hero__grid hero__grid--image-left">
+      <div class="hero__visual">
+        <img src="{{ "images/clientmeeting3.png" | relURL }}" alt="Bev from B Mortgage Services" class="hero__image">
+      </div>
+      <div class="hero__content">
+        <h1 class="hero__title">Expert Mortgage &amp; Insurance Advice, Built on Trust</h1>
+        <p class="hero__subtitle">Whether you're securing your first home or looking after your company's greatest asset—its people—we provide the tailored financial guidance you need.</p>
+        <div class="hero__actions">
+          <a href="/individuals/" class="btn btn--primary btn--large">
+            Get My Quote
+            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="/employers/" class="btn btn--secondary btn--large">Partner With Us</a>
+        </div>
+        <div class="hero__features">
+          <span class="hero__feature">
+            <svg class="hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            100+ Lenders
+          </span>
+          <span class="hero__feature">
+            <svg class="hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Whole of Market
+          </span>
+          <span class="hero__feature">
+            <svg class="hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            5-Star Reviews
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Partner Logos Section -->
+<section class="partners-section">
+  <div class="container">
+    <p class="partners-title">Trusted by leading organisations across the UK</p>
+    <div class="partners-logos">
+      <div class="partner-logo">
+        <img src="{{ "images/partners/altair.webp" | relURL }}" alt="Altair">
+      </div>
+      <div class="partner-logo">
+        <img src="{{ "images/partners/fatface.png" | relURL }}" alt="FatFace">
+      </div>
+      <div class="partner-logo">
+        <img src="{{ "images/partners/ntu.png" | relURL }}" alt="Nottingham Trent University">
+      </div>
+      <div class="partner-logo">
+        <img src="{{ "images/partners/Sopra.png" | relURL }}" alt="Sopra Steria">
+      </div>
+      <div class="partner-logo">
+        <img src="{{ "images/partners/Target.png" | relURL }}" alt="Target">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="section--cream" id="services">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2>Our Services</h2>
+      <p style="max-width: 600px; margin: 1rem auto 0; font-size: 1.1rem;">Comprehensive mortgage and protection advice for every stage of life.</p>
+    </div>
+    
+    <div class="services-grid">
+      <article class="card card--bordered">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Mortgages</h3>
+        <p class="card__text">Whether you're a first-time buyer, remortgaging, or an investor, we provide whole-of-market access to find the best deal for your goals.</p>
+        <a href="/individuals/" class="btn btn--primary">
+          Get My Quote
+          <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+
+      <article class="card card--bordered">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Protection</h3>
+        <p class="card__text">Secure your family's future with a tailored safety net. From life cover to income protection, we ensure your home and lifestyle remain protected.</p>
+        <a href="/individuals/protection/" class="btn btn--primary">
+          Protect Me
+          <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+
+      <article class="card card--bordered card--employer">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Workplace Advice</h3>
+        <p class="card__text">Enhance your benefits package with a zero-cost mortgage and insurance advisory service for your team.</p>
+        <a href="/employers/" class="btn btn--secondary">
+          Partner With Us
+          <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+
+      <article class="card card--bordered card--employer">
+        <div class="card__icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Financial Wellness</h3>
+        <p class="card__text">Reduce workplace stress with proactive education through "Lunch &amp; Learn" sessions and workshops.</p>
+        <a href="/wellness/" class="btn btn--secondary">
+          Learn More
+          <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Process Section -->
+<section class="process-section">
+  <div class="container">
+    <h2>Our Process Made Simple</h2>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="process-step__number">1</div>
+        <h3 class="process-step__title">Discovery</h3>
+        <p class="process-step__text">A brief chat to understand your goals, whether personal or corporate.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__number">2</div>
+        <h3 class="process-step__title">Expert Search</h3>
+        <p class="process-step__text">We scour the whole of the market to find your perfect fit.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__number">3</div>
+        <h3 class="process-step__title">Peace of Mind</h3>
+        <p class="process-step__text">We handle the paperwork and keep you protected for life.</p>
+      </div>
+    </div>
+    <p class="process-hook"><strong>Honest</strong>, <strong>jargon-free</strong> advice at <em class="process-hook__highlight">every stage</em> of your mortgage journey.</p>
+  </div>
+</section>
+
+<!-- Financial Wellness Section -->
+<!-- <section class="wellness-section-new" id="wellness">
+  <div class="container">
+    <h2 class="wellness-section-new__title">Check Your Mortgage &amp; Financial Wellness</h2>
+  </div>
+
+  Frame Animation Container 
+  <div class="wellness-video-container">
+    <canvas class="wellness-frame-canvas" id="wellnessCanvas"></canvas>
+  </div> -->
+
+  <!-- CTA Banner - COMMENTED OUT while working on alternative version
+  <div class="wellness-cta-banner">
+    <div class="container">
+      <div class="wellness-cta-content">
+        <p class="wellness-cta-banner__subtitle">Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report.</p>
+
+        <ul class="wellness-cta-banner__features">
+          <li>
+            <svg class="wellness-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Estimate your borrowing range</span>
+          </li>
+          <li>
+            <svg class="wellness-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Check your financial resilience</span>
+          </li>
+          <li>
+            <svg class="wellness-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Identify top ways to strengthen your finances</span>
+          </li>
+        </ul>
+
+        <div class="wellness-cta-actions">
+          <a href="/wellness/" class="btn btn--primary btn--large">
+            Start Your Free Check
+            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <p class="wellness-cta-banner__note">Takes just 3 minutes &nbsp;•&nbsp; No impact on your credit score</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
+
+  <!-- NEW Wellness CTA with Video Background -->
+  <div class="wellness-cta-overlay">
+    <!-- Background image/video -->
+    <div class="wellness-cta-overlay__bg">
+      <img src="{{ "images/end-img.png" | relURL }}" alt="" class="wellness-cta-overlay__media">
+    </div>
+
+    <!-- Content overlay -->
+    <div class="wellness-cta-overlay__content">
+      <h2>Check Your Mortgage &amp; Financial Wellness</h2>
+      <p class="wellness-cta-overlay__subtitle">Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report.</p>
+
+      <ul class="wellness-cta-overlay__features">
+        <li>
+          <svg class="wellness-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Estimate your borrowing range</span>
+        </li>
+        <li>
+          <svg class="wellness-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Check your financial resilience</span>
+        </li>
+        <li>
+          <svg class="wellness-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Identify top ways to strengthen your finances</span>
+        </li>
+      </ul>
+
+      <div class="wellness-cta-overlay__actions">
+        <a href="/wellness/" class="btn btn--primary btn--large">
+          Start Your Free Check
+          <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <p class="wellness-cta-overlay__note">Takes just 3 minutes &nbsp;•&nbsp; No impact on your credit score</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- About Section -->
+<section class="section--white" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image">
+        <img src="{{ "images/BevOffice.png" | relURL }}" alt="Bev from B Mortgage Services">
+      </div>
+      <div class="about-content">
+        <h2>Our Story</h2>
+        <p class="about-lead">Founded by <strong>Bev Shaw</strong> (now House), our firm began as part of Brunsdon Financial and is now <strong>independently owned and operated</strong> by Bev. From the outset, the business has been built on a commitment to <span class="text-highlight">outstanding customer service</span>, <span class="text-highlight">professional integrity</span>, and <span class="text-highlight">long-term relationships</span>.</p>
+        <p>Bev's hands-on approach and passion for delivering high-quality advice have resulted in an exceptionally loyal client base, ranging from <strong>first-time buyers</strong> to <strong>experienced professionals</strong> with more complex needs. We take pride in offering clear, practical guidance, ensuring our clients feel <em>informed</em>, <em>supported</em>, and <em>confident</em> in their decisions.</p>
+        <p>We work with a wide range of lenders and providers, as well as several large employers who trust us to support their employees with mortgage and protection advice. Our services are designed to be <strong>accessible and personal</strong>, while maintaining the highest standards of compliance and professionalism.</p>
+        <p>As a proud partner of <strong>The Openwork Partnership</strong>, we operate within a strong regulatory framework that supports robust governance, quality assurance, and access to the wider market — allowing us to deliver sound financial advice to clients across the UK.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <h2>What Our Clients Say</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="testimonial__stars">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testimonial__text">"Fantastic. From start to finish Kayleigh and Bev went above and beyond to ensure we understood all our options and find us the mortgage to get us our first home. Can't thank them enough."</p>
+        <p class="testimonial__author">First-Time Buyer</p>
+      </div>
+      
+      <div class="testimonial">
+        <div class="testimonial__stars">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testimonial__text">"Great, hassle free support from Bev. Helped us with remortgage using her professionalism, trustworthiness and deep business knowledge. Thank you very much!"</p>
+        <p class="testimonial__author">Remortgage Client</p>
+      </div>
+      
+      <div class="testimonial">
+        <div class="testimonial__stars">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testimonial__text">"Bev was with us from when we first started thinking about purchasing a house, through to completion. She gave advice at each step, made sure we knew what was needed from us."</p>
+        <p class="testimonial__author">Home Buyer</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Employer Highlight Section -->
+<section class="employer-highlight">
+  <div class="container">
+    <div class="employer-grid">
+      <div class="employer-content">
+        <h2>Empower Your Team with Financial Peace of Mind</h2>
+        <p>A premium employee benefit with zero cost to your business.</p>
+        <div class="employer-benefits">
+          <div class="employer-benefit">
+            <svg class="employer-benefit__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <p class="employer-benefit__text"><strong>Reduce Financial Stress:</strong> 60% of UK employees say financial anxiety affects their work. We help bridge that gap.</p>
+          </div>
+          <div class="employer-benefit">
+            <svg class="employer-benefit__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <p class="employer-benefit__text"><strong>Expert Workplace Advice:</strong> Dedicated mortgage and protection clinics for your staff, either in-person or via webinar.</p>
+          </div>
+          <div class="employer-benefit">
+            <svg class="employer-benefit__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <p class="employer-benefit__text"><strong>Recruitment Edge:</strong> Stand out in the talent market by offering specialized financial wellness support.</p>
+          </div>
+          <div class="employer-benefit">
+            <svg class="employer-benefit__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <p class="employer-benefit__text"><strong>Seamless Integration:</strong> We handle all the administration and delivery. It's "plug-and-play" for your HR team.</p>
+          </div>
+        </div>
+        <div class="employer-actions">
+          <a href="/employers/brochure/" class="btn btn--white">Download Employer Brochure</a>
+          <a href="/employers/#lunch-learn" class="employer-link">
+            View our 'Lunch &amp; Learn' topics
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="employer-visual">
+        <img src="{{ "images/Employee-engagement.png" | relURL }}" alt="Employee engagement and financial wellness" class="employer-visual__image">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Referral Section -->
+<section class="referral-section">
+  <div class="container">
+    <div class="referral-content">
+      <h2>Our Business is Built on Your Trust</h2>
+      <p>If we've helped you secure your home or protect your family, the highest compliment you can pay us is a referral.</p>
+      <div class="referral-steps">
+        <div class="referral-step">
+          <div class="referral-step__number">1</div>
+          <div class="referral-step__content">
+            <h4>Recommend Us</h4>
+            <p>Share our details with a friend, family member, or colleague.</p>
+          </div>
+        </div>
+        <div class="referral-step">
+          <div class="referral-step__number">2</div>
+          <div class="referral-step__content">
+            <h4>Expert Care</h4>
+            <p>We provide them with the same 5-star, jargon-free advice you received.</p>
+          </div>
+        </div>
+        <div class="referral-step">
+          <div class="referral-step__number">3</div>
+          <div class="referral-step__content">
+            <h4>A Token of Thanks</h4>
+            <p>Once their mortgage or policy completes, we'll send you a thank you gift.</p>
+          </div>
+        </div>
+      </div>
+      <p style="font-style: italic; color: var(--text-secondary); margin-bottom: 1.5rem;">"We treat every referral with the utmost care, ensuring your recommendation reflects perfectly on you."</p>
+      <div class="referral-actions">
+        <a href="/refer/" class="btn btn--primary">Refer a Friend Now</a>
+        <a href="/contact/" class="btn btn--secondary">Download Our Digital Card</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Ready to Get Started?</h2>
+    <p>Whether you're buying your first home or enhancing your employee benefits, we're here to help.</p>
+    <div class="d-flex justify-center gap-2">
+      <a href="/contact/" class="btn btn--white btn--large">Book a Free Consultation</a>
+    </div>
+  </div>
+</section>
+
+{{ end }}

@@ -1,0 +1,12 @@
+name = "BMS Theme"
+license = "MIT"
+licenselink = "https://github.com/yourname/yourtheme/blob/master/LICENSE"
+description = "Custom Hugo theme for B Mortgage Services"
+homepage = "https://bmortgageservices.co.uk/"
+tags = ["mortgage", "financial", "responsive", "modern"]
+features = ["responsive", "accessible", "fast"]
+min_version = "0.112.0"
+
+[author]
+  name = "B Mortgage Services"
+  homepage = "https://bmortgageservices.co.uk/"

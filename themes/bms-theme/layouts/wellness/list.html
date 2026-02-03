@@ -1,0 +1,431 @@
+{{ define "main" }}
+
+<!-- Hero Section -->
+<section class="wellness-section" style="padding-top: calc(80px + 4rem);">
+  <div class="container">
+    <div class="wellness-grid">
+      <div class="wellness-content">
+        <span class="hero__eyebrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          Free Assessment
+        </span>
+        <h1>Check Your Mortgage &amp; Financial Wellness</h1>
+        <p style="font-size: 1.15rem;">Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report.</p>
+        <div class="wellness-features">
+          <div class="wellness-feature">
+            <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span class="wellness-feature__text">Estimate your borrowing range</span>
+          </div>
+          <div class="wellness-feature">
+            <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span class="wellness-feature__text">Check your financial resilience</span>
+          </div>
+          <div class="wellness-feature">
+            <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span class="wellness-feature__text">Identify top ways to strengthen your finances</span>
+          </div>
+        </div>
+        <div class="wellness-cta" style="margin-top: 2rem;">
+          <a href="#wellness-check" class="btn btn--primary btn--large">
+            Start Your Free Check
+            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <span class="wellness-cta__note">Takes just 3 minutes • No impact on your credit score</span>
+        </div>
+      </div>
+      <div class="wellness-mockup">
+        <img src="{{ "images/Financial_Wellness_Check_section_mockup.png" | relURL }}" alt="Financial Wellness Score Preview" class="wellness-mockup__image">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="process-section">
+  <div class="container">
+    <h2>How It Works</h2>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="process-step__number">1</div>
+        <h3 class="process-step__title">Answer Questions</h3>
+        <p class="process-step__text">A short questionnaire about your income, savings, and financial situation.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__number">2</div>
+        <h3 class="process-step__title">Get Your Score</h3>
+        <p class="process-step__text">Receive an instant Financial Wellness Score based on four key pillars.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__number">3</div>
+        <h3 class="process-step__title">See Your Report</h3>
+        <p class="process-step__text">Get personalised insights and actionable steps to improve your position.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The Four Pillars -->
+<section class="section--cream">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2>What We Assess</h2>
+      <p style="max-width: 700px; margin: 1rem auto 0; font-size: 1.1rem;">Your overall score is made up of four key areas. Each plays a different role in how lenders assess applications and how comfortable a mortgage feels in day-to-day life.</p>
+    </div>
+    
+    <div class="services-grid">
+      <article class="card">
+        <div class="card__icon" style="background: rgba(34, 197, 94, 0.1); color: #22C55E;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Mortgage Eligibility</h3>
+        <p class="card__text">How your income, deposit, and credit profile may be viewed by mortgage lenders.</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange);">35% of your score</p>
+      </article>
+      
+      <article class="card">
+        <div class="card__icon" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Affordability &amp; Budget</h3>
+        <p class="card__text">Not just how much you can borrow — but what you can repay comfortably.</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange);">30% of your score</p>
+      </article>
+      
+      <article class="card">
+        <div class="card__icon" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Financial Resilience</h3>
+        <p class="card__text">How well you could cope with unexpected events.</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange);">20% of your score</p>
+      </article>
+      
+      <article class="card">
+        <div class="card__icon" style="background: rgba(168, 85, 247, 0.1); color: #A855F7;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+        </div>
+        <h3 class="card__title">Protection Readiness</h3>
+        <p class="card__text">Whether your mortgage would remain affordable if life doesn't go to plan.</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange);">15% of your score</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Wellness Check -->
+<section class="section--white" id="wellness-check">
+  <div class="container container--narrow">
+    <div class="text-center mb-5">
+      <h2>Start Your Financial Wellness Check</h2>
+      <p>Answer a few questions to get your personalised report. Completely free with no impact on your credit score.</p>
+    </div>
+    
+    <div class="calculator-box" style="max-width: 700px; margin: 0 auto;">
+      <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem;">
+        <div class="step-dot step-dot--active" data-step="1"></div>
+        <div class="step-dot" data-step="2"></div>
+        <div class="step-dot" data-step="3"></div>
+        <div class="step-dot" data-step="4"></div>
+      </div>
+      
+      <!-- Step 1 -->
+      <div class="wellness-step" id="step-1">
+        <h3 style="margin-bottom: 1.5rem;">Income &amp; Employment</h3>
+        <div class="form-group">
+          <label>What is your employment status?</label>
+          <select id="employment-status">
+            <option value="">Select...</option>
+            <option value="paye-12">PAYE employed (12+ months)</option>
+            <option value="paye-under">PAYE employed (under 12 months)</option>
+            <option value="self-2">Self-employed (2+ years)</option>
+            <option value="self-under">Self-employed (under 2 years)</option>
+            <option value="contractor">Contractor</option>
+            <option value="irregular">Irregular/variable income</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>What is your annual gross income? (£)</label>
+          <input type="number" id="annual-income" placeholder="45,000">
+        </div>
+        <div class="form-group">
+          <label>How would you describe your credit history?</label>
+          <select id="credit-history">
+            <option value="">Select...</option>
+            <option value="clean">Clean - no issues</option>
+            <option value="minor">Minor historic issues (3+ years ago)</option>
+            <option value="recent">Some recent issues (last 3 years)</option>
+            <option value="severe">Significant adverse credit</option>
+          </select>
+        </div>
+        <button class="btn btn--primary" style="width: 100%; margin-top: 1rem;" onclick="nextStep(2)">Continue →</button>
+      </div>
+      
+      <!-- Step 2 -->
+      <div class="wellness-step" id="step-2" style="display: none;">
+        <h3 style="margin-bottom: 1.5rem;">Property &amp; Deposit</h3>
+        <div class="form-group">
+          <label>Approximate property value you're looking at (£)</label>
+          <input type="number" id="property-value" placeholder="250,000">
+        </div>
+        <div class="form-group">
+          <label>How much deposit do you have saved? (£)</label>
+          <input type="number" id="deposit-amount" placeholder="25,000">
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button class="btn btn--secondary" style="flex: 1;" onclick="nextStep(1)">Back</button>
+          <button class="btn btn--primary" style="flex: 1;" onclick="nextStep(3)">Continue →</button>
+        </div>
+      </div>
+      
+      <!-- Step 3 -->
+      <div class="wellness-step" id="step-3" style="display: none;">
+        <h3 style="margin-bottom: 1.5rem;">Budget &amp; Savings</h3>
+        <div class="form-group">
+          <label>After all expenses, do you typically have money left over each month?</label>
+          <select id="monthly-surplus">
+            <option value="">Select...</option>
+            <option value="surplus">Yes, I regularly save</option>
+            <option value="breakeven">I roughly break even</option>
+            <option value="occasional">Occasionally use credit</option>
+            <option value="reliant">Reliant on credit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>How many months of essential expenses could you cover with savings?</label>
+          <select id="emergency-fund">
+            <option value="">Select...</option>
+            <option value="6plus">6+ months</option>
+            <option value="3-6">3-6 months</option>
+            <option value="1-3">1-3 months</option>
+            <option value="under1">Less than 1 month</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button class="btn btn--secondary" style="flex: 1;" onclick="nextStep(2)">Back</button>
+          <button class="btn btn--primary" style="flex: 1;" onclick="nextStep(4)">Continue →</button>
+        </div>
+      </div>
+      
+      <!-- Step 4 -->
+      <div class="wellness-step" id="step-4" style="display: none;">
+        <h3 style="margin-bottom: 1.5rem;">Protection</h3>
+        <div class="form-group">
+          <label>Do you have life insurance?</label>
+          <select id="life-insurance">
+            <option value="">Select...</option>
+            <option value="full">Yes, adequate cover</option>
+            <option value="partial">Some, but may not be enough</option>
+            <option value="none">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Do you have income protection insurance?</label>
+          <select id="income-protection">
+            <option value="">Select...</option>
+            <option value="full">Yes</option>
+            <option value="partial">Partial/through employer only</option>
+            <option value="none">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Do you have critical illness cover?</label>
+          <select id="critical-illness">
+            <option value="">Select...</option>
+            <option value="full">Yes</option>
+            <option value="partial">Partial</option>
+            <option value="none">No</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button class="btn btn--secondary" style="flex: 1;" onclick="nextStep(3)">Back</button>
+          <button class="btn btn--primary" style="flex: 1;" onclick="calculateScore()">Get My Score ✓</button>
+        </div>
+      </div>
+      
+      <!-- Results -->
+      <div class="wellness-step" id="results" style="display: none;">
+        <div style="text-align: center; padding: 2rem 0;">
+          <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange); margin-bottom: 1rem;">Your Financial Wellness Score</p>
+          <div style="position: relative; width: 200px; height: 120px; margin: 0 auto;">
+            <svg viewBox="0 0 200 120" style="width: 100%; height: 100%;">
+              <defs>
+                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#EF4444"/>
+                  <stop offset="25%" style="stop-color:#F97316"/>
+                  <stop offset="50%" style="stop-color:#EAB308"/>
+                  <stop offset="75%" style="stop-color:#84CC16"/>
+                  <stop offset="100%" style="stop-color:#22C55E"/>
+                </linearGradient>
+              </defs>
+              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e5e5e5" stroke-width="12" stroke-linecap="round"/>
+              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#scoreGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" id="score-arc"/>
+            </svg>
+            <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); text-align: center;">
+              <span id="score-value" style="font-family: var(--font-display); font-size: 3rem; color: var(--brand-charcoal);">0</span>
+              <span style="font-size: 1rem; color: var(--text-secondary);">/100</span>
+            </div>
+          </div>
+          <div id="score-label" style="margin-top: 1rem;"></div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; padding: 1.5rem; background: var(--cream); border-radius: var(--radius-lg);">
+          <div>
+            <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #22C55E; margin-bottom: 0.5rem;">✓ Strengths</p>
+            <ul id="strengths-list" style="list-style: none; font-size: 0.9rem;"></ul>
+          </div>
+          <div>
+            <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--brand-orange); margin-bottom: 0.5rem;">⚠ Areas to Improve</p>
+            <ul id="improve-list" style="list-style: none; font-size: 0.9rem;"></ul>
+          </div>
+        </div>
+        
+        <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--medium-grey);">
+          <p style="margin-bottom: 1rem;">Want to discuss your results with an expert?</p>
+          <a href="/contact/" class="btn btn--primary">Book a Free Consultation →</a>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 1rem;">This assessment is indicative only and does not guarantee mortgage acceptance.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- For Employers CTA -->
+<section class="section--charcoal">
+  <div class="container container--narrow text-center">
+    <h2>Offer This to Your Employees</h2>
+    <p style="font-size: 1.1rem;">Provide your workforce with access to our Financial Wellness Check as part of your employee benefits package — at zero cost to your organisation.</p>
+    <div style="margin-top: 2rem;">
+      <a href="/employers/" class="btn btn--white btn--large">Learn About Employer Partnerships</a>
+    </div>
+  </div>
+</section>
+
+<style>
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--medium-grey);
+  transition: all 0.3s ease;
+}
+.step-dot--active {
+  background: var(--brand-orange);
+  transform: scale(1.2);
+}
+.wellness-step {
+  animation: fadeIn 0.4s ease;
+}
+</style>
+
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+function nextStep(step) {
+  document.querySelectorAll('.wellness-step').forEach(s => s.style.display = 'none');
+  document.getElementById('step-' + step).style.display = 'block';
+  document.querySelectorAll('.step-dot').forEach((dot, i) => {
+    dot.classList.toggle('step-dot--active', i < step);
+  });
+}
+
+function calculateScore() {
+  const employment = document.getElementById('employment-status').value;
+  const credit = document.getElementById('credit-history').value;
+  const propertyValue = parseFloat(document.getElementById('property-value').value) || 0;
+  const deposit = parseFloat(document.getElementById('deposit-amount').value) || 0;
+  const surplus = document.getElementById('monthly-surplus').value;
+  const emergency = document.getElementById('emergency-fund').value;
+  const life = document.getElementById('life-insurance').value;
+  const income = document.getElementById('income-protection').value;
+  const critical = document.getElementById('critical-illness').value;
+  
+  let score = 0;
+  let strengths = [];
+  let improvements = [];
+  
+  const employmentScores = {'paye-12': 15, 'paye-under': 12, 'self-2': 12, 'self-under': 6, 'contractor': 10, 'irregular': 4};
+  score += employmentScores[employment] || 0;
+  if (employmentScores[employment] >= 12) strengths.push('Stable income');
+  else improvements.push('Employment stability');
+  
+  const creditScores = {'clean': 10, 'minor': 7, 'recent': 3, 'severe': 1};
+  score += creditScores[credit] || 0;
+  if (creditScores[credit] >= 7) strengths.push('Good credit profile');
+  else improvements.push('Credit history');
+  
+  const ltv = propertyValue > 0 ? ((propertyValue - deposit) / propertyValue) * 100 : 100;
+  if (ltv <= 75) { score += 10; strengths.push('Strong deposit'); }
+  else if (ltv <= 85) { score += 8; strengths.push('Solid deposit'); }
+  else if (ltv <= 90) { score += 6; improvements.push('Deposit size'); }
+  else { score += 3; improvements.push('Deposit size'); }
+  
+  const surplusScores = {'surplus': 20, 'breakeven': 12, 'occasional': 6, 'reliant': 0};
+  score += surplusScores[surplus] || 0;
+  if (surplusScores[surplus] >= 12) strengths.push('Good budget control');
+  else improvements.push('Monthly budget');
+  
+  const emergencyScores = {'6plus': 10, '3-6': 7, '1-3': 4, 'under1': 0};
+  score += emergencyScores[emergency] || 0;
+  if (emergencyScores[emergency] >= 7) strengths.push('Emergency savings');
+  else improvements.push('Emergency fund');
+  
+  const protectionScores = {'full': 5, 'partial': 3, 'none': 0};
+  score += protectionScores[life] || 0;
+  score += protectionScores[income] || 0;
+  score += protectionScores[critical] || 0;
+  
+  const protectionTotal = (protectionScores[life] || 0) + (protectionScores[income] || 0) + (protectionScores[critical] || 0);
+  if (protectionTotal >= 10) strengths.push('Good protection');
+  else improvements.push('Income protection');
+  
+  score = Math.min(Math.round((score / 80) * 100), 100);
+  
+  document.querySelectorAll('.wellness-step').forEach(s => s.style.display = 'none');
+  document.getElementById('results').style.display = 'block';
+  
+  const scoreEl = document.getElementById('score-value');
+  const arcEl = document.getElementById('score-arc');
+  let current = 0;
+  const interval = setInterval(() => {
+    current += 2;
+    if (current >= score) { current = score; clearInterval(interval); }
+    scoreEl.textContent = current;
+    arcEl.style.strokeDashoffset = 251 - (251 * current / 100);
+  }, 20);
+  
+  const labelEl = document.getElementById('score-label');
+  if (score >= 80) {
+    labelEl.innerHTML = '<h3 style="color: #22C55E;">Mortgage-Ready & Financially Resilient</h3><p>You appear to be in a strong position.</p>';
+  } else if (score >= 65) {
+    labelEl.innerHTML = '<h3 style="color: #84CC16;">On Track with Minor Improvements</h3><p>You\'re broadly on track.</p>';
+  } else if (score >= 50) {
+    labelEl.innerHTML = '<h3 style="color: #EAB308;">Mortgage Possible with Planning</h3><p>A mortgage may be achievable with planning.</p>';
+  } else {
+    labelEl.innerHTML = '<h3 style="color: #F97316;">Preparation Recommended</h3><p>Some focused steps could improve your position.</p>';
+  }
+  
+  document.getElementById('strengths-list').innerHTML = strengths.slice(0, 4).map(s => '<li>• ' + s + '</li>').join('');
+  document.getElementById('improve-list').innerHTML = improvements.slice(0, 4).map(s => '<li>• ' + s + '</li>').join('');
+}
+</script>
+{{ end }}

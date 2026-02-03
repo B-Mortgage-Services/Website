@@ -1,0 +1,21 @@
+{{ define "main" }}
+<article class="page">
+  {{ if .Params.showHeader | default true }}
+  <header class="page-header">
+    <div class="container">
+      {{ with .Params.eyebrow }}<span class="page-header__eyebrow">{{ . }}</span>{{ end }}
+      <h1>{{ .Title }}</h1>
+      {{ with .Params.subtitle }}<p class="page-header__subtitle">{{ . }}</p>{{ end }}
+    </div>
+  </header>
+  {{ end }}
+  
+  <section class="section--white">
+    <div class="container container--narrow">
+      <div class="page-content">
+        {{ .Content }}
+      </div>
+    </div>
+  </section>
+</article>
+{{ end }}
