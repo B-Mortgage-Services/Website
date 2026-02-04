@@ -1,50 +1,46 @@
 {{ define "main" }}
 
 <!-- Hero Section -->
-<section class="wellness-section" style="padding-top: calc(80px + 4rem);">
+<section class="wellness-hero" style="background-image: url('{{ "images/end-img.png" | relURL }}');">
+  <div class="wellness-hero__overlay"></div>
   <div class="container">
-    <div class="wellness-grid">
-      <div class="wellness-content">
-        <span class="hero__eyebrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+    <div class="wellness-hero__content">
+      <span class="hero__eyebrow hero__eyebrow--light">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        Free Assessment
+      </span>
+      <h1>Check Your Mortgage &amp; Financial Wellness</h1>
+      <p>Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report.</p>
+      <div class="wellness-features wellness-features--light">
+        <div class="wellness-feature">
+          <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
           </svg>
-          Free Assessment
-        </span>
-        <h1>Check Your Mortgage &amp; Financial Wellness</h1>
-        <p style="font-size: 1.15rem;">Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report.</p>
-        <div class="wellness-features">
-          <div class="wellness-feature">
-            <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            <span class="wellness-feature__text">Estimate your borrowing range</span>
-          </div>
-          <div class="wellness-feature">
-            <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            <span class="wellness-feature__text">Check your financial resilience</span>
-          </div>
-          <div class="wellness-feature">
-            <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            <span class="wellness-feature__text">Identify top ways to strengthen your finances</span>
-          </div>
+          <span class="wellness-feature__text">Estimate your borrowing range</span>
         </div>
-        <div class="wellness-cta" style="margin-top: 2rem;">
-          <a href="#wellness-check" class="btn btn--primary btn--large">
-            Start Your Free Check
-            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
-          <span class="wellness-cta__note">Takes just 3 minutes • No impact on your credit score</span>
+        <div class="wellness-feature">
+          <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span class="wellness-feature__text">Check your financial resilience</span>
+        </div>
+        <div class="wellness-feature">
+          <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span class="wellness-feature__text">Identify top ways to strengthen your finances</span>
         </div>
       </div>
-      <div class="wellness-mockup">
-        <img src="{{ "images/Financial_Wellness_Check_section_mockup.png" | relURL }}" alt="Financial Wellness Score Preview" class="wellness-mockup__image">
+      <div class="wellness-cta wellness-cta--stacked" style="margin-top: 2rem;">
+        <a href="#wellness-check" class="btn btn--primary btn--large">
+          Start Your Free Check
+          <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <span class="wellness-cta__note">Takes just 3 minutes • No impact on your credit score</span>
       </div>
     </div>
   </div>

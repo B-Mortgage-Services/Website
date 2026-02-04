@@ -1,3 +1,9 @@
+{{ define "head" }}
+<!-- Calendly widget -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+{{ end }}
+
 {{ define "main" }}
 
 <!-- Hero Section -->
@@ -54,7 +60,7 @@
         </div>
       </div>
       <div class="wellness-mockup">
-        <img src="{{ "images/Financial_Wellness_Check_section_mockup.png" | relURL }}" alt="Financial Wellness for Employees" class="wellness-mockup__image">
+        <img src="{{ "images/clientmeeting3.png" | relURL }}" alt="Financial Wellness for Employees" class="wellness-mockup__image">
       </div>
     </div>
   </div>
@@ -314,7 +320,7 @@
         <p class="process-step__text">Employees access confidential support independently whenever they need it.</p>
       </div>
     </div>
-    <p class="text-center" style="margin-top: 2rem; color: var(--text-secondary);">No system integration, no payroll involvement, and no ongoing admin.</p>
+    <p class="text-center" style="margin-top: 2rem; font-size: 1.1rem;"><strong style="color: var(--brand-orange);">No</strong> system integration, <strong style="color: var(--brand-orange);">no</strong> payroll involvement, and <strong style="color: var(--brand-orange);">no</strong> ongoing admin.</p>
   </div>
 </section>
 
@@ -399,13 +405,12 @@
     <p>No obligation. No cost to employees. Simply clear, supportive guidance.</p>
     <div class="d-flex justify-center gap-2" style="flex-wrap: wrap;">
       <a href="/contact/" class="btn btn--white btn--large">Request Employer Information Pack</a>
-      <a href="/contact/" class="btn btn--secondary btn--large" style="border-color: white; color: white;">Arrange an Introductory Call</a>
+      <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/workplace-advice-enquity'});return false;" class="btn btn--secondary btn--large" style="border-color: white; color: white;">Arrange an Introductory Call</a>
     </div>
+    <p style="margin-top: 2rem; font-size: 0.85rem; color: rgba(255,255,255,0.75);">
+      This service provides access to information and guidance. Mortgage advice is provided only following a full personal assessment. Employer involvement is limited to signposting only.
+    </p>
   </div>
 </section>
-
-<p style="text-align: center; padding: 1rem; font-size: 0.85rem; color: var(--text-secondary); background: var(--light-grey);">
-  This service provides access to information and guidance. Mortgage advice is provided only following a full personal assessment. Employer involvement is limited to signposting only.
-</p>
 
 {{ end }}
