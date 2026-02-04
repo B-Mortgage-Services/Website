@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Planner | B Mortgage Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --secondary: #38a169;
+            --secondary-light: #48bb78;
+            --accent: #ed8936;
+            --bg: #f7fafc;
+            --bg-card: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --border-focus: #4299e1;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .intro-box {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .intro-box h2 {
+            font-size: 1.125rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-box p {
+            color: var(--text-light);
+            font-size: 0.925rem;
+        }
+
+        .region-selector {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .region-selector label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .region-selector select {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .region-selector select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .region-selector .help-text {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-header .icon {
+            font-size: 1.25rem;
+        }
+
+        .section-body {
+            padding: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 100px 90px;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.625rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-row:last-child {
+            border-bottom: none;
+        }
+
+        .form-row label {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .form-row input {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            text-align: right;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        .form-row input::placeholder {
+            color: #cbd5e0;
+        }
+
+        .ons-average {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-align: right;
+            background: #edf2f7;
+            padding: 0.5rem 0.625rem;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .ons-average .amount {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .section-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: #f7fafc;
+            border-top: 2px solid var(--border);
+            font-weight: 600;
+        }
+
+        .section-total .value {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        /* Income Section - Different styling */
+        .section.income .section-header {
+            background: var(--secondary);
+        }
+
+        .section.income .section-total .value {
+            color: var(--secondary);
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .summary-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .summary-body {
+            padding: 1.5rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row .label {
+            font-size: 1rem;
+        }
+
+        .summary-row .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .summary-row.income .value {
+            color: var(--secondary);
+        }
+
+        .summary-row.outgoings .value {
+            color: var(--accent);
+        }
+
+        .summary-row.surplus {
+            padding-top: 1.25rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .summary-row.surplus .value {
+            font-size: 1.5rem;
+        }
+
+        .summary-row.surplus .value.positive {
+            color: var(--secondary);
+        }
+
+        .summary-row.surplus .value.negative {
+            color: #e53e3e;
+        }
+
+        /* Mortgage Budget Box */
+        .mortgage-budget {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .mortgage-budget h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .mortgage-budget .amount {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+        }
+
+        .mortgage-budget .per-month {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Footer Note */
+        .footer-note {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            box-shadow: var(--shadow);
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        .footer-note strong {
+            color: var(--text);
+        }
+
+        .ons-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e2e8f0;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .form-row label {
+                font-weight: 500;
+            }
+
+            .input-group {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .section, .summary-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Household Budget Planner</h1>
+        <p>Use this planner to work out your budget for your new home and understand what mortgage you can afford.</p>
+    </header>
+
+    <div class="container">
+        <div class="intro-box">
+            <h2>How to use this planner</h2>
+            <p>Enter your expected monthly income and outgoings. The ONS (Office for National Statistics) regional averages are shown for reference based on your selected region. These figures are weekly averages from the Family Spending Survey (FYE 2022-2024), converted to monthly equivalents. For annual or weekly items, please convert to monthly amounts.</p>
+        </div>
+
+        <div class="region-selector">
+            <label for="region">Select Your Region</label>
+            <select id="region" onchange="updateRegionalAverages()">
+                <option value="uk">United Kingdom (Average)</option>
+                <option value="north_east">North East</option>
+                <option value="north_west">North West</option>
+                <option value="yorkshire">Yorkshire and The Humber</option>
+                <option value="east_midlands">East Midlands</option>
+                <option value="west_midlands">West Midlands</option>
+                <option value="east">East of England</option>
+                <option value="london">London</option>
+                <option value="south_east">South East</option>
+                <option value="south_west">South West</option>
+                <option value="wales">Wales</option>
+                <option value="scotland">Scotland</option>
+                <option value="northern_ireland">Northern Ireland</option>
+            </select>
+            <p class="help-text">Regional averages will update based on your selection</p>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Income Section -->
+            <div class="section income">
+                <div class="section-header">
+                    <span class="icon">💷</span>
+                    Income (Monthly)
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <label for="salary1">Salary – Applicant 1</label>
+                        <input type="number" id="salary1" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="salary2">Salary – Applicant 2</label>
+                        <input type="number" id="salary2" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="bonuses">Bonuses / Commission</label>
+                        <input type="number" id="bonuses" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="benefits">Benefits</label>
+                        <input type="number" id="benefits" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="otherIncome">Other Income</label>
+                        <input type="number" id="otherIncome" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                </div>
+                <div class="section-total">
+                    <span>Total Income</span>
+                    <span class="value" id="totalIncome">£0.00</span>
+                </div>
+            </div>
+
+            <!-- Housing Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="icon">🏠</span>
+                    Housing Costs
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <label for="councilTax">Council Tax</label>
+                        <input type="number" id="councilTax" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="councilTax">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="homeInsurance">Home Insurance</label>
+                        <input type="number" id="homeInsurance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="homeInsurance">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="lifeInsurance">Life & Critical Illness</label>
+                        <input type="number" id="lifeInsurance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="maintenance">Decorating & Maintenance</label>
+                        <input type="number" id="maintenance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="maintenance">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="cleaning">Cleaning</label>
+                        <input type="number" id="cleaning" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="cleaning">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="housingOther">Other Housing Costs</label>
+                        <input type="number" id="housingOther" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                </div>
+                <div class="section-total">
+                    <span>Total Housing</span>
+                    <span class="value" id="totalHousing">£0.00</span>
+                </div>
+            </div>
+
+            <!-- Utilities Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="icon">⚡</span>
+                    Utilities
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <label for="electricity">Electricity</label>
+                        <input type="number" id="electricity" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="electricity">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="gas">Gas / Heating</label>
+                        <input type="number" id="gas" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="gas">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="water">Water</label>
+                        <input type="number" id="water" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="water">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="phoneBroadband">Phone & Broadband</label>
+                        <input type="number" id="phoneBroadband" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="communication">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="mobile">Mobile Phones</label>
+                        <input type="number" id="mobile" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="tvSubscriptions">TV, Streaming & Subscriptions</label>
+                        <input type="number" id="tvSubscriptions" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="tvSubscriptions">ONS: <span class="amount">—</span></div>
+                    </div>
+                </div>
+                <div class="section-total">
+                    <span>Total Utilities</span>
+                    <span class="value" id="totalUtilities">£0.00</span>
+                </div>
+            </div>
+
+            <!-- Financial Commitments Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="icon">💳</span>
+                    Financial Commitments
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <label for="loans">Loans</label>
+                        <input type="number" id="loans" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="creditCards">Credit Cards</label>
+                        <input type="number" id="creditCards" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="carFinance">Car HP / Leases</label>
+                        <input type="number" id="carFinance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="furniture">Furniture / Appliances</label>
+                        <input type="number" id="furniture" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="furniture">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="childMaintenance">Child Maintenance</label>
+                        <input type="number" id="childMaintenance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="commitmentsOther">Other Commitments</label>
+                        <input type="number" id="commitmentsOther" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                </div>
+                <div class="section-total">
+                    <span>Total Commitments</span>
+                    <span class="value" id="totalCommitments">£0.00</span>
+                </div>
+            </div>
+
+            <!-- Family & Living Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="icon">🛒</span>
+                    Family & Living Expenses
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <label for="foodShopping">Food Shopping</label>
+                        <input type="number" id="foodShopping" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="food">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="clothes">Clothes</label>
+                        <input type="number" id="clothes" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="clothing">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="health">Health (Dentist, Opticians, etc.)</label>
+                        <input type="number" id="health" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="health">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="beauty">Beauty Treatments</label>
+                        <input type="number" id="beauty" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="personalCare">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="petInsurance">Pet Insurance</label>
+                        <input type="number" id="petInsurance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="petCare">Pet Care & Food</label>
+                        <input type="number" id="petCare" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="pets">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="gifts">Gifts (Birthdays & Christmas)</label>
+                        <input type="number" id="gifts" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="childcare">Childcare</label>
+                        <input type="number" id="childcare" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="childcare">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="schoolFees">School Fees</label>
+                        <input type="number" id="schoolFees" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="education">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="kidsClubs">Kids Clubs & Hobbies</label>
+                        <input type="number" id="kidsClubs" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="pocketMoney">Pocket Money</label>
+                        <input type="number" id="pocketMoney" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="familyOther">Other Family Expenses</label>
+                        <input type="number" id="familyOther" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                </div>
+                <div class="section-total">
+                    <span>Total Family</span>
+                    <span class="value" id="totalFamily">£0.00</span>
+                </div>
+            </div>
+
+            <!-- Miscellaneous Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="icon">🎯</span>
+                    Lifestyle & Miscellaneous
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <label for="savings">Savings</label>
+                        <input type="number" id="savings" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="pension">Pension Contributions (Voluntary)</label>
+                        <input type="number" id="pension" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="holidays">Holidays</label>
+                        <input type="number" id="holidays" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="holidays">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="charity">Charity</label>
+                        <input type="number" id="charity" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="entertainment">Entertainment</label>
+                        <input type="number" id="entertainment" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="recreation">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="gymSports">Gym & Sports</label>
+                        <input type="number" id="gymSports" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="sports">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="eatingOut">Eating Out & Takeaways</label>
+                        <input type="number" id="eatingOut" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="restaurants">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="alcohol">Alcohol & Tobacco</label>
+                        <input type="number" id="alcohol" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="alcohol">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="motorInsurance">Motor Insurance</label>
+                        <input type="number" id="motorInsurance" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="vehicleInsurance">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="taxServicing">Car Tax & Servicing</label>
+                        <input type="number" id="taxServicing" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="repairs">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="fuel">Fuel</label>
+                        <input type="number" id="fuel" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="fuel">ONS: <span class="amount">—</span></div>
+                    </div>
+                    <div class="form-row">
+                        <label for="parking">Parking</label>
+                        <input type="number" id="parking" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average">—</div>
+                    </div>
+                    <div class="form-row">
+                        <label for="publicTransport">Public Transport</label>
+                        <input type="number" id="publicTransport" placeholder="0.00" oninput="calculateTotals()">
+                        <div class="ons-average" data-ons="transport">ONS: <span class="amount">—</span></div>
+                    </div>
+                </div>
+                <div class="section-total">
+                    <span>Total Miscellaneous</span>
+                    <span class="value" id="totalMisc">£0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="summary-header">Budget Summary</div>
+            <div class="summary-body">
+                <div class="grid-layout" style="margin-bottom: 0;">
+                    <div>
+                        <div class="summary-row">
+                            <span class="label">Housing</span>
+                            <span class="value" id="summaryHousing">£0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Utilities</span>
+                            <span class="value" id="summaryUtilities">£0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Commitments</span>
+                            <span class="value" id="summaryCommitments">£0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Family Expenses</span>
+                            <span class="value" id="summaryFamily">£0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Lifestyle & Misc</span>
+                            <span class="value" id="summaryMisc">£0.00</span>
+                        </div>
+                        <div class="summary-row outgoings" style="border-top: 2px solid var(--border); margin-top: 0.5rem; padding-top: 1rem;">
+                            <span class="label"><strong>Total Outgoings</strong></span>
+                            <span class="value" id="summaryOutgoings">£0.00</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="summary-row income">
+                            <span class="label"><strong>Total Income</strong></span>
+                            <span class="value" id="summaryIncome">£0.00</span>
+                        </div>
+                        <div class="summary-row outgoings">
+                            <span class="label"><strong>Total Outgoings</strong></span>
+                            <span class="value" id="summaryOutgoings2">£0.00</span>
+                        </div>
+                        <div class="summary-row surplus">
+                            <span class="label"><strong>Surplus / Deficit</strong></span>
+                            <span class="value" id="surplusIncome">£0.00</span>
+                        </div>
+                        <div class="mortgage-budget" style="margin-top: 1.5rem;">
+                            <h3>Your Available Mortgage Budget</h3>
+                            <div class="amount" id="mortgageBudget">£0.00</div>
+                            <div class="per-month">per month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <strong>ONS Data Source:</strong> Regional averages are from the Office for National Statistics Family Spending Survey, covering the financial years ending 2022 to 2024 (3-year average). Weekly figures have been converted to monthly equivalents (×4.33). These figures represent average household expenditure and may vary based on your specific circumstances.
+            <div class="ons-badge">
+                <span>📊</span> Data: ONS Family Spending FYE 2022-2024
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ONS Regional Data - Weekly averages from Table A33/A35 (FYE 2022-2024, 3-year average)
+        // Converted to monthly by multiplying by 4.33
+        const onsData = {
+            uk: {
+                name: "United Kingdom",
+                // From Table A33 high level expenditure
+                food: 65.40,                   // Food & non-alcoholic drinks
+                alcohol: 11.30,                // Alcoholic drinks, tobacco & narcotics
+                clothing: 17.30,               // Clothing & footwear
+                housing: 102.20,               // Housing(net), fuel & power
+                householdGoods: 36.30,         // Household goods & services
+                health: 8.50,                  // Health
+                transport: 80.60,              // Transport
+                communication: 21.30,          // Communication
+                recreation: 64.70,             // Recreation & culture
+                education: 5.10,               // Education
+                restaurants: 39.90,            // Restaurants & hotels
+                misc: 42.20,                   // Miscellaneous goods & services
+                // From Table A35 detailed expenditure
+                electricity: 18.20,
+                gas: 14.40,
+                water: 10.70,                  // Water supply & misc services
+                maintenance: 10.50,            // Maintenance and repair of dwelling
+                furniture: 18.60,              // Furniture and furnishings
+                homeInsurance: 5.30,           // Household insurances
+                personalCare: 11.30,           // Personal care
+                vehicleInsurance: 11.10,       // Vehicle insurance
+                fuel: 19.90,                   // Petrol, diesel and other motor oils
+                repairs: 7.60,                 // Repairs and servicing
+                tvSubscriptions: 6.00,         // TV, video, satellite, cable subscriptions
+                sports: 6.00,                  // Sports admissions, subscriptions etc
+                holidays: 21.20,               // Package holidays
+                pets: 6.90,                    // Pets and pet food
+                cleaning: 2.70,                // Cleaning materials
+                childcare: 2.50                // Social protection (childcare services)
+            },
+            north_east: {
+                name: "North East",
+                food: 58.20, alcohol: 9.50, clothing: 16.10, housing: 75.20, householdGoods: 34.90,
+                health: 5.10, transport: 66.80, communication: 19.60, recreation: 54.80, education: 1.90,
+                restaurants: 31.90, misc: 32.60,
+                electricity: 16.50, gas: 15.50, water: 7.40, maintenance: 5.80, furniture: 18.90,
+                homeInsurance: 3.80, personalCare: 10.60, vehicleInsurance: 9.40, fuel: 17.30,
+                repairs: 5.80, tvSubscriptions: 5.70, sports: 3.70, holidays: 20.40, pets: 6.10,
+                cleaning: 2.60, childcare: 0.90
+            },
+            north_west: {
+                name: "North West",
+                food: 64.20, alcohol: 11.20, clothing: 18.40, housing: 88.60, householdGoods: 36.30,
+                health: 8.10, transport: 74.10, communication: 20.80, recreation: 67.50, education: 3.40,
+                restaurants: 36.90, misc: 40.10,
+                electricity: 17.10, gas: 16.00, water: 9.90, maintenance: 8.90, furniture: 17.70,
+                homeInsurance: 4.80, personalCare: 10.30, vehicleInsurance: 11.90, fuel: 20.90,
+                repairs: 7.40, tvSubscriptions: 5.50, sports: 5.60, holidays: 21.60, pets: 7.10,
+                cleaning: 2.50, childcare: 3.90
+            },
+            yorkshire: {
+                name: "Yorkshire and The Humber",
+                food: 61.10, alcohol: 11.00, clothing: 15.40, housing: 86.70, householdGoods: 40.80,
+                health: 9.50, transport: 78.80, communication: 20.30, recreation: 61.40, education: 3.00,
+                restaurants: 39.20, misc: 38.40,
+                electricity: 17.30, gas: 15.30, water: 9.50, maintenance: 8.90, furniture: 22.60,
+                homeInsurance: 5.00, personalCare: 10.90, vehicleInsurance: 11.30, fuel: 19.00,
+                repairs: 6.80, tvSubscriptions: 5.80, sports: 5.40, holidays: 22.20, pets: 7.00,
+                cleaning: 2.80, childcare: 1.70
+            },
+            east_midlands: {
+                name: "East Midlands",
+                food: 66.70, alcohol: 11.40, clothing: 16.30, housing: 93.70, householdGoods: 32.70,
+                health: 8.20, transport: 79.20, communication: 21.90, recreation: 60.60, education: 4.80,
+                restaurants: 36.30, misc: 38.40,
+                electricity: 17.40, gas: 14.30, water: 9.20, maintenance: 11.70, furniture: 13.90,
+                homeInsurance: 4.70, personalCare: 11.20, vehicleInsurance: 11.50, fuel: 21.90,
+                repairs: 7.90, tvSubscriptions: 5.80, sports: 5.40, holidays: 18.30, pets: 8.60,
+                cleaning: 2.90, childcare: 2.00
+            },
+            west_midlands: {
+                name: "West Midlands",
+                food: 64.50, alcohol: 11.30, clothing: 16.70, housing: 91.00, householdGoods: 31.30,
+                health: 9.90, transport: 81.30, communication: 21.10, recreation: 65.70, education: 3.10,
+                restaurants: 34.30, misc: 40.20,
+                electricity: 18.10, gas: 14.70, water: 9.50, maintenance: 8.60, furniture: 15.40,
+                homeInsurance: 4.80, personalCare: 10.70, vehicleInsurance: 12.40, fuel: 20.30,
+                repairs: 7.10, tvSubscriptions: 6.10, sports: 5.40, holidays: 23.70, pets: 6.80,
+                cleaning: 2.80, childcare: 2.70
+            },
+            east: {
+                name: "East of England",
+                food: 68.80, alcohol: 11.80, clothing: 18.20, housing: 104.70, householdGoods: 38.30,
+                health: 8.70, transport: 91.10, communication: 23.00, recreation: 63.70, education: 4.60,
+                restaurants: 40.60, misc: 45.50,
+                electricity: 19.50, gas: 13.70, water: 10.50, maintenance: 14.00, furniture: 15.60,
+                homeInsurance: 6.60, personalCare: 11.70, vehicleInsurance: 11.60, fuel: 21.20,
+                repairs: 9.40, tvSubscriptions: 6.50, sports: 5.40, holidays: 18.50, pets: 7.90,
+                cleaning: 3.00, childcare: 2.40
+            },
+            london: {
+                name: "London",
+                food: 63.50, alcohol: 8.10, clothing: 20.40, housing: 163.60, householdGoods: 32.50,
+                health: 8.20, transport: 63.20, communication: 21.50, recreation: 49.90, education: 10.30,
+                restaurants: 45.70, misc: 45.60,
+                electricity: 17.30, gas: 14.60, water: 16.00, maintenance: 9.20, furniture: 19.60,
+                homeInsurance: 5.30, personalCare: 12.40, vehicleInsurance: 10.00, fuel: 10.10,
+                repairs: 5.10, tvSubscriptions: 5.20, sports: 7.90, holidays: 15.10, pets: 3.20,
+                cleaning: 2.50, childcare: 2.60
+            },
+            south_east: {
+                name: "South East",
+                food: 69.70, alcohol: 12.30, clothing: 15.70, housing: 109.50, householdGoods: 40.80,
+                health: 9.80, transport: 97.20, communication: 22.10, recreation: 82.20, education: 8.10,
+                restaurants: 46.70, misc: 51.00,
+                electricity: 19.20, gas: 15.80, water: 12.40, maintenance: 13.10, furniture: 20.80,
+                homeInsurance: 6.00, personalCare: 12.40, vehicleInsurance: 11.40, fuel: 23.00,
+                repairs: 8.90, tvSubscriptions: 6.90, sports: 8.40, holidays: 27.20, pets: 8.40,
+                cleaning: 2.80, childcare: 3.40
+            },
+            south_west: {
+                name: "South West",
+                food: 68.80, alcohol: 13.00, clothing: 17.10, housing: 102.30, householdGoods: 42.80,
+                health: 8.70, transport: 88.40, communication: 20.70, recreation: 71.90, education: 6.80,
+                restaurants: 46.60, misc: 45.30,
+                electricity: 19.30, gas: 12.40, water: 11.80, maintenance: 14.50, furniture: 24.20,
+                homeInsurance: 5.10, personalCare: 11.90, vehicleInsurance: 11.90, fuel: 24.10,
+                repairs: 10.00, tvSubscriptions: 5.90, sports: 6.50, holidays: 18.10, pets: 8.70,
+                cleaning: 2.70, childcare: 2.10
+            },
+            wales: {
+                name: "Wales",
+                food: 62.20, alcohol: 14.10, clothing: 16.90, housing: 83.30, householdGoods: 32.00,
+                health: 7.70, transport: 81.30, communication: 20.30, recreation: 67.90, education: 2.70,
+                restaurants: 38.20, misc: 37.00,
+                electricity: 17.80, gas: 12.90, water: 10.70, maintenance: 9.90, furniture: 14.20,
+                homeInsurance: 5.50, personalCare: 8.90, vehicleInsurance: 10.60, fuel: 21.90,
+                repairs: 8.60, tvSubscriptions: 6.00, sports: 4.50, holidays: 23.90, pets: 7.70,
+                cleaning: 2.30, childcare: 1.80
+            },
+            scotland: {
+                name: "Scotland",
+                food: 61.50, alcohol: 11.60, clothing: 14.80, housing: 81.80, householdGoods: 32.30,
+                health: 6.40, transport: 75.90, communication: 21.00, recreation: 62.30, education: 1.60,
+                restaurants: 31.10, misc: 35.10,
+                electricity: 18.80, gas: 14.30, water: 8.80, maintenance: 8.80, furniture: 17.50,
+                homeInsurance: 5.10, personalCare: 10.60, vehicleInsurance: 8.30, fuel: 17.90,
+                repairs: 7.20, tvSubscriptions: 6.10, sports: 4.70, holidays: 25.70, pets: 5.90,
+                cleaning: 2.30, childcare: 1.90
+            },
+            northern_ireland: {
+                name: "Northern Ireland",
+                food: 77.90, alcohol: 13.40, clothing: 23.80, housing: 71.30, householdGoods: 37.90,
+                health: 11.40, transport: 89.50, communication: 20.90, recreation: 54.00, education: 3.90,
+                restaurants: 40.80, misc: 46.20,
+                electricity: 19.40, gas: 7.40, water: 0.60, maintenance: 5.70, furniture: 19.60,
+                homeInsurance: 5.20, personalCare: 13.70, vehicleInsurance: 12.90, fuel: 32.80,
+                repairs: 7.30, tvSubscriptions: 5.10, sports: 3.00, holidays: 15.70, pets: 6.40,
+                cleaning: 3.40, childcare: 1.60
+            }
+        };
+
+        // Convert weekly to monthly (multiply by 4.33)
+        function weeklyToMonthly(weeklyAmount) {
+            return (weeklyAmount * 4.33).toFixed(0);
+        }
+
+        // Update regional averages display
+        function updateRegionalAverages() {
+            const region = document.getElementById('region').value;
+            const data = onsData[region];
+
+            // Map ONS data to form fields
+            const mappings = {
+                'food': 'food',
+                'clothing': 'clothing',
+                'health': 'health',
+                'communication': 'communication',
+                'recreation': 'recreation',
+                'education': 'education',
+                'restaurants': 'restaurants',
+                'alcohol': 'alcohol',
+                'electricity': 'electricity',
+                'gas': 'gas',
+                'water': 'water',
+                'maintenance': 'maintenance',
+                'furniture': 'furniture',
+                'homeInsurance': 'homeInsurance',
+                'personalCare': 'personalCare',
+                'vehicleInsurance': 'vehicleInsurance',
+                'fuel': 'fuel',
+                'repairs': 'repairs',
+                'tvSubscriptions': 'tvSubscriptions',
+                'sports': 'sports',
+                'holidays': 'holidays',
+                'pets': 'pets',
+                'cleaning': 'cleaning',
+                'childcare': 'childcare',
+                'transport': 'transport'
+            };
+
+            // Update all ONS average displays
+            document.querySelectorAll('[data-ons]').forEach(el => {
+                const key = el.dataset.ons;
+                if (data[key] !== undefined) {
+                    const monthlyAmount = weeklyToMonthly(data[key]);
+                    el.querySelector('.amount').textContent = '£' + monthlyAmount;
+                }
+            });
+        }
+
+        // Calculate all totals
+        function calculateTotals() {
+            // Income
+            const salary1 = parseFloat(document.getElementById('salary1').value) || 0;
+            const salary2 = parseFloat(document.getElementById('salary2').value) || 0;
+            const bonuses = parseFloat(document.getElementById('bonuses').value) || 0;
+            const benefits = parseFloat(document.getElementById('benefits').value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+            const totalIncome = salary1 + salary2 + bonuses + benefits + otherIncome;
+
+            // Housing
+            const councilTax = parseFloat(document.getElementById('councilTax').value) || 0;
+            const homeInsurance = parseFloat(document.getElementById('homeInsurance').value) || 0;
+            const lifeInsurance = parseFloat(document.getElementById('lifeInsurance').value) || 0;
+            const maintenance = parseFloat(document.getElementById('maintenance').value) || 0;
+            const cleaning = parseFloat(document.getElementById('cleaning').value) || 0;
+            const housingOther = parseFloat(document.getElementById('housingOther').value) || 0;
+            const totalHousing = councilTax + homeInsurance + lifeInsurance + maintenance + cleaning + housingOther;
+
+            // Utilities
+            const electricity = parseFloat(document.getElementById('electricity').value) || 0;
+            const gas = parseFloat(document.getElementById('gas').value) || 0;
+            const water = parseFloat(document.getElementById('water').value) || 0;
+            const phoneBroadband = parseFloat(document.getElementById('phoneBroadband').value) || 0;
+            const mobile = parseFloat(document.getElementById('mobile').value) || 0;
+            const tvSubscriptions = parseFloat(document.getElementById('tvSubscriptions').value) || 0;
+            const totalUtilities = electricity + gas + water + phoneBroadband + mobile + tvSubscriptions;
+
+            // Commitments
+            const loans = parseFloat(document.getElementById('loans').value) || 0;
+            const creditCards = parseFloat(document.getElementById('creditCards').value) || 0;
+            const carFinance = parseFloat(document.getElementById('carFinance').value) || 0;
+            const furniture = parseFloat(document.getElementById('furniture').value) || 0;
+            const childMaintenance = parseFloat(document.getElementById('childMaintenance').value) || 0;
+            const commitmentsOther = parseFloat(document.getElementById('commitmentsOther').value) || 0;
+            const totalCommitments = loans + creditCards + carFinance + furniture + childMaintenance + commitmentsOther;
+
+            // Family
+            const foodShopping = parseFloat(document.getElementById('foodShopping').value) || 0;
+            const clothes = parseFloat(document.getElementById('clothes').value) || 0;
+            const health = parseFloat(document.getElementById('health').value) || 0;
+            const beauty = parseFloat(document.getElementById('beauty').value) || 0;
+            const petInsurance = parseFloat(document.getElementById('petInsurance').value) || 0;
+            const petCare = parseFloat(document.getElementById('petCare').value) || 0;
+            const gifts = parseFloat(document.getElementById('gifts').value) || 0;
+            const childcare = parseFloat(document.getElementById('childcare').value) || 0;
+            const schoolFees = parseFloat(document.getElementById('schoolFees').value) || 0;
+            const kidsClubs = parseFloat(document.getElementById('kidsClubs').value) || 0;
+            const pocketMoney = parseFloat(document.getElementById('pocketMoney').value) || 0;
+            const familyOther = parseFloat(document.getElementById('familyOther').value) || 0;
+            const totalFamily = foodShopping + clothes + health + beauty + petInsurance + petCare + gifts + childcare + schoolFees + kidsClubs + pocketMoney + familyOther;
+
+            // Miscellaneous
+            const savings = parseFloat(document.getElementById('savings').value) || 0;
+            const pension = parseFloat(document.getElementById('pension').value) || 0;
+            const holidays = parseFloat(document.getElementById('holidays').value) || 0;
+            const charity = parseFloat(document.getElementById('charity').value) || 0;
+            const entertainment = parseFloat(document.getElementById('entertainment').value) || 0;
+            const gymSports = parseFloat(document.getElementById('gymSports').value) || 0;
+            const eatingOut = parseFloat(document.getElementById('eatingOut').value) || 0;
+            const alcohol = parseFloat(document.getElementById('alcohol').value) || 0;
+            const motorInsurance = parseFloat(document.getElementById('motorInsurance').value) || 0;
+            const taxServicing = parseFloat(document.getElementById('taxServicing').value) || 0;
+            const fuel = parseFloat(document.getElementById('fuel').value) || 0;
+            const parking = parseFloat(document.getElementById('parking').value) || 0;
+            const publicTransport = parseFloat(document.getElementById('publicTransport').value) || 0;
+            const totalMisc = savings + pension + holidays + charity + entertainment + gymSports + eatingOut + alcohol + motorInsurance + taxServicing + fuel + parking + publicTransport;
+
+            // Total Outgoings
+            const totalOutgoings = totalHousing + totalUtilities + totalCommitments + totalFamily + totalMisc;
+
+            // Surplus
+            const surplus = totalIncome - totalOutgoings;
+
+            // Update displays
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalHousing').textContent = formatCurrency(totalHousing);
+            document.getElementById('totalUtilities').textContent = formatCurrency(totalUtilities);
+            document.getElementById('totalCommitments').textContent = formatCurrency(totalCommitments);
+            document.getElementById('totalFamily').textContent = formatCurrency(totalFamily);
+            document.getElementById('totalMisc').textContent = formatCurrency(totalMisc);
+
+            // Summary
+            document.getElementById('summaryHousing').textContent = formatCurrency(totalHousing);
+            document.getElementById('summaryUtilities').textContent = formatCurrency(totalUtilities);
+            document.getElementById('summaryCommitments').textContent = formatCurrency(totalCommitments);
+            document.getElementById('summaryFamily').textContent = formatCurrency(totalFamily);
+            document.getElementById('summaryMisc').textContent = formatCurrency(totalMisc);
+            document.getElementById('summaryIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('summaryOutgoings').textContent = formatCurrency(totalOutgoings);
+            document.getElementById('summaryOutgoings2').textContent = formatCurrency(totalOutgoings);
+
+            // Surplus with colour
+            const surplusEl = document.getElementById('surplusIncome');
+            surplusEl.textContent = formatCurrency(surplus);
+            surplusEl.className = 'value ' + (surplus >= 0 ? 'positive' : 'negative');
+
+            // Mortgage budget
+            const mortgageBudgetEl = document.getElementById('mortgageBudget');
+            mortgageBudgetEl.textContent = formatCurrency(Math.max(0, surplus));
+        }
+
+        function formatCurrency(amount) {
+            return '£' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRegionalAverages();
+            calculateTotals();
+        });
+    </script>
+</body>
+</html>
