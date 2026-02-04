@@ -519,6 +519,113 @@ section {
   }
 }
 
+/* Homepage Ambient Glow Variation - Warm gold/orange blend */
+.ambient-glow--home .ambient-glow__blob--1 {
+  background: radial-gradient(circle, rgba(255, 193, 112, 0.3) 0%, transparent 70%);
+  top: -15%;
+  left: -5%;
+  animation: ambientDriftHome1 28s ease-in-out infinite;
+}
+
+.ambient-glow--home .ambient-glow__blob--2 {
+  background: radial-gradient(circle, rgba(240, 91, 40, 0.22) 0%, transparent 70%);
+  bottom: 0%;
+  right: -5%;
+  animation: ambientDriftHome2 32s ease-in-out infinite;
+}
+
+.ambient-glow--home .ambient-glow__blob--3 {
+  background: radial-gradient(circle, rgba(45, 45, 45, 0.15) 0%, transparent 70%);
+  top: 60%;
+  right: 30%;
+  left: auto;
+  animation: ambientDriftHome3 22s ease-in-out infinite;
+}
+
+@keyframes ambientDriftHome1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, 50px) scale(1.08);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+}
+
+@keyframes ambientDriftHome2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-60px, -40px) scale(1.1);
+  }
+}
+
+@keyframes ambientDriftHome3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(50px, -30px) scale(1.05) rotate(-5deg);
+  }
+}
+
+/* Employers Page Ambient Glow Variation - Purple/Charcoal corporate feel */
+.ambient-glow--employers .ambient-glow__blob--1 {
+  background: radial-gradient(circle, rgba(103, 58, 183, 0.2) 0%, transparent 70%);
+  top: -5%;
+  right: 10%;
+  left: auto;
+  animation: ambientDriftEmp1 30s ease-in-out infinite;
+}
+
+.ambient-glow--employers .ambient-glow__blob--2 {
+  background: radial-gradient(circle, rgba(45, 45, 45, 0.2) 0%, transparent 70%);
+  bottom: -15%;
+  left: 5%;
+  right: auto;
+  animation: ambientDriftEmp2 26s ease-in-out infinite;
+}
+
+.ambient-glow--employers .ambient-glow__blob--3 {
+  background: radial-gradient(circle, rgba(240, 91, 40, 0.18) 0%, transparent 70%);
+  top: 30%;
+  left: 60%;
+  animation: ambientDriftEmp3 24s ease-in-out infinite;
+}
+
+@keyframes ambientDriftEmp1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(-40px, 30px) scale(1.06);
+  }
+  80% {
+    transform: translate(20px, -20px) scale(0.98);
+  }
+}
+
+@keyframes ambientDriftEmp2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50px, 30px) scale(1.12);
+  }
+}
+
+@keyframes ambientDriftEmp3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(-30px, 50px) scale(1.08) rotate(8deg);
+  }
+}
+
 .hero__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2421,9 +2528,19 @@ section {
   background: var(--white);
 }
 
-.faq-section h2 {
+.faq-header {
   text-align: center;
   margin-bottom: var(--space-3xl);
+}
+
+.faq-header h2 {
+  margin-bottom: var(--space-sm);
+}
+
+.faq-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 .faq-list {
@@ -2616,6 +2733,116 @@ section {
   color: var(--text-secondary);
 }
 
+/* Offer Ready Section */
+.offer-ready {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
+.offer-ready__content h2 {
+  color: var(--white);
+  margin-bottom: var(--space-lg);
+}
+
+.offer-ready__content p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: var(--space-md);
+}
+
+.offer-ready__content strong {
+  color: var(--white);
+}
+
+.offer-ready__lead {
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.offer-ready__cta {
+  margin-top: var(--space-xl);
+}
+
+.checklist-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+}
+
+.checklist-card__title {
+  color: var(--brand-charcoal) !important;
+  font-size: 1.25rem;
+  margin-bottom: var(--space-sm);
+}
+
+.checklist-card__subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem;
+  margin-bottom: var(--space-lg);
+}
+
+.checklist-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checklist-card__list li {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--medium-grey);
+  font-size: 0.95rem;
+  color: var(--text-primary) !important;
+}
+
+.checklist-card__list li strong {
+  color: var(--brand-charcoal);
+}
+
+.checklist-card__list li:last-child {
+  border-bottom: none;
+}
+
+.checklist-check {
+  color: var(--score-good);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.checklist-card__tip {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  color: var(--text-primary) !important;
+  border-left: 3px solid var(--brand-orange);
+}
+
+.checklist-card__tip strong {
+  color: var(--brand-orange);
+}
+
+@media (max-width: 992px) {
+  .offer-ready {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .offer-ready__content {
+    text-align: center;
+  }
+
+  .offer-ready__cta {
+    display: flex;
+    justify-content: center;
+  }
+}
+
 /* Compliance Footer */
 .compliance-footer {
   margin-top: var(--space-xl);
@@ -2646,6 +2873,23 @@ section {
   padding-bottom: var(--space-3xl);
   background: linear-gradient(135deg, var(--cream) 0%, var(--off-white) 100%);
   text-align: center;
+}
+
+.page-header--ambient {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header--ambient .container {
+  position: relative;
+  z-index: 2;
+}
+
+.page-header--ambient h1,
+.page-header--ambient p,
+.page-header--ambient .hero__actions {
+  position: relative;
+  z-index: 3;
 }
 
 .page-header__eyebrow {
