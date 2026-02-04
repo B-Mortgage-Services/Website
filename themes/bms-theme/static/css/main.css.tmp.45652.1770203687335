@@ -340,18 +340,6 @@ section {
   transform: translateY(-2px);
 }
 
-.btn--outline {
-  background: transparent;
-  color: var(--brand-charcoal);
-  border: 2px solid var(--medium-grey);
-}
-
-.btn--outline:hover {
-  border-color: var(--brand-orange);
-  color: var(--brand-orange);
-  transform: translateY(-2px);
-}
-
 .btn--white {
   background: var(--white);
   color: var(--brand-charcoal);
@@ -2250,6 +2238,59 @@ section {
   margin-bottom: var(--space-xl);
 }
 
+/* Quote Options */
+.quote-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.quote-option {
+  background: var(--white);
+  border: 2px solid var(--medium-grey);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.quote-option:hover {
+  border-color: var(--brand-orange);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.quote-option__icon {
+  width: 64px;
+  height: 64px;
+  background: var(--cream);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-lg);
+  color: var(--brand-orange);
+}
+
+.quote-option:hover .quote-option__icon {
+  background: var(--brand-orange);
+  color: var(--white);
+}
+
+.quote-option__title {
+  font-size: 1.1rem;
+  color: var(--brand-charcoal);
+  margin-bottom: var(--space-sm);
+}
+
+.quote-option__desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* Quote Form */
 .quote-modal__form .form-group {
   margin-bottom: var(--space-lg);
@@ -2297,6 +2338,33 @@ section {
   margin-top: var(--space-lg);
 }
 
+/* Calendly Embed */
+.quote-modal__calendly {
+  min-height: 650px;
+}
+
+.quote-modal__calendly .quote-modal__title,
+.quote-modal__calendly .quote-modal__subtitle {
+  text-align: left;
+}
+
+.calendly-embed {
+  height: 580px;
+  margin-top: var(--space-md);
+  margin-left: calc(-1 * var(--space-2xl));
+  margin-right: calc(-1 * var(--space-2xl));
+  margin-bottom: calc(-1 * var(--space-2xl));
+}
+
+.calendly-embed iframe {
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+/* Wider modal for Calendly */
+.quote-modal--calendly .quote-modal__container {
+  max-width: 700px;
+}
+
 /* Success State */
 .quote-modal__success {
   text-align: center;
@@ -2329,8 +2397,20 @@ section {
     width: 95%;
   }
 
+  .quote-options {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-option {
+    padding: var(--space-lg);
+  }
+
   .quote-modal__title {
     font-size: 1.25rem;
+  }
+
+  .calendly-embed {
+    min-height: 400px;
   }
 }
 
@@ -2613,27 +2693,6 @@ section {
 }
 
 .comparison-table .cross {
-  color: var(--text-secondary);
-}
-
-/* Compliance Footer */
-.compliance-footer {
-  margin-top: var(--space-xl);
-  padding: var(--space-lg) var(--space-xl);
-  background: var(--light-grey);
-  border-radius: var(--radius-md);
-  border-left: 4px solid var(--brand-orange);
-}
-
-.compliance-footer__warning {
-  margin: 0 0 var(--space-sm);
-  font-size: 0.9rem;
-  color: var(--brand-charcoal);
-}
-
-.compliance-footer__fee {
-  margin: 0;
-  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 

@@ -171,7 +171,7 @@
   <div class="container">
     <div class="text-center mb-4">
       <h2>How Much Could You Borrow?</h2>
-      <p class="calculator-intro">Get an instant estimate based on your income. Lenders typically offer between 3.5x and 5x your annual salary.</p>
+      <p class="calculator-intro">Get an instant estimate based on your income. Lenders typically offer between 3.5x and 5x your annual salary, some will consider upto 6x.</p>
     </div>
 
     <div class="affordability-calculator">
@@ -202,6 +202,7 @@
             <span class="input-prefix">£</span>
             <input type="text" id="yourIncome" class="form-input" placeholder="Enter amount" oninput="formatAndCalculate(this)">
           </div>
+          <div class="net-pay-display" id="yourNetPay"></div>
         </div>
 
         <!-- Partner Income (hidden by default) -->
@@ -211,6 +212,7 @@
             <span class="input-prefix">£</span>
             <input type="text" id="partnerIncome" class="form-input" placeholder="Enter amount" oninput="formatAndCalculate(this)">
           </div>
+          <div class="net-pay-display" id="partnerNetPay"></div>
         </div>
 
         <!-- Regular Commitments Section -->
@@ -255,6 +257,7 @@
             </div>
             <div class="result-tier__amount" id="result-conservative">£0</div>
             <p class="result-tier__desc">Standard high street lending</p>
+            <div class="result-tier__repayment" id="repayment-conservative"></div>
           </div>
 
           <div class="result-tier result-tier--standard">
@@ -264,6 +267,7 @@
             </div>
             <div class="result-tier__amount" id="result-standard">£0</div>
             <p class="result-tier__desc">Most common lending criteria</p>
+            <div class="result-tier__repayment" id="repayment-standard"></div>
           </div>
 
           <div class="result-tier result-tier--maximum">
@@ -273,32 +277,236 @@
             </div>
             <div class="result-tier__amount" id="result-maximum">£0</div>
             <p class="result-tier__desc">Subject to eligibility criteria</p>
+            <div class="result-tier__repayment" id="repayment-maximum"></div>
           </div>
         </div>
 
-        <p class="results-disclaimer">These estimates are for guidance only. Your actual borrowing capacity depends on credit history, outgoings, and individual lender criteria.</p>
+        <!-- Mortgage Term Slider -->
+        <div class="mortgage-term-slider">
+          <div class="term-slider__header">
+            <label for="mortgageTerm" class="term-slider__label">Mortgage Term</label>
+            <span class="term-slider__value"><span id="termValue">30</span> years</span>
+          </div>
+          <input type="range" id="mortgageTerm" class="term-slider__input" min="15" max="40" value="30" oninput="updateMortgageTerm(this.value)">
+          <div class="term-slider__range">
+            <span>15 years</span>
+            <span>40 years</span>
+          </div>
+          <p class="term-slider__note">Indicative monthly repayments shown above (rates: 3.75% - 4.75%)</p>
+        </div>
       </div>
     </div>
 
-    <div class="text-center" style="margin-top: 2rem;">
-      <a href="/contact/" class="btn btn--primary btn--large">
-        Get Your Personalised Quote
-        <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
+    <!-- Disclaimers -->
+    <div class="calculator-disclaimers">
+      <div class="repossession-warning">
+        <strong>YOUR HOME MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE</strong>
+      </div>
+      <p class="results-disclaimer">These estimates are for guidance only. Your actual borrowing capacity depends on credit history, outgoings, and individual lender criteria.</p>
+    </div>
+
+    <!-- Moving Cost Calculator (shown for first-time buyers and movers) -->
+    <div class="moving-cost-calculator" id="movingCostCalculator" style="display: none;">
+      <h3 class="moving-cost__title">Moving Cost Calculator</h3>
+
+      <div class="moving-cost__grid">
+        <div class="moving-cost__inputs">
+          <div class="form-group">
+            <label for="housePrice" class="form-label">Purchase Price</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">£</span>
+              <input type="text" id="housePrice" class="form-input" placeholder="Enter amount" oninput="formatAndCalculateMovingCosts(this)">
+            </div>
+          </div>
+
+          <div class="form-group" id="salePriceGroup" style="display: none;">
+            <label for="salePrice" class="form-label">Sale Price (your current property)</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">£</span>
+              <input type="text" id="salePrice" class="form-input" placeholder="Enter amount" oninput="formatAndCalculateMovingCosts(this)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="depositAmount" class="form-label">Deposit</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">£</span>
+              <input type="text" id="depositAmount" class="form-input" placeholder="Enter amount" oninput="formatAndCalculateMovingCosts(this)">
+            </div>
+            <div class="deposit-ltv" id="depositLtv"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="movingInterestRate" class="form-label">Interest Rate (%)</label>
+            <input type="number" id="movingInterestRate" class="form-input form-input--small" value="4" step="0.01" min="0" max="15" oninput="calculateMovingCosts()">
+          </div>
+
+          <div class="mortgage-term-slider mortgage-term-slider--moving">
+            <div class="term-slider__header">
+              <label for="movingMortgageTerm" class="term-slider__label">Mortgage Term</label>
+              <span class="term-slider__value"><span id="movingTermValue">30</span> years</span>
+            </div>
+            <input type="range" id="movingMortgageTerm" class="term-slider__input" min="15" max="40" value="30" oninput="updateMovingMortgageTerm(this.value)">
+            <div class="term-slider__range">
+              <span>15 years</span>
+              <span>40 years</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="moving-cost__results">
+          <div class="moving-result__primary">
+            <div class="moving-result__item moving-result__item--highlight">
+              <span class="moving-result__label">Mortgage Amount</span>
+              <span class="moving-result__value" id="mortgageAmount">£0</span>
+            </div>
+            <div class="moving-result__item moving-result__item--highlight">
+              <span class="moving-result__label">Monthly Payment</span>
+              <span class="moving-result__value" id="monthlyMortgagePayment">£0</span>
+            </div>
+          </div>
+
+          <div class="moving-result__breakdown">
+            <h4 class="breakdown__title">Breakdown of Costs</h4>
+
+            <div class="breakdown__item">
+              <span class="breakdown__label">Stamp Duty</span>
+              <span class="breakdown__value" id="stampDuty">£0</span>
+            </div>
+
+            <div class="breakdown__item" id="estateAgentRow" style="display: none;">
+              <span class="breakdown__label">Estate Agent Fees <span class="breakdown__note">(1% + VAT)</span></span>
+              <span class="breakdown__value" id="estateAgentFees">£0</span>
+            </div>
+
+            <div class="breakdown__item" id="sellingLegalRow" style="display: none;">
+              <span class="breakdown__label">Selling Legal Fees</span>
+              <span class="breakdown__value" id="sellingLegalFees">£1,500</span>
+            </div>
+
+            <div class="breakdown__item">
+              <span class="breakdown__label" id="legalFeesLabel">Legal Fees</span>
+              <span class="breakdown__value" id="purchaseLegalFees">£2,500</span>
+            </div>
+
+            <div class="breakdown__item">
+              <span class="breakdown__label">Survey</span>
+              <span class="breakdown__value" id="surveyCost">£500</span>
+            </div>
+
+            <div class="breakdown__total">
+              <span class="breakdown__label">Total Costs</span>
+              <span class="breakdown__value" id="totalMovingCosts">£0</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="calculator-actions">
+      <button type="button" class="btn btn--primary btn--large" onclick="openQuoteModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
         </svg>
-      </a>
+        Get Quote
+      </button>
+      <button type="button" class="btn btn--secondary btn--large" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Book Call
+      </button>
+      <button type="button" class="btn btn--outline btn--large" onclick="printCalculatorResults()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Print Results
+      </button>
     </div>
   </div>
 </section>
+
+<!-- Quote Modal -->
+<div class="quote-modal" id="quoteModal">
+  <div class="quote-modal__overlay" onclick="closeQuoteModal()"></div>
+  <div class="quote-modal__container">
+    <button type="button" class="quote-modal__close" onclick="closeQuoteModal()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <!-- Email Form View -->
+    <div class="quote-modal__form" id="modalEmailForm">
+      <h3 class="quote-modal__title">Request Your Quote</h3>
+      <p class="quote-modal__subtitle">Fill in your details and we'll be in touch within 24 hours</p>
+
+      <form id="quoteEmailForm" onsubmit="submitQuoteForm(event)">
+        <div class="form-group">
+          <label for="quoteName" class="form-label">Full Name</label>
+          <input type="text" id="quoteName" class="form-input" placeholder="Enter your name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="quotePhone" class="form-label">Phone Number</label>
+          <input type="tel" id="quotePhone" class="form-input" placeholder="Enter your phone number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="quoteEmail" class="form-label">Email Address</label>
+          <input type="email" id="quoteEmail" class="form-input" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-checkbox">
+            <input type="checkbox" id="quoteIncludeResults" checked>
+            <span>Include my calculator results with this request</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--large btn--full">
+          Send My Request
+          <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </form>
+
+      <p class="quote-modal__privacy">Your information is secure and will only be used to provide your quote.</p>
+    </div>
+
+    <!-- Success View -->
+    <div class="quote-modal__success" id="modalSuccess" style="display: none;">
+      <div class="success-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h3 class="quote-modal__title">Request Sent!</h3>
+      <p class="quote-modal__subtitle">Thank you for your enquiry. We'll be in touch within 24 hours with your personalised quote.</p>
+      <button type="button" class="btn btn--primary" onclick="closeQuoteModal()">Close</button>
+    </div>
+  </div>
+</div>
 
 
 <!-- Broker vs Bank Comparison -->
 <section class="section--white">
   <div class="container">
     <div class="text-center mb-5">
-      <h2>Why Choose an Independent Broker vs. Your Bank?</h2>
+      <h2>Why Come to Us Rather Than Your Bank?</h2>
     </div>
-    
+
     <table class="comparison-table">
       <thead>
         <tr>
@@ -310,55 +518,90 @@
       <tbody>
         <tr>
           <td><strong>Access to Deals</strong></td>
-          <td>Limited to their own products only.</td>
-          <td class="check"><strong>✓</strong> Whole of Market access (100+ lenders).</td>
+          <td>Restricted to their own products only.</td>
+          <td class="check"><strong>✓</strong> Access to a comprehensive range of mortgages from across the market.</td>
         </tr>
         <tr>
           <td><strong>Exclusive Rates</strong></td>
-          <td>No access to broker-only deals.</td>
-          <td class="check"><strong>✓</strong> Access to exclusive intermediary rates.</td>
+          <td>Access to high-street rates only.</td>
+          <td class="check"><strong>✓</strong> Access to exclusive intermediary-only rates not available directly.</td>
         </tr>
         <tr>
-          <td><strong>Advice Quality</strong></td>
-          <td>Often biased toward their products.</td>
-          <td class="check"><strong>✓</strong> Unbiased, regulated advice focused on you.</td>
+          <td><strong>Advice Scope</strong></td>
+          <td>Advice is limited to that specific lender's criteria.</td>
+          <td class="check"><strong>✓</strong> Tailored advice based on your unique circumstances across multiple lenders.</td>
         </tr>
         <tr>
           <td><strong>Availability</strong></td>
-          <td>Often 9-5, long waits for appointments.</td>
-          <td class="check"><strong>✓</strong> Flexible hours, including evenings &amp; weekends.</td>
+          <td>Subject to standard branch opening hours.</td>
+          <td class="check"><strong>✓</strong> Flexible appointment times, including evenings and weekends.</td>
         </tr>
         <tr>
-          <td><strong>Paperwork</strong></td>
-          <td>You handle most of the chasing.</td>
-          <td class="check"><strong>✓</strong> We manage the entire application to completion.</td>
+          <td><strong>Application Support</strong></td>
+          <td>You manage the process and communication with the lender.</td>
+          <td class="check"><strong>✓</strong> Full application management, from paperwork to completion.</td>
         </tr>
       </tbody>
     </table>
+
+    <div class="compliance-footer">
+      <p class="compliance-footer__warning"><strong>Your home may be repossessed if you do not keep up repayments on your mortgage.</strong></p>
+      <p class="compliance-footer__fee">We may charge a fee for mortgage advice. The actual amount you pay will depend upon your circumstances.</p>
+    </div>
   </div>
 </section>
 
 <!-- AIP Fast Track -->
 <section class="section--charcoal">
   <div class="container">
-    <div class="wellness-grid" style="align-items: center;">
-      <div class="wellness-content">
+    <div class="offer-ready">
+      <div class="offer-ready__content">
         <h2>Ready to Make an Offer on a House?</h2>
-        <p style="font-size: 1.1rem;">In today's market, speed matters. We can often secure a Decision in Principle (DIP) within 24 hours, putting you in the strongest position with sellers.</p>
-        <div style="margin-top: 2rem;">
+        <p class="offer-ready__lead">In today's fast-paced market, being 'offer-ready' can be the difference between securing your dream home or missing out. Speed matters.</p>
+        <p>At <strong>B Mortgage Services</strong>, we often secure a <strong>Decision in Principle (DIP) within 24 hours</strong>, providing you with a certificate that proves to sellers and estate agents that you are a serious, qualified buyer.</p>
+        <div class="offer-ready__cta">
           <a href="/contact/" class="btn btn--primary btn--large">
-            Fast-Track My Decision in Principle
+            Get Your DIP Started Now
             <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </a>
         </div>
       </div>
-      <div style="text-align: center;">
-        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="var(--brand-orange)" stroke-width="1.5" style="opacity: 0.8;">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
+      <div class="offer-ready__checklist">
+        <div class="checklist-card">
+          <h4 class="checklist-card__title">Your 'Offer-Ready' Checklist</h4>
+          <p class="checklist-card__subtitle">Have these documents ready to speed up your application:</p>
+          <ul class="checklist-card__list">
+            <li>
+              <span class="checklist-check">✓</span>
+              <div>
+                <strong>Proof of Identity:</strong> Valid Passport or Driving License.
+              </div>
+            </li>
+            <li>
+              <span class="checklist-check">✓</span>
+              <div>
+                <strong>Proof of Income:</strong> Last 3 months' payslips or 2 years of Tax Calculations (SA302s).
+              </div>
+            </li>
+            <li>
+              <span class="checklist-check">✓</span>
+              <div>
+                <strong>Bank Statements:</strong> Last 3 months' personal statements showing income and outgoings.
+              </div>
+            </li>
+            <li>
+              <span class="checklist-check">✓</span>
+              <div>
+                <strong>Proof of Deposit:</strong> Evidence of savings or a gifted deposit letter.
+              </div>
+            </li>
+          </ul>
+          <div class="checklist-card__tip">
+            <strong>Pro Tip:</strong> Having digital copies ready to upload can shave days off your mortgage approval time.
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -458,9 +701,11 @@ function setApplicationType(type) {
   } else {
     partnerGroup.style.display = 'none';
     document.getElementById('partnerIncome').value = '';
+    document.getElementById('partnerNetPay').innerHTML = '';
   }
 
   calculateAffordability();
+  updateNetPayDisplay('yourIncome', 'yourNetPay');
 }
 
 function formatAndCalculate(input) {
@@ -474,6 +719,12 @@ function formatAndCalculate(input) {
 
   input.value = value;
   calculateAffordability();
+
+  // Update net pay displays
+  updateNetPayDisplay('yourIncome', 'yourNetPay');
+  if (applicationType === 'joint') {
+    updateNetPayDisplay('partnerIncome', 'partnerNetPay');
+  }
 }
 
 function parseFormattedNumber(str) {
@@ -485,24 +736,182 @@ function formatCurrency(num) {
   return '£' + num.toLocaleString('en-GB', { maximumFractionDigits: 0 });
 }
 
+function calculateNetPay(grossAnnual) {
+  if (grossAnnual <= 0) return 0;
+
+  // 2025/26 Tax Year Thresholds
+  const personalAllowance = 12570;
+  const basicRateLimit = 50270;
+  const higherRateLimit = 125140;
+
+  // Tax Rates
+  const basicRate = 0.20;
+  const higherRate = 0.40;
+  const additionalRate = 0.45;
+
+  // NI Thresholds
+  const niThreshold = 12570;
+  const niUpperLimit = 50270;
+  const niMainRate = 0.08;
+  const niAdditionalRate = 0.02;
+
+  // Calculate Income Tax
+  let incomeTax = 0;
+
+  // Reduce personal allowance for high earners (£1 reduction for every £2 over £100k)
+  let adjustedAllowance = personalAllowance;
+  if (grossAnnual > 100000) {
+    adjustedAllowance = Math.max(0, personalAllowance - ((grossAnnual - 100000) / 2));
+  }
+
+  let taxableIncome = Math.max(0, grossAnnual - adjustedAllowance);
+
+  if (taxableIncome > 0) {
+    const basicBandLimit = basicRateLimit - adjustedAllowance;
+    const basicTaxable = Math.min(taxableIncome, basicBandLimit);
+    incomeTax += basicTaxable * basicRate;
+
+    if (taxableIncome > basicBandLimit) {
+      const higherBandLimit = higherRateLimit - adjustedAllowance;
+      const higherTaxable = Math.min(taxableIncome - basicBandLimit, higherBandLimit - basicBandLimit);
+      incomeTax += higherTaxable * higherRate;
+
+      if (taxableIncome > higherBandLimit) {
+        const additionalTaxable = taxableIncome - higherBandLimit;
+        incomeTax += additionalTaxable * additionalRate;
+      }
+    }
+  }
+
+  // Calculate National Insurance
+  let nationalInsurance = 0;
+
+  if (grossAnnual > niThreshold) {
+    const niMainBand = Math.min(grossAnnual, niUpperLimit) - niThreshold;
+    nationalInsurance += niMainBand * niMainRate;
+
+    if (grossAnnual > niUpperLimit) {
+      nationalInsurance += (grossAnnual - niUpperLimit) * niAdditionalRate;
+    }
+  }
+
+  return grossAnnual - incomeTax - nationalInsurance;
+}
+
+function updateNetPayDisplay(inputId, displayId) {
+  const gross = parseFormattedNumber(document.getElementById(inputId).value);
+  const displayEl = document.getElementById(displayId);
+
+  if (gross > 0) {
+    const netAnnual = calculateNetPay(gross);
+    const netMonthly = netAnnual / 12;
+    displayEl.innerHTML = 'Take-home: <strong>' + formatCurrency(Math.round(netMonthly)) + '/month</strong> (' + formatCurrency(Math.round(netAnnual)) + '/year)';
+  } else {
+    displayEl.innerHTML = '';
+  }
+}
+
+function calculateMonthlyRepayment(principal, annualRate, years) {
+  if (principal <= 0) return 0;
+  const monthlyRate = annualRate / 100 / 12;
+  const numPayments = years * 12;
+  // Standard mortgage formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+  const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+  return Math.round(payment);
+}
+
+function calculateMaxMortgageFromPayment(monthlyPayment, annualRate, years) {
+  if (monthlyPayment <= 0) return 0;
+  const monthlyRate = annualRate / 100 / 12;
+  const numPayments = years * 12;
+  // Reverse mortgage formula: P = M * [(1+r)^n - 1] / [r(1+r)^n]
+  const principal = monthlyPayment * (Math.pow(1 + monthlyRate, numPayments) - 1) / (monthlyRate * Math.pow(1 + monthlyRate, numPayments));
+  return Math.round(principal);
+}
+
+function updateRepaymentDisplay(elementId, principal, years) {
+  const lowRate = 3.75;
+  const highRate = 4.75;
+  const lowPayment = calculateMonthlyRepayment(principal, lowRate, years);
+  const highPayment = calculateMonthlyRepayment(principal, highRate, years);
+
+  const element = document.getElementById(elementId);
+  if (principal > 0) {
+    element.innerHTML = '<span class="repayment-label">Est. monthly:</span> ' + formatCurrency(lowPayment) + ' - ' + formatCurrency(highPayment);
+  } else {
+    element.innerHTML = '';
+  }
+}
+
+function updateMortgageTerm(value) {
+  document.getElementById('termValue').textContent = value;
+  // Sync with moving cost calculator slider
+  document.getElementById('movingMortgageTerm').value = value;
+  document.getElementById('movingTermValue').textContent = value;
+  calculateAffordability();
+  calculateMovingCosts();
+}
+
+function updateMovingMortgageTerm(value) {
+  document.getElementById('movingTermValue').textContent = value;
+  // Sync with affordability calculator slider
+  document.getElementById('mortgageTerm').value = value;
+  document.getElementById('termValue').textContent = value;
+  calculateAffordability();
+  calculateMovingCosts();
+}
+
 function calculateAffordability() {
   const yourIncome = parseFormattedNumber(document.getElementById('yourIncome').value);
   const partnerIncome = applicationType === 'joint'
     ? parseFormattedNumber(document.getElementById('partnerIncome').value)
     : 0;
 
-  // Total income
+  // Get commitments (monthly values)
+  const creditCards = parseFormattedNumber(document.getElementById('creditCards').value);
+  const loansHP = parseFormattedNumber(document.getElementById('loansHP').value);
+  const otherOutgoings = parseFormattedNumber(document.getElementById('otherOutgoings').value);
+
+  // Total gross income
   const totalIncome = yourIncome + partnerIncome;
 
-  // Calculate the three tiers
+  // Calculate net income for both applicants
+  const yourNetAnnual = calculateNetPay(yourIncome);
+  const partnerNetAnnual = applicationType === 'joint' ? calculateNetPay(partnerIncome) : 0;
+  const totalNetMonthly = (yourNetAnnual + partnerNetAnnual) / 12;
+
+  // Calculate monthly commitments for affordability
+  // Credit cards: use 3% of balance as monthly commitment
+  const cardCommitment = creditCards * 0.03;
+  const totalCommitments = loansHP + otherOutgoings + cardCommitment;
+
+  // Calculate the income multiplier tiers
   const conservative = totalIncome * 3.5;
   const standard = totalIncome * 4.5;
-  const maximum = totalIncome * 5;
+  const incomeMultiplierMax = totalIncome * 6; // 6x income cap
+
+  // Calculate affordability-based maximum
+  // Max payment = 45% of (net income - commitments)
+  const disposableIncome = totalNetMonthly - totalCommitments;
+  const maxAffordablePayment = disposableIncome * 0.45;
+
+  // Get mortgage term and calculate max mortgage from affordability
+  const termYears = parseInt(document.getElementById('mortgageTerm').value) || 30;
+  const highRate = 4.75;
+  const affordabilityMax = calculateMaxMortgageFromPayment(maxAffordablePayment, highRate, termYears);
+
+  // Maximum is the lower of affordability-based or 6x income
+  const maximum = Math.min(affordabilityMax, incomeMultiplierMax);
 
   // Update display
   document.getElementById('result-conservative').textContent = formatCurrency(conservative);
   document.getElementById('result-standard').textContent = formatCurrency(standard);
-  document.getElementById('result-maximum').textContent = formatCurrency(maximum);
+  document.getElementById('result-maximum').textContent = formatCurrency(Math.max(0, maximum));
+
+  // Calculate repayments for each tier
+  updateRepaymentDisplay('repayment-conservative', conservative, termYears);
+  updateRepaymentDisplay('repayment-standard', standard, termYears);
+  updateRepaymentDisplay('repayment-maximum', maximum, termYears);
 }
 
 function toggleFaq(element) {
@@ -510,9 +919,454 @@ function toggleFaq(element) {
   item.classList.toggle('faq-item--open');
 }
 
+// Stamp Duty Calculator (UK rates as of 2024/25)
+function calculateStampDuty(price, isFirstTimeBuyer) {
+  if (price <= 0) return 0;
+
+  let stampDuty = 0;
+
+  if (isFirstTimeBuyer) {
+    // First-time buyer relief: 0% up to £425k, 5% on £425k-£625k
+    // If property > £625k, no relief - use standard rates
+    if (price <= 625000) {
+      if (price > 425000) {
+        stampDuty = (price - 425000) * 0.05;
+      }
+      return Math.round(stampDuty);
+    }
+    // Falls through to standard rates if > £625k
+  }
+
+  // Standard rates (no relief)
+  // 0% up to £250k
+  // 5% on £250k - £925k
+  // 10% on £925k - £1.5m
+  // 12% above £1.5m
+
+  if (price > 250000) {
+    const band1 = Math.min(price, 925000) - 250000;
+    stampDuty += band1 * 0.05;
+  }
+
+  if (price > 925000) {
+    const band2 = Math.min(price, 1500000) - 925000;
+    stampDuty += band2 * 0.10;
+  }
+
+  if (price > 1500000) {
+    const band3 = price - 1500000;
+    stampDuty += band3 * 0.12;
+  }
+
+  return Math.round(stampDuty);
+}
+
+function formatAndCalculateMovingCosts(input) {
+  let value = input.value.replace(/[^0-9]/g, '');
+  if (value) {
+    value = parseInt(value).toLocaleString('en-GB');
+  }
+  input.value = value;
+  calculateMovingCosts();
+}
+
+function calculateMovingCosts() {
+  const mortgagePurpose = document.getElementById('mortgagePurpose').value;
+  const isFirstTimeBuyer = mortgagePurpose === 'first-time';
+  const isMover = mortgagePurpose === 'moving';
+
+  const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
+  const salePrice = parseFormattedNumber(document.getElementById('salePrice').value);
+  const deposit = parseFormattedNumber(document.getElementById('depositAmount').value);
+  const interestRate = parseFloat(document.getElementById('movingInterestRate').value) || 4;
+  const termYears = parseInt(document.getElementById('movingMortgageTerm').value) || 30;
+
+  // Calculate mortgage amount
+  const mortgageAmount = Math.max(0, housePrice - deposit);
+
+  // Calculate LTV
+  const ltv = housePrice > 0 ? ((mortgageAmount / housePrice) * 100).toFixed(0) : 0;
+  const ltvDisplay = document.getElementById('depositLtv');
+  if (housePrice > 0 && deposit > 0) {
+    ltvDisplay.innerHTML = 'LTV: <strong>' + ltv + '%</strong> (Deposit: ' + ((deposit / housePrice) * 100).toFixed(0) + '%)';
+  } else {
+    ltvDisplay.innerHTML = '';
+  }
+
+  // Calculate monthly payment
+  const monthlyPayment = calculateMonthlyRepayment(mortgageAmount, interestRate, termYears);
+
+  // Calculate stamp duty
+  const stampDuty = calculateStampDuty(housePrice, isFirstTimeBuyer);
+
+  // Calculate other costs
+  let estateAgentFees = 0;
+  let sellingLegalFees = 0;
+  const purchaseLegalFees = 2500;
+  const surveyCost = 500;
+
+  if (isMover) {
+    // Estate agent: 1% + VAT (20%)
+    estateAgentFees = Math.round(salePrice * 0.01 * 1.2);
+    sellingLegalFees = 1500;
+  }
+
+  // Calculate total costs
+  const totalCosts = stampDuty + estateAgentFees + sellingLegalFees + purchaseLegalFees + surveyCost;
+
+  // Update display
+  document.getElementById('mortgageAmount').textContent = formatCurrency(mortgageAmount);
+  document.getElementById('monthlyMortgagePayment').textContent = formatCurrency(monthlyPayment);
+  document.getElementById('stampDuty').textContent = formatCurrency(stampDuty);
+  document.getElementById('estateAgentFees').textContent = formatCurrency(estateAgentFees);
+  document.getElementById('purchaseLegalFees').textContent = formatCurrency(purchaseLegalFees);
+  document.getElementById('surveyCost').textContent = formatCurrency(surveyCost);
+  document.getElementById('totalMovingCosts').textContent = formatCurrency(totalCosts);
+
+  // Update label for legal fees
+  if (isMover) {
+    document.getElementById('legalFeesLabel').textContent = 'Purchase Legal Fees';
+  } else {
+    document.getElementById('legalFeesLabel').textContent = 'Legal Fees';
+  }
+}
+
+function handleMortgagePurposeChange() {
+  const purpose = document.getElementById('mortgagePurpose').value;
+  const movingCalc = document.getElementById('movingCostCalculator');
+  const salePriceGroup = document.getElementById('salePriceGroup');
+  const estateAgentRow = document.getElementById('estateAgentRow');
+  const sellingLegalRow = document.getElementById('sellingLegalRow');
+
+  if (purpose === 'first-time' || purpose === 'moving') {
+    movingCalc.style.display = 'block';
+
+    if (purpose === 'moving') {
+      salePriceGroup.style.display = 'block';
+      estateAgentRow.style.display = 'flex';
+      sellingLegalRow.style.display = 'flex';
+    } else {
+      salePriceGroup.style.display = 'none';
+      estateAgentRow.style.display = 'none';
+      sellingLegalRow.style.display = 'none';
+      document.getElementById('salePrice').value = '';
+    }
+
+    calculateMovingCosts();
+  } else {
+    movingCalc.style.display = 'none';
+  }
+}
+
+function printCalculatorResults() {
+  // Get mortgage purpose to determine what to show
+  const mortgagePurpose = document.getElementById('mortgagePurpose').value;
+  const showMovingCosts = mortgagePurpose === 'first-time' || mortgagePurpose === 'moving';
+  const isMover = mortgagePurpose === 'moving';
+
+  // Get values for affordability section
+  const yourIncome = document.getElementById('yourIncome').value || '0';
+  const partnerIncome = document.getElementById('partnerIncome').value || '0';
+  const conservative = document.getElementById('result-conservative').textContent;
+  const standard = document.getElementById('result-standard').textContent;
+  const maximum = document.getElementById('result-maximum').textContent;
+  const repaymentConservative = document.getElementById('repayment-conservative').innerHTML;
+  const repaymentStandard = document.getElementById('repayment-standard').innerHTML;
+  const repaymentMaximum = document.getElementById('repayment-maximum').innerHTML;
+  const termYears = document.getElementById('termValue').textContent;
+
+  // Build affordability HTML
+  let affordabilityHTML = `
+    <div class="print-section">
+      <h3>Borrowing Estimate</h3>
+      <div class="print-summary">
+        <div class="summary-row">
+          <span>Your Annual Income:</span>
+          <strong>£${yourIncome}</strong>
+        </div>
+        ${applicationType === 'joint' ? `
+        <div class="summary-row">
+          <span>Partner's Annual Income:</span>
+          <strong>£${partnerIncome}</strong>
+        </div>
+        ` : ''}
+        <div class="summary-row">
+          <span>Mortgage Term:</span>
+          <strong>${termYears} years</strong>
+        </div>
+      </div>
+      <div class="print-results">
+        <div class="result-box">
+          <div class="result-label">Conservative (3.5x)</div>
+          <div class="result-amount">${conservative}</div>
+          <div class="result-repayment">${repaymentConservative}</div>
+        </div>
+        <div class="result-box result-box--highlight">
+          <div class="result-label">Standard (4.5x)</div>
+          <div class="result-amount">${standard}</div>
+          <div class="result-repayment">${repaymentStandard}</div>
+        </div>
+        <div class="result-box">
+          <div class="result-label">Maximum (up to 6x)</div>
+          <div class="result-amount">${maximum}</div>
+          <div class="result-repayment">${repaymentMaximum}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Build moving costs HTML if applicable
+  let movingCostsHTML = '';
+  if (showMovingCosts) {
+    const housePrice = document.getElementById('housePrice').value || '0';
+    const salePrice = document.getElementById('salePrice').value || '0';
+    const deposit = document.getElementById('depositAmount').value || '0';
+    const interestRate = document.getElementById('movingInterestRate').value || '4';
+    const mortgageAmount = document.getElementById('mortgageAmount').textContent;
+    const monthlyPayment = document.getElementById('monthlyMortgagePayment').textContent;
+    const stampDuty = document.getElementById('stampDuty').textContent;
+    const estateAgentFees = document.getElementById('estateAgentFees').textContent;
+    const purchaseLegalFees = document.getElementById('purchaseLegalFees').textContent;
+    const surveyCost = document.getElementById('surveyCost').textContent;
+    const totalCosts = document.getElementById('totalMovingCosts').textContent;
+    const ltv = document.getElementById('depositLtv').innerHTML;
+
+    movingCostsHTML = `
+      <div class="print-section">
+        <h3>Moving Costs Estimate</h3>
+        <div class="print-summary">
+          <div class="summary-row">
+            <span>Purchase Price:</span>
+            <strong>£${housePrice}</strong>
+          </div>
+          ${isMover ? `
+          <div class="summary-row">
+            <span>Sale Price:</span>
+            <strong>£${salePrice}</strong>
+          </div>
+          ` : ''}
+          <div class="summary-row">
+            <span>Deposit:</span>
+            <strong>£${deposit}</strong>
+          </div>
+          <div class="summary-row">
+            <span>Interest Rate:</span>
+            <strong>${interestRate}%</strong>
+          </div>
+        </div>
+        <div class="print-mortgage-summary">
+          <div class="mortgage-box">
+            <div class="mortgage-label">Mortgage Amount</div>
+            <div class="mortgage-value">${mortgageAmount}</div>
+            ${ltv ? `<div class="mortgage-ltv">${ltv}</div>` : ''}
+          </div>
+          <div class="mortgage-box">
+            <div class="mortgage-label">Monthly Payment</div>
+            <div class="mortgage-value">${monthlyPayment}</div>
+          </div>
+        </div>
+        <div class="print-costs">
+          <h4>Cost Breakdown</h4>
+          <div class="cost-row">
+            <span>Stamp Duty</span>
+            <span>${stampDuty}</span>
+          </div>
+          ${isMover ? `
+          <div class="cost-row">
+            <span>Estate Agent Fees (1% + VAT)</span>
+            <span>${estateAgentFees}</span>
+          </div>
+          <div class="cost-row">
+            <span>Selling Legal Fees</span>
+            <span>£1,500</span>
+          </div>
+          ` : ''}
+          <div class="cost-row">
+            <span>${isMover ? 'Purchase Legal Fees' : 'Legal Fees'}</span>
+            <span>${purchaseLegalFees}</span>
+          </div>
+          <div class="cost-row">
+            <span>Survey</span>
+            <span>${surveyCost}</span>
+          </div>
+          <div class="cost-row cost-row--total">
+            <span>Total Costs</span>
+            <span>${totalCosts}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Create print window
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Mortgage Estimate - B Mortgage Services</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #2D2D2D; }
+        .print-header { text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 3px solid #F05B28; }
+        .print-header h2 { color: #F05B28; margin: 0 0 4px; font-size: 1.75rem; }
+        .print-header p { color: #666; font-size: 1rem; }
+        .print-section { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #ddd; }
+        .print-section h3 { color: #2D2D2D; margin-bottom: 16px; font-size: 1.25rem; }
+        .print-summary { background: #f8f8f8; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 6px 0; }
+        .summary-row span { color: #666; }
+        .summary-row strong { color: #2D2D2D; }
+        .print-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .result-box { background: #f8f8f8; padding: 16px; border-radius: 8px; text-align: center; border-top: 3px solid #ddd; }
+        .result-box--highlight { background: #FEF6F0; border-top-color: #F05B28; }
+        .result-label { font-size: 0.85rem; color: #666; margin-bottom: 8px; }
+        .result-amount { font-size: 1.5rem; font-weight: 700; color: #2D2D2D; margin-bottom: 8px; }
+        .result-box--highlight .result-amount { color: #F05B28; }
+        .result-repayment { font-size: 0.8rem; color: #666; }
+        .repayment-label { display: block; margin-bottom: 2px; }
+        .print-mortgage-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .mortgage-box { background: #FEF6F0; padding: 16px; border-radius: 8px; text-align: center; border-left: 4px solid #F05B28; }
+        .mortgage-label { font-size: 0.85rem; color: #666; margin-bottom: 8px; }
+        .mortgage-value { font-size: 1.5rem; font-weight: 700; color: #F05B28; }
+        .mortgage-ltv { font-size: 0.8rem; color: #666; margin-top: 8px; }
+        .mortgage-ltv strong { color: #F05B28; }
+        .print-costs h4 { margin-bottom: 12px; font-size: 1rem; }
+        .cost-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .cost-row--total { border-bottom: none; border-top: 2px solid #2D2D2D; margin-top: 8px; padding-top: 12px; font-weight: 700; }
+        .cost-row--total span:last-child { color: #F05B28; font-size: 1.1rem; }
+        .print-footer { margin-top: 32px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; }
+        .print-footer p { font-size: 0.8rem; color: #666; margin-bottom: 8px; }
+        .print-footer .warning { font-weight: 700; color: #2D2D2D; font-size: 0.85rem; margin-top: 12px; padding: 12px; background: #FEF6F0; border: 1px solid #F05B28; border-radius: 4px; }
+        @media print {
+          body { padding: 20px; }
+          .print-section { page-break-inside: avoid; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="print-header">
+        <h2>B Mortgage Services</h2>
+        <p>Your Personalised Mortgage Estimate</p>
+      </div>
+      ${affordabilityHTML}
+      ${movingCostsHTML}
+      <div class="print-footer">
+        <p>These estimates are for guidance only. Your actual borrowing capacity depends on credit history, outgoings, and individual lender criteria.</p>
+        <p>Generated on ${new Date().toLocaleDateString('en-GB')}</p>
+        <div class="warning">YOUR HOME MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE</div>
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// Quote Modal Functions
+function openQuoteModal() {
+  document.getElementById('quoteModal').classList.add('quote-modal--open');
+  document.body.style.overflow = 'hidden';
+  resetModal();
+}
+
+function closeQuoteModal() {
+  document.getElementById('quoteModal').classList.remove('quote-modal--open');
+  document.body.style.overflow = '';
+}
+
+function showSuccess() {
+  document.getElementById('modalEmailForm').style.display = 'none';
+  document.getElementById('modalSuccess').style.display = 'block';
+}
+
+function resetModal() {
+  document.getElementById('modalEmailForm').style.display = 'block';
+  document.getElementById('modalSuccess').style.display = 'none';
+}
+
+function submitQuoteForm(event) {
+  event.preventDefault();
+
+  const name = document.getElementById('quoteName').value;
+  const phone = document.getElementById('quotePhone').value;
+  const email = document.getElementById('quoteEmail').value;
+  const includeResults = document.getElementById('quoteIncludeResults').checked;
+
+  // Build email body
+  let emailBody = `New Quote Request\n\n`;
+  emailBody += `Name: ${name}\n`;
+  emailBody += `Phone: ${phone}\n`;
+  emailBody += `Email: ${email}\n\n`;
+
+  if (includeResults) {
+    const mortgagePurpose = document.getElementById('mortgagePurpose').value;
+    const yourIncome = document.getElementById('yourIncome').value || '0';
+    const partnerIncome = document.getElementById('partnerIncome').value || '0';
+    const conservative = document.getElementById('result-conservative').textContent;
+    const standard = document.getElementById('result-standard').textContent;
+    const maximum = document.getElementById('result-maximum').textContent;
+    const termYears = document.getElementById('termValue').textContent;
+
+    emailBody += `--- Calculator Results ---\n`;
+    emailBody += `Mortgage Purpose: ${mortgagePurpose}\n`;
+    emailBody += `Application Type: ${applicationType}\n`;
+    emailBody += `Your Income: £${yourIncome}\n`;
+    if (applicationType === 'joint') {
+      emailBody += `Partner Income: £${partnerIncome}\n`;
+    }
+    emailBody += `Term: ${termYears} years\n\n`;
+    emailBody += `Borrowing Estimates:\n`;
+    emailBody += `- Conservative (3.5x): ${conservative}\n`;
+    emailBody += `- Standard (4.5x): ${standard}\n`;
+    emailBody += `- Maximum: ${maximum}\n`;
+
+    if (mortgagePurpose === 'first-time' || mortgagePurpose === 'moving') {
+      const housePrice = document.getElementById('housePrice').value || '0';
+      const deposit = document.getElementById('depositAmount').value || '0';
+      const mortgageAmount = document.getElementById('mortgageAmount').textContent;
+      const monthlyPayment = document.getElementById('monthlyMortgagePayment').textContent;
+      const stampDuty = document.getElementById('stampDuty').textContent;
+      const totalCosts = document.getElementById('totalMovingCosts').textContent;
+
+      emailBody += `\n--- Moving Costs ---\n`;
+      emailBody += `Purchase Price: £${housePrice}\n`;
+      emailBody += `Deposit: £${deposit}\n`;
+      emailBody += `Mortgage Amount: ${mortgageAmount}\n`;
+      emailBody += `Monthly Payment: ${monthlyPayment}\n`;
+      emailBody += `Stamp Duty: ${stampDuty}\n`;
+      emailBody += `Total Costs: ${totalCosts}\n`;
+    }
+  }
+
+  // Open email client with pre-filled content
+  const mailtoLink = `mailto:bev@bmortgageservices.co.uk?subject=${encodeURIComponent('Quote Request from ' + name)}&body=${encodeURIComponent(emailBody)}`;
+  window.location.href = mailtoLink;
+
+  // Show success message
+  showSuccess();
+
+  // Reset form
+  document.getElementById('quoteEmailForm').reset();
+  document.getElementById('quoteIncludeResults').checked = true;
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeQuoteModal();
+  }
+});
+
 // Initialize calculator on page load
 document.addEventListener('DOMContentLoaded', function() {
   calculateAffordability();
+
+  // Add event listener to mortgage purpose dropdown
+  document.getElementById('mortgagePurpose').addEventListener('change', handleMortgagePurposeChange);
+
+  // Trigger initial check in case a value is already selected
+  handleMortgagePurposeChange();
 });
 </script>
 {{ end }}
