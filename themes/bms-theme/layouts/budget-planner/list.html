@@ -1,0 +1,1283 @@
+{{ define "main" }}
+
+<!-- Hero Section -->
+<section class="page-header page-header--ambient">
+  <div class="ambient-glow ambient-glow--wellness">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--3"></div>
+  </div>
+  <div class="container">
+    <span class="page-header__eyebrow">Financial Planning Tool</span>
+    <h1>Household Budget Planner</h1>
+    <p class="page-header__subtitle">Work out your budget for your new home and understand what mortgage payment you can comfortably afford.</p>
+  </div>
+</section>
+
+<!-- Budget Wizard -->
+<section class="section--white">
+  <div class="container">
+
+    <!-- Progress Bar -->
+    <div class="wizard-progress">
+      <div class="wizard-progress__bar">
+        <div class="wizard-progress__fill" id="progressFill"></div>
+      </div>
+      <div class="wizard-progress__steps">
+        <div class="wizard-step active" data-step="1">
+          <span class="wizard-step__number">1</span>
+          <span class="wizard-step__label">Region</span>
+        </div>
+        <div class="wizard-step" data-step="2">
+          <span class="wizard-step__number">2</span>
+          <span class="wizard-step__label">Income</span>
+        </div>
+        <div class="wizard-step" data-step="3">
+          <span class="wizard-step__number">3</span>
+          <span class="wizard-step__label">Housing</span>
+        </div>
+        <div class="wizard-step" data-step="4">
+          <span class="wizard-step__number">4</span>
+          <span class="wizard-step__label">Utilities</span>
+        </div>
+        <div class="wizard-step" data-step="5">
+          <span class="wizard-step__number">5</span>
+          <span class="wizard-step__label">Commitments</span>
+        </div>
+        <div class="wizard-step" data-step="6">
+          <span class="wizard-step__number">6</span>
+          <span class="wizard-step__label">Living</span>
+        </div>
+        <div class="wizard-step" data-step="7">
+          <span class="wizard-step__number">7</span>
+          <span class="wizard-step__label">Lifestyle</span>
+        </div>
+        <div class="wizard-step" data-step="8">
+          <span class="wizard-step__number">8</span>
+          <span class="wizard-step__label">Results</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wizard Content -->
+    <div class="wizard-content">
+
+      <!-- Step 1: Region Selection -->
+      <div class="wizard-panel active" data-panel="1">
+        <div class="wizard-panel__header">
+          <h2>Select Your Region</h2>
+          <p>Choose your region to see relevant ONS (Office for National Statistics) average spending figures for reference.</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="form-group">
+            <label for="region" class="form-label">Your Region</label>
+            <select id="region" class="form-select form-select--large" onchange="updateRegionalAverages()">
+              <option value="uk">United Kingdom (Average)</option>
+              <option value="north_east">North East</option>
+              <option value="north_west">North West</option>
+              <option value="yorkshire">Yorkshire and The Humber</option>
+              <option value="east_midlands">East Midlands</option>
+              <option value="west_midlands">West Midlands</option>
+              <option value="east">East of England</option>
+              <option value="london">London</option>
+              <option value="south_east">South East</option>
+              <option value="south_west">South West</option>
+              <option value="wales">Wales</option>
+              <option value="scotland">Scotland</option>
+              <option value="northern_ireland">Northern Ireland</option>
+            </select>
+            <p class="form-help">Regional averages will update based on your selection</p>
+          </div>
+          <div class="info-box">
+            <svg class="info-box__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <div>
+              <strong>About the ONS Data</strong>
+              <p>The averages shown are from the Office for National Statistics Family Spending Survey (FYE 2022-2024). These are weekly averages converted to monthly equivalents.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Income -->
+      <div class="wizard-panel" data-panel="2">
+        <div class="wizard-panel__header">
+          <h2>Your Monthly Income</h2>
+          <p>Enter your total monthly take-home pay (after tax and deductions).</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="budget-form">
+            <div class="budget-row">
+              <label for="salary1">Salary - Applicant 1</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="salary1" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="salary2">Salary - Applicant 2</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="salary2" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="bonuses">Bonuses / Commission</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="bonuses" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="benefits">Benefits</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="benefits" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="otherIncome">Other Income</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="otherIncome" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+          </div>
+          <div class="budget-total budget-total--income">
+            <span>Total Monthly Income</span>
+            <span class="budget-total__value" id="totalIncome">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Housing Costs -->
+      <div class="wizard-panel" data-panel="3">
+        <div class="wizard-panel__header">
+          <h2>Housing Costs</h2>
+          <p>Enter your expected monthly housing-related expenses (excluding mortgage/rent).</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="budget-form">
+            <div class="budget-row">
+              <label for="councilTax">Council Tax</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="councilTax" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="councilTax">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="homeInsurance">Home Insurance</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="homeInsurance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="homeInsurance">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="lifeInsurance">Life & Critical Illness Cover</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="lifeInsurance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="maintenance">Decorating & Maintenance</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="maintenance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="maintenance">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="cleaning">Cleaning Products</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="cleaning" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="cleaning">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="housingOther">Other Housing Costs</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="housingOther" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+          </div>
+          <div class="budget-total">
+            <span>Total Housing Costs</span>
+            <span class="budget-total__value" id="totalHousing">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Utilities -->
+      <div class="wizard-panel" data-panel="4">
+        <div class="wizard-panel__header">
+          <h2>Utilities</h2>
+          <p>Enter your expected monthly utility bills.</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="budget-form">
+            <div class="budget-row">
+              <label for="electricity">Electricity</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="electricity" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="electricity">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="gas">Gas / Heating</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="gas" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="gas">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="water">Water</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="water" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="water">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="phoneBroadband">Phone & Broadband</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="phoneBroadband" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="communication">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="mobile">Mobile Phones</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="mobile" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="tvSubscriptions">TV, Streaming & Subscriptions</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="tvSubscriptions" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="tvSubscriptions">ONS: <span>-</span></div>
+            </div>
+          </div>
+          <div class="budget-total">
+            <span>Total Utilities</span>
+            <span class="budget-total__value" id="totalUtilities">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Financial Commitments -->
+      <div class="wizard-panel" data-panel="5">
+        <div class="wizard-panel__header">
+          <h2>Financial Commitments</h2>
+          <p>Enter your existing monthly debt repayments and financial obligations.</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="budget-form">
+            <div class="budget-row">
+              <label for="loans">Personal Loans</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="loans" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="creditCards">Credit Card Payments</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="creditCards" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="carFinance">Car HP / Leases</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="carFinance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="furniture">Furniture / Appliances Finance</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="furniture" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="furniture">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="childMaintenance">Child Maintenance</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="childMaintenance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="commitmentsOther">Other Commitments</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="commitmentsOther" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+          </div>
+          <div class="budget-total">
+            <span>Total Commitments</span>
+            <span class="budget-total__value" id="totalCommitments">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Family & Living -->
+      <div class="wizard-panel" data-panel="6">
+        <div class="wizard-panel__header">
+          <h2>Family & Living Expenses</h2>
+          <p>Enter your expected monthly family and essential living costs.</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="budget-form">
+            <div class="budget-row">
+              <label for="foodShopping">Food Shopping</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="foodShopping" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="food">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="clothes">Clothes</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="clothes" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="clothing">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="health">Health (Dentist, Opticians, etc.)</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="health" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="health">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="beauty">Personal Care & Beauty</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="beauty" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="personalCare">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="petInsurance">Pet Insurance</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="petInsurance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="petCare">Pet Care & Food</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="petCare" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="pets">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="gifts">Gifts (Birthdays, Christmas)</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="gifts" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="childcare">Childcare</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="childcare" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="childcare">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="schoolFees">School Fees / Education</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="schoolFees" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="education">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="kidsClubs">Kids Clubs & Hobbies</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="kidsClubs" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="pocketMoney">Pocket Money</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="pocketMoney" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="familyOther">Other Family Expenses</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="familyOther" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+          </div>
+          <div class="budget-total">
+            <span>Total Family & Living</span>
+            <span class="budget-total__value" id="totalFamily">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: Lifestyle -->
+      <div class="wizard-panel" data-panel="7">
+        <div class="wizard-panel__header">
+          <h2>Lifestyle & Transport</h2>
+          <p>Enter your lifestyle expenses and transport costs.</p>
+        </div>
+        <div class="wizard-panel__body">
+          <div class="budget-form">
+            <div class="budget-row">
+              <label for="savings">Savings</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="savings" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="pension">Pension (Voluntary)</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="pension" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="holidays">Holidays</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="holidays" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="holidays">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="charity">Charity / Donations</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="charity" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="entertainment">Entertainment</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="entertainment" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="recreation">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="gymSports">Gym & Sports</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="gymSports" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="sports">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="eatingOut">Eating Out & Takeaways</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="eatingOut" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="restaurants">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="alcohol">Alcohol & Tobacco</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="alcohol" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="alcohol">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="motorInsurance">Motor Insurance</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="motorInsurance" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="vehicleInsurance">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="taxServicing">Car Tax & Servicing</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="taxServicing" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="repairs">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="fuel">Fuel</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="fuel" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="fuel">ONS: <span>-</span></div>
+            </div>
+            <div class="budget-row">
+              <label for="parking">Parking</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="parking" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons">-</div>
+            </div>
+            <div class="budget-row">
+              <label for="publicTransport">Public Transport</label>
+              <div class="budget-input">
+                <span class="budget-input__prefix">£</span>
+                <input type="number" id="publicTransport" placeholder="0.00" oninput="calculateTotals()">
+              </div>
+              <div class="budget-ons" data-ons="transport">ONS: <span>-</span></div>
+            </div>
+          </div>
+          <div class="budget-total">
+            <span>Total Lifestyle & Transport</span>
+            <span class="budget-total__value" id="totalMisc">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Results -->
+      <div class="wizard-panel" data-panel="8">
+        <div class="wizard-panel__header">
+          <h2>Your Budget Summary</h2>
+          <p>Here's your complete budget breakdown and available mortgage budget.</p>
+        </div>
+        <div class="wizard-panel__body" id="resultsPanel">
+          <div class="results-grid">
+            <div class="results-breakdown">
+              <h3>Monthly Outgoings Breakdown</h3>
+              <div class="results-row">
+                <span>Housing Costs</span>
+                <span class="results-value" id="summaryHousing">£0.00</span>
+              </div>
+              <div class="results-row">
+                <span>Utilities</span>
+                <span class="results-value" id="summaryUtilities">£0.00</span>
+              </div>
+              <div class="results-row">
+                <span>Financial Commitments</span>
+                <span class="results-value" id="summaryCommitments">£0.00</span>
+              </div>
+              <div class="results-row">
+                <span>Family & Living</span>
+                <span class="results-value" id="summaryFamily">£0.00</span>
+              </div>
+              <div class="results-row">
+                <span>Lifestyle & Transport</span>
+                <span class="results-value" id="summaryMisc">£0.00</span>
+              </div>
+              <div class="results-row results-row--total">
+                <span><strong>Total Monthly Outgoings</strong></span>
+                <span class="results-value results-value--outgoings" id="summaryOutgoings">£0.00</span>
+              </div>
+            </div>
+            <div class="results-summary">
+              <div class="results-card results-card--income">
+                <span class="results-card__label">Total Monthly Income</span>
+                <span class="results-card__value" id="summaryIncome">£0.00</span>
+              </div>
+              <div class="results-card results-card--outgoings">
+                <span class="results-card__label">Total Monthly Outgoings</span>
+                <span class="results-card__value" id="summaryOutgoings2">£0.00</span>
+              </div>
+              <div class="results-card results-card--surplus" id="surplusCard">
+                <span class="results-card__label">Monthly Surplus / Deficit</span>
+                <span class="results-card__value" id="surplusIncome">£0.00</span>
+              </div>
+              <div class="results-mortgage">
+                <h3>Your Available Mortgage Budget</h3>
+                <div class="results-mortgage__amount" id="mortgageBudget">£0.00</div>
+                <span class="results-mortgage__period">per month</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="results-actions">
+            <button type="button" class="btn btn--primary btn--large" onclick="printResults()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"/>
+                <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+              </svg>
+              Print Results
+            </button>
+            <button type="button" class="btn btn--secondary btn--large" onclick="downloadExcel()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download Excel
+            </button>
+            <a href="/contact/" class="btn btn--outline btn--large">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+              Speak to an Advisor
+            </a>
+          </div>
+
+          <div class="results-disclaimer">
+            <p><strong>Please Note:</strong> This budget planner provides an estimate based on the figures you've entered. Your actual mortgage affordability will be assessed by lenders based on their specific criteria, including credit checks and stress testing. For personalised mortgage advice, please contact us.</p>
+            <p class="results-disclaimer__source">ONS Data Source: Regional averages from Office for National Statistics Family Spending Survey (FYE 2022-2024).</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <div class="wizard-nav">
+      <button type="button" class="btn btn--outline" id="prevBtn" onclick="changeStep(-1)" style="visibility: hidden;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back
+      </button>
+      <button type="button" class="btn btn--primary btn--large" id="nextBtn" onclick="changeStep(1)">
+        Next
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- SheetJS Library for Excel Export -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+// Current step
+let currentStep = 1;
+const totalSteps = 8;
+
+// ONS Regional Data - Weekly averages converted to monthly
+const onsData = {
+  uk: {
+    name: "United Kingdom",
+    food: 65.40, alcohol: 11.30, clothing: 17.30, housing: 102.20,
+    householdGoods: 36.30, health: 8.50, transport: 80.60, communication: 21.30,
+    recreation: 64.70, education: 5.10, restaurants: 39.90, misc: 42.20,
+    electricity: 18.20, gas: 14.40, water: 10.70, maintenance: 10.50,
+    furniture: 18.60, homeInsurance: 5.30, personalCare: 11.30,
+    vehicleInsurance: 11.10, fuel: 19.90, repairs: 7.60, tvSubscriptions: 6.00,
+    sports: 6.00, holidays: 21.20, pets: 6.90, cleaning: 2.70, childcare: 2.50
+  },
+  north_east: {
+    name: "North East",
+    food: 58.20, alcohol: 9.50, clothing: 16.10, housing: 75.20,
+    householdGoods: 34.90, health: 5.10, transport: 66.80, communication: 19.60,
+    recreation: 54.80, education: 1.90, restaurants: 31.90, misc: 32.60,
+    electricity: 16.50, gas: 15.50, water: 7.40, maintenance: 5.80,
+    furniture: 18.90, homeInsurance: 3.80, personalCare: 10.60,
+    vehicleInsurance: 9.40, fuel: 17.30, repairs: 5.80, tvSubscriptions: 5.70,
+    sports: 3.70, holidays: 20.40, pets: 6.10, cleaning: 2.60, childcare: 0.90
+  },
+  north_west: {
+    name: "North West",
+    food: 64.20, alcohol: 11.20, clothing: 18.40, housing: 88.60,
+    householdGoods: 36.30, health: 8.10, transport: 74.10, communication: 20.80,
+    recreation: 67.50, education: 3.40, restaurants: 36.90, misc: 40.10,
+    electricity: 17.10, gas: 16.00, water: 9.90, maintenance: 8.90,
+    furniture: 17.70, homeInsurance: 4.80, personalCare: 10.30,
+    vehicleInsurance: 11.90, fuel: 20.90, repairs: 7.40, tvSubscriptions: 5.50,
+    sports: 5.60, holidays: 21.60, pets: 7.10, cleaning: 2.50, childcare: 3.90
+  },
+  yorkshire: {
+    name: "Yorkshire and The Humber",
+    food: 61.10, alcohol: 11.00, clothing: 15.40, housing: 86.70,
+    householdGoods: 40.80, health: 9.50, transport: 78.80, communication: 20.30,
+    recreation: 61.40, education: 3.00, restaurants: 39.20, misc: 38.40,
+    electricity: 17.30, gas: 15.30, water: 9.50, maintenance: 8.90,
+    furniture: 22.60, homeInsurance: 5.00, personalCare: 10.90,
+    vehicleInsurance: 11.30, fuel: 19.00, repairs: 6.80, tvSubscriptions: 5.80,
+    sports: 5.40, holidays: 22.20, pets: 7.00, cleaning: 2.80, childcare: 1.70
+  },
+  east_midlands: {
+    name: "East Midlands",
+    food: 66.70, alcohol: 11.40, clothing: 16.30, housing: 93.70,
+    householdGoods: 32.70, health: 8.20, transport: 79.20, communication: 21.90,
+    recreation: 60.60, education: 4.80, restaurants: 36.30, misc: 38.40,
+    electricity: 17.40, gas: 14.30, water: 9.20, maintenance: 11.70,
+    furniture: 13.90, homeInsurance: 4.70, personalCare: 11.20,
+    vehicleInsurance: 11.50, fuel: 21.90, repairs: 7.90, tvSubscriptions: 5.80,
+    sports: 5.40, holidays: 18.30, pets: 8.60, cleaning: 2.90, childcare: 2.00
+  },
+  west_midlands: {
+    name: "West Midlands",
+    food: 64.50, alcohol: 11.30, clothing: 16.70, housing: 91.00,
+    householdGoods: 31.30, health: 9.90, transport: 81.30, communication: 21.10,
+    recreation: 65.70, education: 3.10, restaurants: 34.30, misc: 40.20,
+    electricity: 18.10, gas: 14.70, water: 9.50, maintenance: 8.60,
+    furniture: 15.40, homeInsurance: 4.80, personalCare: 10.70,
+    vehicleInsurance: 12.40, fuel: 20.30, repairs: 7.10, tvSubscriptions: 6.10,
+    sports: 5.40, holidays: 23.70, pets: 6.80, cleaning: 2.80, childcare: 2.70
+  },
+  east: {
+    name: "East of England",
+    food: 68.80, alcohol: 11.80, clothing: 18.20, housing: 104.70,
+    householdGoods: 38.30, health: 8.70, transport: 91.10, communication: 23.00,
+    recreation: 63.70, education: 4.60, restaurants: 40.60, misc: 45.50,
+    electricity: 19.50, gas: 13.70, water: 10.50, maintenance: 14.00,
+    furniture: 15.60, homeInsurance: 6.60, personalCare: 11.70,
+    vehicleInsurance: 11.60, fuel: 21.20, repairs: 9.40, tvSubscriptions: 6.50,
+    sports: 5.40, holidays: 18.50, pets: 7.90, cleaning: 3.00, childcare: 2.40
+  },
+  london: {
+    name: "London",
+    food: 63.50, alcohol: 8.10, clothing: 20.40, housing: 163.60,
+    householdGoods: 32.50, health: 8.20, transport: 63.20, communication: 21.50,
+    recreation: 49.90, education: 10.30, restaurants: 45.70, misc: 45.60,
+    electricity: 17.30, gas: 14.60, water: 16.00, maintenance: 9.20,
+    furniture: 19.60, homeInsurance: 5.30, personalCare: 12.40,
+    vehicleInsurance: 10.00, fuel: 10.10, repairs: 5.10, tvSubscriptions: 5.20,
+    sports: 7.90, holidays: 15.10, pets: 3.20, cleaning: 2.50, childcare: 2.60
+  },
+  south_east: {
+    name: "South East",
+    food: 69.70, alcohol: 12.30, clothing: 15.70, housing: 109.50,
+    householdGoods: 40.80, health: 9.80, transport: 97.20, communication: 22.10,
+    recreation: 82.20, education: 8.10, restaurants: 46.70, misc: 51.00,
+    electricity: 19.20, gas: 15.80, water: 12.40, maintenance: 13.10,
+    furniture: 20.80, homeInsurance: 6.00, personalCare: 12.40,
+    vehicleInsurance: 11.40, fuel: 23.00, repairs: 8.90, tvSubscriptions: 6.90,
+    sports: 8.40, holidays: 27.20, pets: 8.40, cleaning: 2.80, childcare: 3.40
+  },
+  south_west: {
+    name: "South West",
+    food: 68.80, alcohol: 13.00, clothing: 17.10, housing: 102.30,
+    householdGoods: 42.80, health: 8.70, transport: 88.40, communication: 20.70,
+    recreation: 71.90, education: 6.80, restaurants: 46.60, misc: 45.30,
+    electricity: 19.30, gas: 12.40, water: 11.80, maintenance: 14.50,
+    furniture: 24.20, homeInsurance: 5.10, personalCare: 11.90,
+    vehicleInsurance: 11.90, fuel: 24.10, repairs: 10.00, tvSubscriptions: 5.90,
+    sports: 6.50, holidays: 18.10, pets: 8.70, cleaning: 2.70, childcare: 2.10
+  },
+  wales: {
+    name: "Wales",
+    food: 62.20, alcohol: 14.10, clothing: 16.90, housing: 83.30,
+    householdGoods: 32.00, health: 7.70, transport: 81.30, communication: 20.30,
+    recreation: 67.90, education: 2.70, restaurants: 38.20, misc: 37.00,
+    electricity: 17.80, gas: 12.90, water: 10.70, maintenance: 9.90,
+    furniture: 14.20, homeInsurance: 5.50, personalCare: 8.90,
+    vehicleInsurance: 10.60, fuel: 21.90, repairs: 8.60, tvSubscriptions: 6.00,
+    sports: 4.50, holidays: 23.90, pets: 7.70, cleaning: 2.30, childcare: 1.80
+  },
+  scotland: {
+    name: "Scotland",
+    food: 61.50, alcohol: 11.60, clothing: 14.80, housing: 81.80,
+    householdGoods: 32.30, health: 6.40, transport: 75.90, communication: 21.00,
+    recreation: 62.30, education: 1.60, restaurants: 31.10, misc: 35.10,
+    electricity: 18.80, gas: 14.30, water: 8.80, maintenance: 8.80,
+    furniture: 17.50, homeInsurance: 5.10, personalCare: 10.60,
+    vehicleInsurance: 8.30, fuel: 17.90, repairs: 7.20, tvSubscriptions: 6.10,
+    sports: 4.70, holidays: 25.70, pets: 5.90, cleaning: 2.30, childcare: 1.90
+  },
+  northern_ireland: {
+    name: "Northern Ireland",
+    food: 77.90, alcohol: 13.40, clothing: 23.80, housing: 71.30,
+    householdGoods: 37.90, health: 11.40, transport: 89.50, communication: 20.90,
+    recreation: 54.00, education: 3.90, restaurants: 40.80, misc: 46.20,
+    electricity: 19.40, gas: 7.40, water: 0.60, maintenance: 5.70,
+    furniture: 19.60, homeInsurance: 5.20, personalCare: 13.70,
+    vehicleInsurance: 12.90, fuel: 32.80, repairs: 7.30, tvSubscriptions: 5.10,
+    sports: 3.00, holidays: 15.70, pets: 6.40, cleaning: 3.40, childcare: 1.60
+  }
+};
+
+function weeklyToMonthly(weeklyAmount) {
+  return (weeklyAmount * 4.33).toFixed(0);
+}
+
+function updateRegionalAverages() {
+  const region = document.getElementById('region').value;
+  const data = onsData[region];
+
+  document.querySelectorAll('[data-ons]').forEach(el => {
+    const key = el.dataset.ons;
+    if (data[key] !== undefined) {
+      const monthlyAmount = weeklyToMonthly(data[key]);
+      el.querySelector('span').textContent = '£' + monthlyAmount;
+    }
+  });
+}
+
+function calculateTotals() {
+  // Income
+  const salary1 = parseFloat(document.getElementById('salary1').value) || 0;
+  const salary2 = parseFloat(document.getElementById('salary2').value) || 0;
+  const bonuses = parseFloat(document.getElementById('bonuses').value) || 0;
+  const benefits = parseFloat(document.getElementById('benefits').value) || 0;
+  const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+  const totalIncome = salary1 + salary2 + bonuses + benefits + otherIncome;
+
+  // Housing
+  const councilTax = parseFloat(document.getElementById('councilTax').value) || 0;
+  const homeInsurance = parseFloat(document.getElementById('homeInsurance').value) || 0;
+  const lifeInsurance = parseFloat(document.getElementById('lifeInsurance').value) || 0;
+  const maintenance = parseFloat(document.getElementById('maintenance').value) || 0;
+  const cleaning = parseFloat(document.getElementById('cleaning').value) || 0;
+  const housingOther = parseFloat(document.getElementById('housingOther').value) || 0;
+  const totalHousing = councilTax + homeInsurance + lifeInsurance + maintenance + cleaning + housingOther;
+
+  // Utilities
+  const electricity = parseFloat(document.getElementById('electricity').value) || 0;
+  const gas = parseFloat(document.getElementById('gas').value) || 0;
+  const water = parseFloat(document.getElementById('water').value) || 0;
+  const phoneBroadband = parseFloat(document.getElementById('phoneBroadband').value) || 0;
+  const mobile = parseFloat(document.getElementById('mobile').value) || 0;
+  const tvSubscriptions = parseFloat(document.getElementById('tvSubscriptions').value) || 0;
+  const totalUtilities = electricity + gas + water + phoneBroadband + mobile + tvSubscriptions;
+
+  // Commitments
+  const loans = parseFloat(document.getElementById('loans').value) || 0;
+  const creditCards = parseFloat(document.getElementById('creditCards').value) || 0;
+  const carFinance = parseFloat(document.getElementById('carFinance').value) || 0;
+  const furniture = parseFloat(document.getElementById('furniture').value) || 0;
+  const childMaintenance = parseFloat(document.getElementById('childMaintenance').value) || 0;
+  const commitmentsOther = parseFloat(document.getElementById('commitmentsOther').value) || 0;
+  const totalCommitments = loans + creditCards + carFinance + furniture + childMaintenance + commitmentsOther;
+
+  // Family
+  const foodShopping = parseFloat(document.getElementById('foodShopping').value) || 0;
+  const clothes = parseFloat(document.getElementById('clothes').value) || 0;
+  const health = parseFloat(document.getElementById('health').value) || 0;
+  const beauty = parseFloat(document.getElementById('beauty').value) || 0;
+  const petInsurance = parseFloat(document.getElementById('petInsurance').value) || 0;
+  const petCare = parseFloat(document.getElementById('petCare').value) || 0;
+  const gifts = parseFloat(document.getElementById('gifts').value) || 0;
+  const childcare = parseFloat(document.getElementById('childcare').value) || 0;
+  const schoolFees = parseFloat(document.getElementById('schoolFees').value) || 0;
+  const kidsClubs = parseFloat(document.getElementById('kidsClubs').value) || 0;
+  const pocketMoney = parseFloat(document.getElementById('pocketMoney').value) || 0;
+  const familyOther = parseFloat(document.getElementById('familyOther').value) || 0;
+  const totalFamily = foodShopping + clothes + health + beauty + petInsurance + petCare + gifts + childcare + schoolFees + kidsClubs + pocketMoney + familyOther;
+
+  // Misc
+  const savings = parseFloat(document.getElementById('savings').value) || 0;
+  const pension = parseFloat(document.getElementById('pension').value) || 0;
+  const holidays = parseFloat(document.getElementById('holidays').value) || 0;
+  const charity = parseFloat(document.getElementById('charity').value) || 0;
+  const entertainment = parseFloat(document.getElementById('entertainment').value) || 0;
+  const gymSports = parseFloat(document.getElementById('gymSports').value) || 0;
+  const eatingOut = parseFloat(document.getElementById('eatingOut').value) || 0;
+  const alcohol = parseFloat(document.getElementById('alcohol').value) || 0;
+  const motorInsurance = parseFloat(document.getElementById('motorInsurance').value) || 0;
+  const taxServicing = parseFloat(document.getElementById('taxServicing').value) || 0;
+  const fuel = parseFloat(document.getElementById('fuel').value) || 0;
+  const parking = parseFloat(document.getElementById('parking').value) || 0;
+  const publicTransport = parseFloat(document.getElementById('publicTransport').value) || 0;
+  const totalMisc = savings + pension + holidays + charity + entertainment + gymSports + eatingOut + alcohol + motorInsurance + taxServicing + fuel + parking + publicTransport;
+
+  const totalOutgoings = totalHousing + totalUtilities + totalCommitments + totalFamily + totalMisc;
+  const surplus = totalIncome - totalOutgoings;
+
+  // Update displays
+  document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+  document.getElementById('totalHousing').textContent = formatCurrency(totalHousing);
+  document.getElementById('totalUtilities').textContent = formatCurrency(totalUtilities);
+  document.getElementById('totalCommitments').textContent = formatCurrency(totalCommitments);
+  document.getElementById('totalFamily').textContent = formatCurrency(totalFamily);
+  document.getElementById('totalMisc').textContent = formatCurrency(totalMisc);
+
+  // Summary
+  document.getElementById('summaryHousing').textContent = formatCurrency(totalHousing);
+  document.getElementById('summaryUtilities').textContent = formatCurrency(totalUtilities);
+  document.getElementById('summaryCommitments').textContent = formatCurrency(totalCommitments);
+  document.getElementById('summaryFamily').textContent = formatCurrency(totalFamily);
+  document.getElementById('summaryMisc').textContent = formatCurrency(totalMisc);
+  document.getElementById('summaryIncome').textContent = formatCurrency(totalIncome);
+  document.getElementById('summaryOutgoings').textContent = formatCurrency(totalOutgoings);
+  document.getElementById('summaryOutgoings2').textContent = formatCurrency(totalOutgoings);
+
+  const surplusEl = document.getElementById('surplusIncome');
+  const surplusCard = document.getElementById('surplusCard');
+  surplusEl.textContent = formatCurrency(surplus);
+  if (surplus >= 0) {
+    surplusCard.classList.remove('results-card--negative');
+    surplusCard.classList.add('results-card--positive');
+  } else {
+    surplusCard.classList.remove('results-card--positive');
+    surplusCard.classList.add('results-card--negative');
+  }
+
+  document.getElementById('mortgageBudget').textContent = formatCurrency(Math.max(0, surplus));
+}
+
+function formatCurrency(amount) {
+  return '£' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function changeStep(direction) {
+  const newStep = currentStep + direction;
+  if (newStep < 1 || newStep > totalSteps) return;
+
+  // Hide current panel
+  document.querySelector(`.wizard-panel[data-panel="${currentStep}"]`).classList.remove('active');
+  document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+
+  // Show new panel
+  currentStep = newStep;
+  document.querySelector(`.wizard-panel[data-panel="${currentStep}"]`).classList.add('active');
+  document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('completed');
+  document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+
+  // Mark previous steps as completed
+  for (let i = 1; i < currentStep; i++) {
+    document.querySelector(`.wizard-step[data-step="${i}"]`).classList.add('completed');
+    document.querySelector(`.wizard-step[data-step="${i}"]`).classList.remove('active');
+  }
+
+  // Update progress bar
+  const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+  document.getElementById('progressFill').style.width = progress + '%';
+
+  // Update navigation buttons
+  document.getElementById('prevBtn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+
+  if (currentStep === totalSteps) {
+    document.getElementById('nextBtn').style.display = 'none';
+    calculateTotals();
+  } else {
+    document.getElementById('nextBtn').style.display = 'inline-flex';
+  }
+
+  // Scroll to top of wizard
+  document.querySelector('.wizard-progress').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function printResults() {
+  const region = document.getElementById('region');
+  const regionName = region.options[region.selectedIndex].text;
+
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Budget Planner Results - B Mortgage Services</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
+        h1 { color: #F05B28; margin-bottom: 5px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .section { margin-bottom: 25px; }
+        .section h2 { font-size: 16px; color: #2D2D2D; border-bottom: 2px solid #F05B28; padding-bottom: 5px; margin-bottom: 10px; }
+        .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+        .row:last-child { border-bottom: none; }
+        .total-row { font-weight: bold; background: #f5f5f5; padding: 10px; margin-top: 10px; display: flex; justify-content: space-between; }
+        .summary-box { background: #F05B28; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+        .summary-box h3 { margin: 0 0 10px 0; font-size: 14px; opacity: 0.9; }
+        .summary-box .amount { font-size: 32px; font-weight: bold; }
+        .footer { margin-top: 30px; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 15px; }
+        .page-break { page-break-before: always; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .detail-section { break-inside: avoid; }
+        .detail-section h3 { font-size: 14px; color: #F05B28; margin-bottom: 8px; border-bottom: 1px solid #F05B28; padding-bottom: 4px; }
+        .detail-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; }
+        .detail-total { font-weight: bold; margin-top: 5px; padding-top: 5px; border-top: 1px solid #ddd; }
+        @media print { body { padding: 20px; } .page-break { page-break-before: always; } }
+      </style>
+    </head>
+    <body>
+      <h1>Household Budget Summary</h1>
+      <p class="subtitle">B Mortgage Services | Region: ${regionName}</p>
+
+      <div class="section">
+        <h2>Monthly Income</h2>
+        <div class="row"><span>Salary - Applicant 1</span><span>£${(parseFloat(document.getElementById('salary1').value) || 0).toFixed(2)}</span></div>
+        <div class="row"><span>Salary - Applicant 2</span><span>£${(parseFloat(document.getElementById('salary2').value) || 0).toFixed(2)}</span></div>
+        <div class="row"><span>Bonuses / Commission</span><span>£${(parseFloat(document.getElementById('bonuses').value) || 0).toFixed(2)}</span></div>
+        <div class="row"><span>Benefits</span><span>£${(parseFloat(document.getElementById('benefits').value) || 0).toFixed(2)}</span></div>
+        <div class="row"><span>Other Income</span><span>£${(parseFloat(document.getElementById('otherIncome').value) || 0).toFixed(2)}</span></div>
+        <div class="total-row"><span>Total Income</span><span>${document.getElementById('totalIncome').textContent}</span></div>
+      </div>
+
+      <div class="section">
+        <h2>Monthly Outgoings Summary</h2>
+        <div class="row"><span>Housing Costs</span><span>${document.getElementById('summaryHousing').textContent}</span></div>
+        <div class="row"><span>Utilities</span><span>${document.getElementById('summaryUtilities').textContent}</span></div>
+        <div class="row"><span>Financial Commitments</span><span>${document.getElementById('summaryCommitments').textContent}</span></div>
+        <div class="row"><span>Family & Living</span><span>${document.getElementById('summaryFamily').textContent}</span></div>
+        <div class="row"><span>Lifestyle & Transport</span><span>${document.getElementById('summaryMisc').textContent}</span></div>
+        <div class="total-row"><span>Total Outgoings</span><span>${document.getElementById('summaryOutgoings').textContent}</span></div>
+      </div>
+
+      <div class="summary-box">
+        <h3>Your Available Mortgage Budget</h3>
+        <div class="amount">${document.getElementById('mortgageBudget').textContent} per month</div>
+      </div>
+
+      <!-- Page 2: Detailed Breakdown -->
+      <div class="page-break"></div>
+      <h1>Detailed Expenditure Breakdown</h1>
+      <p class="subtitle">B Mortgage Services | Region: ${regionName}</p>
+
+      <div class="detail-grid">
+        <div class="detail-section">
+          <h3>Housing Costs</h3>
+          <div class="detail-row"><span>Council Tax</span><span>£${(parseFloat(document.getElementById('councilTax').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Home Insurance</span><span>£${(parseFloat(document.getElementById('homeInsurance').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Life & Critical Illness Cover</span><span>£${(parseFloat(document.getElementById('lifeInsurance').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Decorating & Maintenance</span><span>£${(parseFloat(document.getElementById('maintenance').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Cleaning Products</span><span>£${(parseFloat(document.getElementById('cleaning').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Other Housing Costs</span><span>£${(parseFloat(document.getElementById('housingOther').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row detail-total"><span>Total Housing</span><span>${document.getElementById('summaryHousing').textContent}</span></div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Utilities</h3>
+          <div class="detail-row"><span>Electricity</span><span>£${(parseFloat(document.getElementById('electricity').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Gas / Heating</span><span>£${(parseFloat(document.getElementById('gas').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Water</span><span>£${(parseFloat(document.getElementById('water').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Phone & Broadband</span><span>£${(parseFloat(document.getElementById('phoneBroadband').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Mobile Phones</span><span>£${(parseFloat(document.getElementById('mobile').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>TV, Streaming & Subscriptions</span><span>£${(parseFloat(document.getElementById('tvSubscriptions').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row detail-total"><span>Total Utilities</span><span>${document.getElementById('summaryUtilities').textContent}</span></div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Financial Commitments</h3>
+          <div class="detail-row"><span>Personal Loans</span><span>£${(parseFloat(document.getElementById('loans').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Credit Card Payments</span><span>£${(parseFloat(document.getElementById('creditCards').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Car HP / Leases</span><span>£${(parseFloat(document.getElementById('carFinance').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Furniture / Appliances Finance</span><span>£${(parseFloat(document.getElementById('furniture').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Child Maintenance</span><span>£${(parseFloat(document.getElementById('childMaintenance').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Other Commitments</span><span>£${(parseFloat(document.getElementById('commitmentsOther').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row detail-total"><span>Total Commitments</span><span>${document.getElementById('summaryCommitments').textContent}</span></div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Family & Living</h3>
+          <div class="detail-row"><span>Food Shopping</span><span>£${(parseFloat(document.getElementById('foodShopping').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Clothes</span><span>£${(parseFloat(document.getElementById('clothes').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Health (Dentist, Opticians)</span><span>£${(parseFloat(document.getElementById('health').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Personal Care & Beauty</span><span>£${(parseFloat(document.getElementById('beauty').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Pet Insurance</span><span>£${(parseFloat(document.getElementById('petInsurance').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Pet Care & Food</span><span>£${(parseFloat(document.getElementById('petCare').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Gifts (Birthdays, Christmas)</span><span>£${(parseFloat(document.getElementById('gifts').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Childcare</span><span>£${(parseFloat(document.getElementById('childcare').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>School Fees / Education</span><span>£${(parseFloat(document.getElementById('schoolFees').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Kids Clubs & Hobbies</span><span>£${(parseFloat(document.getElementById('kidsClubs').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Pocket Money</span><span>£${(parseFloat(document.getElementById('pocketMoney').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row"><span>Other Family Expenses</span><span>£${(parseFloat(document.getElementById('familyOther').value) || 0).toFixed(2)}</span></div>
+          <div class="detail-row detail-total"><span>Total Family & Living</span><span>${document.getElementById('summaryFamily').textContent}</span></div>
+        </div>
+      </div>
+
+      <div class="detail-section" style="margin-top: 20px;">
+        <h3>Lifestyle & Transport</h3>
+        <div class="detail-grid">
+          <div>
+            <div class="detail-row"><span>Savings</span><span>£${(parseFloat(document.getElementById('savings').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Pension (Voluntary)</span><span>£${(parseFloat(document.getElementById('pension').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Holidays</span><span>£${(parseFloat(document.getElementById('holidays').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Charity / Donations</span><span>£${(parseFloat(document.getElementById('charity').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Entertainment</span><span>£${(parseFloat(document.getElementById('entertainment').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Gym & Sports</span><span>£${(parseFloat(document.getElementById('gymSports').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Eating Out & Takeaways</span><span>£${(parseFloat(document.getElementById('eatingOut').value) || 0).toFixed(2)}</span></div>
+          </div>
+          <div>
+            <div class="detail-row"><span>Alcohol & Tobacco</span><span>£${(parseFloat(document.getElementById('alcohol').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Motor Insurance</span><span>£${(parseFloat(document.getElementById('motorInsurance').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Car Tax & Servicing</span><span>£${(parseFloat(document.getElementById('taxServicing').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Fuel</span><span>£${(parseFloat(document.getElementById('fuel').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Parking</span><span>£${(parseFloat(document.getElementById('parking').value) || 0).toFixed(2)}</span></div>
+            <div class="detail-row"><span>Public Transport</span><span>£${(parseFloat(document.getElementById('publicTransport').value) || 0).toFixed(2)}</span></div>
+          </div>
+        </div>
+        <div class="detail-row detail-total" style="margin-top: 10px;"><span>Total Lifestyle & Transport</span><span>${document.getElementById('summaryMisc').textContent}</span></div>
+      </div>
+
+      <div class="footer">
+        <p><strong>Disclaimer:</strong> This budget planner provides an estimate based on the figures entered. Actual mortgage affordability will be assessed by lenders based on their criteria.</p>
+        <p>B Mortgage Services | www.bmortgageservices.co.uk | 01452 925209</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+function downloadExcel() {
+  const region = document.getElementById('region');
+  const regionName = region.options[region.selectedIndex].text;
+
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+
+  // Income data
+  const incomeData = [
+    ['INCOME', 'Monthly Amount'],
+    ['Salary - Applicant 1', parseFloat(document.getElementById('salary1').value) || 0],
+    ['Salary - Applicant 2', parseFloat(document.getElementById('salary2').value) || 0],
+    ['Bonuses / Commission', parseFloat(document.getElementById('bonuses').value) || 0],
+    ['Benefits', parseFloat(document.getElementById('benefits').value) || 0],
+    ['Other Income', parseFloat(document.getElementById('otherIncome').value) || 0],
+    ['TOTAL INCOME', { f: 'SUM(B2:B6)' }]
+  ];
+
+  // Complete expenditure data with all fields
+  const expenditureData = [
+    ['EXPENDITURE BREAKDOWN', 'Monthly Amount'],
+    [''],
+    ['HOUSING COSTS', ''],
+    ['Council Tax', parseFloat(document.getElementById('councilTax').value) || 0],
+    ['Home Insurance', parseFloat(document.getElementById('homeInsurance').value) || 0],
+    ['Life & Critical Illness Cover', parseFloat(document.getElementById('lifeInsurance').value) || 0],
+    ['Decorating & Maintenance', parseFloat(document.getElementById('maintenance').value) || 0],
+    ['Cleaning Products', parseFloat(document.getElementById('cleaning').value) || 0],
+    ['Other Housing Costs', parseFloat(document.getElementById('housingOther').value) || 0],
+    ['Subtotal - Housing', { f: 'SUM(B4:B9)' }],
+    [''],
+    ['UTILITIES', ''],
+    ['Electricity', parseFloat(document.getElementById('electricity').value) || 0],
+    ['Gas / Heating', parseFloat(document.getElementById('gas').value) || 0],
+    ['Water', parseFloat(document.getElementById('water').value) || 0],
+    ['Phone & Broadband', parseFloat(document.getElementById('phoneBroadband').value) || 0],
+    ['Mobile Phones', parseFloat(document.getElementById('mobile').value) || 0],
+    ['TV, Streaming & Subscriptions', parseFloat(document.getElementById('tvSubscriptions').value) || 0],
+    ['Subtotal - Utilities', { f: 'SUM(B13:B18)' }],
+    [''],
+    ['FINANCIAL COMMITMENTS', ''],
+    ['Personal Loans', parseFloat(document.getElementById('loans').value) || 0],
+    ['Credit Card Payments', parseFloat(document.getElementById('creditCards').value) || 0],
+    ['Car HP / Leases', parseFloat(document.getElementById('carFinance').value) || 0],
+    ['Furniture / Appliances Finance', parseFloat(document.getElementById('furniture').value) || 0],
+    ['Child Maintenance', parseFloat(document.getElementById('childMaintenance').value) || 0],
+    ['Other Commitments', parseFloat(document.getElementById('commitmentsOther').value) || 0],
+    ['Subtotal - Commitments', { f: 'SUM(B22:B27)' }],
+    [''],
+    ['FAMILY & LIVING', ''],
+    ['Food Shopping', parseFloat(document.getElementById('foodShopping').value) || 0],
+    ['Clothes', parseFloat(document.getElementById('clothes').value) || 0],
+    ['Health (Dentist, Opticians, etc.)', parseFloat(document.getElementById('health').value) || 0],
+    ['Personal Care & Beauty', parseFloat(document.getElementById('beauty').value) || 0],
+    ['Pet Insurance', parseFloat(document.getElementById('petInsurance').value) || 0],
+    ['Pet Care & Food', parseFloat(document.getElementById('petCare').value) || 0],
+    ['Gifts (Birthdays, Christmas)', parseFloat(document.getElementById('gifts').value) || 0],
+    ['Childcare', parseFloat(document.getElementById('childcare').value) || 0],
+    ['School Fees / Education', parseFloat(document.getElementById('schoolFees').value) || 0],
+    ['Kids Clubs & Hobbies', parseFloat(document.getElementById('kidsClubs').value) || 0],
+    ['Pocket Money', parseFloat(document.getElementById('pocketMoney').value) || 0],
+    ['Other Family Expenses', parseFloat(document.getElementById('familyOther').value) || 0],
+    ['Subtotal - Family & Living', { f: 'SUM(B31:B42)' }],
+    [''],
+    ['LIFESTYLE & TRANSPORT', ''],
+    ['Savings', parseFloat(document.getElementById('savings').value) || 0],
+    ['Pension (Voluntary)', parseFloat(document.getElementById('pension').value) || 0],
+    ['Holidays', parseFloat(document.getElementById('holidays').value) || 0],
+    ['Charity / Donations', parseFloat(document.getElementById('charity').value) || 0],
+    ['Entertainment', parseFloat(document.getElementById('entertainment').value) || 0],
+    ['Gym & Sports', parseFloat(document.getElementById('gymSports').value) || 0],
+    ['Eating Out & Takeaways', parseFloat(document.getElementById('eatingOut').value) || 0],
+    ['Alcohol & Tobacco', parseFloat(document.getElementById('alcohol').value) || 0],
+    ['Motor Insurance', parseFloat(document.getElementById('motorInsurance').value) || 0],
+    ['Car Tax & Servicing', parseFloat(document.getElementById('taxServicing').value) || 0],
+    ['Fuel', parseFloat(document.getElementById('fuel').value) || 0],
+    ['Parking', parseFloat(document.getElementById('parking').value) || 0],
+    ['Public Transport', parseFloat(document.getElementById('publicTransport').value) || 0],
+    ['Subtotal - Lifestyle & Transport', { f: 'SUM(B46:B58)' }],
+    [''],
+    ['TOTAL MONTHLY EXPENDITURE', { f: 'B10+B19+B28+B43+B59' }]
+  ];
+
+  // Summary data
+  const summaryData = [
+    ['BUDGET SUMMARY', 'Amount'],
+    [''],
+    ['Total Monthly Income', document.getElementById('summaryIncome').textContent],
+    [''],
+    ['Housing Costs', document.getElementById('summaryHousing').textContent],
+    ['Utilities', document.getElementById('summaryUtilities').textContent],
+    ['Financial Commitments', document.getElementById('summaryCommitments').textContent],
+    ['Family & Living', document.getElementById('summaryFamily').textContent],
+    ['Lifestyle & Transport', document.getElementById('summaryMisc').textContent],
+    [''],
+    ['Total Monthly Outgoings', document.getElementById('summaryOutgoings').textContent],
+    [''],
+    ['AVAILABLE MORTGAGE BUDGET', document.getElementById('mortgageBudget').textContent],
+    [''],
+    ['Region', regionName],
+    ['Generated', new Date().toLocaleDateString('en-GB')]
+  ];
+
+  // Create worksheets
+  const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+  const ws2 = XLSX.utils.aoa_to_sheet(incomeData);
+  const ws3 = XLSX.utils.aoa_to_sheet(expenditureData);
+
+  // Set column widths
+  ws1['!cols'] = [{ wch: 30 }, { wch: 20 }];
+  ws2['!cols'] = [{ wch: 25 }, { wch: 15 }];
+  ws3['!cols'] = [{ wch: 35 }, { wch: 18 }];
+
+  // Add worksheets to workbook
+  XLSX.utils.book_append_sheet(wb, ws1, 'Budget Summary');
+  XLSX.utils.book_append_sheet(wb, ws2, 'Income');
+  XLSX.utils.book_append_sheet(wb, ws3, 'Expenditure');
+
+  // Download
+  XLSX.writeFile(wb, 'BMS_Budget_Planner.xlsx');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  updateRegionalAverages();
+  calculateTotals();
+});
+</script>
+{{ end }}

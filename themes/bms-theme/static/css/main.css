@@ -3549,3 +3549,473 @@ video.wellness-cta-overlay__media {
     padding: 20pt 0;
   }
 }
+
+/* ================================================
+   BUDGET PLANNER WIZARD
+   ================================================ */
+
+.wizard-progress {
+  margin-bottom: var(--space-3xl);
+}
+
+.wizard-progress__bar {
+  height: 4px;
+  background: var(--medium-grey);
+  border-radius: 2px;
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.wizard-progress__fill {
+  height: 100%;
+  background: var(--brand-orange);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0;
+}
+
+.wizard-progress__steps {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1;
+  text-align: center;
+}
+
+.wizard-step__number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--medium-grey);
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.wizard-step.active .wizard-step__number {
+  background: var(--brand-orange);
+  color: white;
+}
+
+.wizard-step.completed .wizard-step__number {
+  background: var(--brand-charcoal);
+  color: white;
+}
+
+.wizard-step__label {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  transition: color 0.3s ease;
+}
+
+.wizard-step.active .wizard-step__label {
+  color: var(--brand-orange);
+  font-weight: 600;
+}
+
+.wizard-step.completed .wizard-step__label {
+  color: var(--text-body);
+}
+
+/* Wizard Content */
+.wizard-content {
+  min-height: 400px;
+}
+
+.wizard-panel {
+  display: none;
+}
+
+.wizard-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.wizard-panel__header {
+  margin-bottom: var(--space-2xl);
+}
+
+.wizard-panel__header h2 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-sm);
+  color: var(--brand-charcoal);
+}
+
+.wizard-panel__header p {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+/* Budget Form */
+.budget-form {
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.budget-row {
+  display: grid;
+  grid-template-columns: 1fr 140px 100px;
+  gap: var(--space-md);
+  align-items: center;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--medium-grey);
+}
+
+.budget-row:last-child {
+  border-bottom: none;
+}
+
+.budget-row label {
+  font-size: 0.95rem;
+  color: var(--text-body);
+}
+
+.budget-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.budget-input__prefix {
+  position: absolute;
+  left: 12px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.budget-input input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 28px;
+  border: 1.5px solid var(--medium-grey);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-family: inherit;
+  text-align: right;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.budget-input input:focus {
+  outline: none;
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px rgba(240, 91, 40, 0.1);
+}
+
+.budget-input input::placeholder {
+  color: #ccc;
+}
+
+.budget-ons {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-align: right;
+  background: white;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.budget-ons span {
+  font-weight: 600;
+  color: var(--brand-charcoal);
+}
+
+/* Budget Total */
+.budget-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg);
+  background: var(--brand-charcoal);
+  color: white;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.budget-total--income {
+  background: linear-gradient(135deg, #38a169, #48bb78);
+}
+
+.budget-total__value {
+  font-size: 1.5rem;
+}
+
+/* Wizard Navigation */
+.wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--medium-grey);
+}
+
+/* Info Box */
+.info-box {
+  display: flex;
+  gap: var(--space-md);
+  background: #EBF8FF;
+  border: 1px solid #90CDF4;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.info-box__icon {
+  flex-shrink: 0;
+  color: #3182CE;
+}
+
+.info-box strong {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: #2B6CB0;
+}
+
+.info-box p {
+  font-size: 0.9rem;
+  color: #4A5568;
+  margin: 0;
+}
+
+/* Form Select Large */
+.form-select--large {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 1rem;
+  border: 2px solid var(--medium-grey);
+  border-radius: var(--radius-md);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.form-select--large:focus {
+  outline: none;
+  border-color: var(--brand-orange);
+}
+
+.form-help {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin-top: var(--space-sm);
+}
+
+/* Results Section */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+}
+
+.results-breakdown {
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+}
+
+.results-breakdown h3 {
+  font-size: 1rem;
+  margin-bottom: var(--space-lg);
+  color: var(--brand-charcoal);
+}
+
+.results-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--medium-grey);
+}
+
+.results-row:last-child {
+  border-bottom: none;
+}
+
+.results-row--total {
+  border-top: 2px solid var(--brand-charcoal);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+}
+
+.results-value {
+  font-weight: 600;
+  color: var(--brand-charcoal);
+}
+
+.results-value--outgoings {
+  color: var(--brand-orange);
+}
+
+/* Results Cards */
+.results-card {
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.results-card__label {
+  font-size: 0.95rem;
+  color: var(--text-body);
+}
+
+.results-card__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.results-card--income {
+  border-left: 4px solid #38a169;
+}
+
+.results-card--income .results-card__value {
+  color: #38a169;
+}
+
+.results-card--outgoings {
+  border-left: 4px solid var(--brand-orange);
+}
+
+.results-card--outgoings .results-card__value {
+  color: var(--brand-orange);
+}
+
+.results-card--surplus {
+  border-left: 4px solid var(--brand-charcoal);
+}
+
+.results-card--positive .results-card__value {
+  color: #38a169;
+}
+
+.results-card--negative .results-card__value {
+  color: #e53e3e;
+}
+
+/* Results Mortgage */
+.results-mortgage {
+  background: linear-gradient(135deg, var(--brand-orange), #ff7043);
+  color: white;
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  text-align: center;
+  margin-top: var(--space-lg);
+}
+
+.results-mortgage h3 {
+  font-size: 1rem;
+  margin-bottom: var(--space-sm);
+  opacity: 0.9;
+}
+
+.results-mortgage__amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.results-mortgage__period {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Results Actions */
+.results-actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--medium-grey);
+}
+
+/* Results Disclaimer */
+.results-disclaimer {
+  margin-top: var(--space-2xl);
+  padding: var(--space-lg);
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.results-disclaimer strong {
+  color: var(--text-body);
+}
+
+.results-disclaimer__source {
+  margin-top: var(--space-sm);
+  font-size: 0.8rem;
+}
+
+/* Responsive Wizard */
+@media (max-width: 768px) {
+  .wizard-progress__steps {
+    display: none;
+  }
+
+  .budget-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .budget-row label {
+    font-weight: 500;
+  }
+
+  .budget-input,
+  .budget-ons {
+    max-width: 100%;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-actions {
+    flex-direction: column;
+  }
+
+  .results-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wizard-nav {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .wizard-nav .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media print {
+  .wizard-progress,
+  .wizard-nav,
+  .results-actions {
+    display: none !important;
+  }
+}
