@@ -295,7 +295,7 @@ async function submitWellnessCheck(formData) {
   try {
     showLoadingState();
 
-    var response = await fetch('/.netlify/functions/wellness-calculate', {
+    var response = await fetch('/api/wellness-calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
@@ -923,7 +923,7 @@ function downloadPDF(reportId) {
     downloadBtn.textContent = 'Generating PDF...';
   }
 
-  var pdfUrl = '/.netlify/functions/wellness-pdf?reportId=' + reportId;
+  var pdfUrl = '/api/wellness-pdf?reportId=' + reportId;
 
   fetch(pdfUrl)
     .then(function(response) {
