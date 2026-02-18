@@ -1,0 +1,29 @@
+[build]
+  command = "hugo --gc --minify"
+  publish = "public"
+  functions = "netlify/functions"
+
+[build.environment]
+  HUGO_VERSION = "0.154.4"
+  NODE_VERSION = "24.12.0"
+
+# Redirect API requests to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Redirect wellness report URLs to the report page
+[[redirects]]
+  from = "/wellness/report/:id"
+  to = "/wellness/report.html"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+
+# Function-specific configuration for PDF generation
+[functions."wellness-pdf"]
+  timeout = 30
+  memory = 1024
+  included_files = ["templates/pdf/**"]

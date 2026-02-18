@@ -141,11 +141,34 @@
         <div class="step-dot" data-step="2"></div>
         <div class="step-dot" data-step="3"></div>
         <div class="step-dot" data-step="4"></div>
+        <div class="step-dot" data-step="5"></div>
       </div>
       
       <!-- Step 1 -->
       <div class="wellness-step" id="step-1">
         <h3 style="margin-bottom: 1.5rem;">Income &amp; Employment</h3>
+
+        <!-- New: Age -->
+        <div class="form-group">
+          <label>Your age</label>
+          <input type="number" id="user-age" min="18" max="70" placeholder="e.g. 35" style="padding: 0.75rem; border: 1px solid var(--medium-grey); border-radius: var(--radius-md); width: 100%; font-size: 1rem;">
+        </div>
+
+        <!-- New: Smoker status -->
+        <div class="form-group">
+          <label>Are you a smoker?</label>
+          <div style="display: flex; gap: 1rem;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="smoker-status" id="smoker-yes" value="yes" style="margin-right: 0.5rem;">
+              Yes
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="smoker-status" id="smoker-no" value="no" checked style="margin-right: 0.5rem;">
+              No
+            </label>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>What is your employment status?</label>
           <select id="employment-status">
@@ -158,10 +181,35 @@
             <option value="irregular">Irregular/variable income</option>
           </select>
         </div>
+
+        <!-- New: Monthly take-home income -->
         <div class="form-group">
-          <label>What is your annual gross income? (£)</label>
-          <input type="number" id="annual-income" placeholder="45,000">
+          <label>Your monthly take-home income (after tax) (£)</label>
+          <input type="number" id="monthly-income" placeholder="e.g. 2,500" style="padding: 0.75rem; border: 1px solid var(--medium-grey); border-radius: var(--radius-md); width: 100%; font-size: 1rem;">
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">The amount that actually hits your bank account each month</p>
         </div>
+
+        <!-- New: Partner question -->
+        <div class="form-group">
+          <label>Do you have a partner in a joint application?</label>
+          <div style="display: flex; gap: 1rem;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="has-partner" id="partner-yes" value="yes" style="margin-right: 0.5rem;" onchange="togglePartnerIncome()">
+              Yes
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="has-partner" id="partner-no" value="no" checked style="margin-right: 0.5rem;" onchange="togglePartnerIncome()">
+              No
+            </label>
+          </div>
+        </div>
+
+        <!-- Conditional: Partner income -->
+        <div class="form-group" id="partner-income-group" style="display: none;">
+          <label>Partner's monthly take-home income (£)</label>
+          <input type="number" id="partner-income" placeholder="e.g. 2,000" style="padding: 0.75rem; border: 1px solid var(--medium-grey); border-radius: var(--radius-md); width: 100%; font-size: 1rem;">
+        </div>
+
         <div class="form-group">
           <label>How would you describe your credit history?</label>
           <select id="credit-history">
@@ -195,6 +243,36 @@
       <!-- Step 3 -->
       <div class="wellness-step" id="step-3" style="display: none;">
         <h3 style="margin-bottom: 1.5rem;">Budget &amp; Savings</h3>
+
+        <!-- New: Total accessible savings -->
+        <div class="form-group">
+          <label>Total accessible savings (£)</label>
+          <input type="number" id="accessible-savings" placeholder="e.g. 5,000" style="padding: 0.75rem; border: 1px solid var(--medium-grey); border-radius: var(--radius-md); width: 100%; font-size: 1rem;">
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Money you could get to within a week — current accounts, easy-access savings, ISAs</p>
+        </div>
+
+        <!-- New: Essential monthly outgoings -->
+        <div class="form-group">
+          <label>Your essential monthly outgoings (£)</label>
+          <input type="number" id="monthly-essentials" placeholder="e.g. 2,000" style="padding: 0.75rem; border: 1px solid var(--medium-grey); border-radius: var(--radius-md); width: 100%; font-size: 1rem;">
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Mortgage/rent, bills, food, transport — the basics to keep going</p>
+        </div>
+
+        <!-- New: Are you saving each month? -->
+        <div class="form-group">
+          <label>Are you saving money each month?</label>
+          <div style="display: flex; gap: 1rem;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="saving-monthly" id="saving-yes" value="yes" style="margin-right: 0.5rem;">
+              Yes
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="saving-monthly" id="saving-no" value="no" style="margin-right: 0.5rem;">
+              No
+            </label>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>After all expenses, do you typically have money left over each month?</label>
           <select id="monthly-surplus">
@@ -205,16 +283,7 @@
             <option value="reliant">Reliant on credit</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>How many months of essential expenses could you cover with savings?</label>
-          <select id="emergency-fund">
-            <option value="">Select...</option>
-            <option value="6plus">6+ months</option>
-            <option value="3-6">3-6 months</option>
-            <option value="1-3">1-3 months</option>
-            <option value="under1">Less than 1 month</option>
-          </select>
-        </div>
+
         <div style="display: flex; gap: 1rem; margin-top: 1rem;">
           <button class="btn btn--secondary" style="flex: 1;" onclick="nextStep(2)">Back</button>
           <button class="btn btn--primary" style="flex: 1;" onclick="nextStep(4)">Continue →</button>
@@ -224,6 +293,59 @@
       <!-- Step 4 -->
       <div class="wellness-step" id="step-4" style="display: none;">
         <h3 style="margin-bottom: 1.5rem;">Protection</h3>
+
+        <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-secondary);">Employer Benefits</h4>
+
+        <!-- New: Employer sick pay -->
+        <div class="form-group">
+          <label>Does your employer pay sick pay above the statutory minimum?</label>
+          <select id="employer-sick-pay" onchange="toggleSickPayDuration()">
+            <option value="">Select...</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+            <option value="not-sure">Not sure</option>
+          </select>
+        </div>
+
+        <!-- Conditional: Sick pay duration -->
+        <div class="form-group" id="sick-pay-duration-group" style="display: none;">
+          <label>If yes: Full pay for how long?</label>
+          <select id="sick-pay-duration">
+            <option value="">Select...</option>
+            <option value="1">1 month</option>
+            <option value="2">2 months</option>
+            <option value="3">3 months</option>
+            <option value="6">6+ months</option>
+            <option value="dont-know">Don't know</option>
+          </select>
+        </div>
+
+        <!-- New: Death in Service -->
+        <div class="form-group">
+          <label>Does your employer provide Death in Service benefit?</label>
+          <select id="employer-death-in-service" onchange="toggleDeathInServiceMultiple()">
+            <option value="">Select...</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+            <option value="not-sure">Not sure</option>
+          </select>
+        </div>
+
+        <!-- Conditional: Death in Service multiple -->
+        <div class="form-group" id="death-in-service-multiple-group" style="display: none;">
+          <label>Multiple of salary</label>
+          <select id="death-in-service-multiple">
+            <option value="">Select...</option>
+            <option value="1">1x annual salary</option>
+            <option value="2">2x annual salary</option>
+            <option value="3">3x annual salary</option>
+            <option value="4">4x annual salary</option>
+            <option value="other">Other/Don't know</option>
+          </select>
+        </div>
+
+        <h4 style="font-size: 1rem; margin: 1.5rem 0 1rem; color: var(--text-secondary);">Personal Protection</h4>
+
         <div class="form-group">
           <label>Do you have life insurance?</label>
           <select id="life-insurance">
@@ -235,13 +357,48 @@
         </div>
         <div class="form-group">
           <label>Do you have income protection insurance?</label>
-          <select id="income-protection">
+          <select id="income-protection" onchange="toggleIPDetails()">
             <option value="">Select...</option>
             <option value="full">Yes</option>
             <option value="partial">Partial/through employer only</option>
             <option value="none">No</option>
           </select>
         </div>
+
+        <!-- Conditional: IP Details -->
+        <div id="ip-details-group" style="display: none; background: #F8FAFC; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; font-weight: 600;">Income Protection Details</p>
+
+          <div class="form-group">
+            <label>Monthly benefit amount (£)</label>
+            <input type="number" id="ip-monthly-benefit" placeholder="e.g. 2000" min="0" step="100">
+          </div>
+
+          <div class="form-group">
+            <label>Deferred period (how long before benefit starts?)</label>
+            <select id="ip-deferred-period">
+              <option value="">Select...</option>
+              <option value="1">1 month</option>
+              <option value="2">2 months</option>
+              <option value="3">3 months</option>
+              <option value="6">6 months</option>
+              <option value="12">12 months</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Benefit period (how long does it pay?)</label>
+            <select id="ip-benefit-period">
+              <option value="">Select...</option>
+              <option value="1">1 year</option>
+              <option value="2">2 years</option>
+              <option value="5">5 years</option>
+              <option value="retirement">Until retirement (age 65)</option>
+              <option value="lifetime">Lifetime</option>
+            </select>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>Do you have critical illness cover?</label>
           <select id="critical-illness">
@@ -251,16 +408,70 @@
             <option value="none">No</option>
           </select>
         </div>
+
+        <!-- Optional Email Capture -->
+        <div class="form-group" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--medium-grey);">
+          <label>Email (Optional) - Receive your report and occasional mortgage tips</label>
+          <input type="email" id="user-email" placeholder="your.email@example.com" style="padding: 0.75rem; border: 1px solid var(--medium-grey); border-radius: var(--radius-md); width: 100%; font-size: 1rem;">
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">
+            We respect your privacy. By providing your email, you consent to receive your wellness report and occasional helpful mortgage information. You can unsubscribe anytime. See our <a href="/privacy/" style="color: var(--brand-orange);">privacy policy</a>.
+          </p>
+        </div>
+
         <div style="display: flex; gap: 1rem; margin-top: 1rem;">
           <button class="btn btn--secondary" style="flex: 1;" onclick="nextStep(3)">Back</button>
+          <button class="btn btn--primary" style="flex: 1;" onclick="nextStep(5)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Perception Check -->
+      <div class="wellness-step" id="step-5" style="display: none;">
+        <h3 style="margin-bottom: 1.5rem;">One Last Thing...</h3>
+        <p style="margin-bottom: 2rem; color: var(--text-secondary);">Before we crunch the numbers, we'd like to know what you <em>think</em>.</p>
+
+        <div class="form-group">
+          <label>If you or your partner couldn't work from tomorrow, how many months do you think your savings could cover your mortgage/rent and essential bills?</label>
+          <div style="margin: 1.5rem 0;">
+            <input type="range" id="perception-months" min="0" max="24" value="3" step="1" style="width: 100%;" oninput="updatePerceptionValue(this.value)">
+            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+              <span>0 months</span>
+              <span id="perception-value" style="font-weight: 600; color: var(--brand-orange);">3 months</span>
+              <span>24 months</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--cream); padding: 1.5rem; border-radius: var(--radius-lg); margin-top: 2rem;">
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+            💡 <strong>Why we ask:</strong> This helps us show you how your perception compares to reality — many people are surprised by the gap.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <button class="btn btn--secondary" style="flex: 1;" onclick="nextStep(4)">Back</button>
           <button class="btn btn--primary" style="flex: 1;" onclick="calculateScore()">Get My Score ✓</button>
         </div>
       </div>
-      
+
       <!-- Results -->
       <div class="wellness-step" id="results" style="display: none;">
+
+        <!-- NEW: Financial Runway Callout (Hero Metric) -->
+        <div id="runway-callout" style="background: linear-gradient(135deg, var(--brand-orange) 0%, #D94A1F 100%); color: white; padding: 2rem; border-radius: var(--radius-lg); margin-bottom: 2rem; text-align: center;">
+          <p style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem;">Your Financial Runway</p>
+          <div style="margin: 1.5rem 0;">
+            <span id="runway-days" style="font-family: var(--font-display); font-size: 4rem; font-weight: 700; line-height: 1;">0</span>
+            <span style="font-size: 1.25rem; opacity: 0.9;"> days</span>
+          </div>
+          <p id="runway-message" style="font-size: 1.1rem; margin-bottom: 1rem; opacity: 0.95;">If your income stopped tomorrow, your savings would cover essential expenses for approximately X days.</p>
+          <div id="runway-comparison" style="display: flex; justify-content: center; gap: 2rem; font-size: 0.875rem; opacity: 0.9; flex-wrap: wrap;">
+            <span>UK average: <strong>19 days</strong></span>
+            <span>Target: <strong>90 days</strong></span>
+          </div>
+        </div>
+
         <div style="text-align: center; padding: 2rem 0;">
-          <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange); margin-bottom: 1rem;">Your Financial Wellness Score</p>
+          <p style="font-size: 0.875rem; font-weight: 600; color: var(--brand-orange); margin-bottom: 1rem;">Your Mortgage Readiness Score</p>
           <div style="position: relative; width: 200px; height: 120px; margin: 0 auto;">
             <svg viewBox="0 0 200 120" style="width: 100%; height: 100%;">
               <defs>
@@ -293,7 +504,87 @@
             <ul id="improve-list" style="list-style: none; font-size: 0.9rem;"></ul>
           </div>
         </div>
-        
+
+        <!-- Visualizations -->
+        <div style="margin: 2rem 0;">
+          <h3 style="text-align: center; margin-bottom: 1.5rem;">Detailed Breakdown</h3>
+          <div class="wellness-charts-grid">
+            <div class="wellness-chart-card">
+              <h4 style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary);">Four Pillar Analysis</h4>
+              <canvas id="radar-chart" style="max-height: 300px;"></canvas>
+            </div>
+            <div class="wellness-chart-card">
+              <h4 style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary);">Category Scores</h4>
+              <canvas id="bar-chart" style="max-height: 300px;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Perception Gap -->
+        <div id="perception-gap-section" style="background: var(--cream); padding: 2rem; border-radius: var(--radius-lg); margin: 2rem 0;">
+          <h3 style="text-align: center; margin-bottom: 1.5rem;">Reality Check</h3>
+          <div style="max-width: 600px; margin: 0 auto;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+              <div style="text-align: center; padding: 1.5rem; background: white; border-radius: var(--radius-md);">
+                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">You Estimated</p>
+                <p id="perception-estimated" style="font-family: var(--font-display); font-size: 2.5rem; color: var(--brand-charcoal); margin: 0;">0</p>
+                <p style="font-size: 0.875rem; color: var(--text-secondary);">days</p>
+              </div>
+              <div style="text-align: center; padding: 1.5rem; background: white; border-radius: var(--radius-md); border: 2px solid var(--brand-orange);">
+                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">The Reality</p>
+                <p id="perception-actual" style="font-family: var(--font-display); font-size: 2.5rem; color: var(--brand-orange); margin: 0;">0</p>
+                <p style="font-size: 0.875rem; color: var(--text-secondary);">days</p>
+              </div>
+            </div>
+            <p id="perception-message" style="text-align: center; font-size: 1rem; color: var(--text-secondary);"></p>
+          </div>
+        </div>
+
+        <!-- NEW: Income Waterfall Chart -->
+        <div style="background: white; padding: 2rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin: 2rem 0;">
+          <h3 style="text-align: center; margin-bottom: 1rem;">What If You Couldn't Work?</h3>
+          <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">Your income over 6 months if you were unable to work due to illness or injury</p>
+          <canvas id="waterfall-chart" style="max-height: 400px;"></canvas>
+          <div id="benefit-explanation" style="display: none; margin-top: 1.5rem; padding: 1rem 1.25rem; background: #F0F4FF; border-left: 3px solid #3B82F6; border-radius: 0 8px 8px 0;"></div>
+        </div>
+
+        <!-- NEW: Risk Probability Cards -->
+        <div style="margin: 2rem 0;">
+          <h3 style="text-align: center; margin-bottom: 1rem;">Mortgage Term Risk Statistics</h3>
+          <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">During a typical 25-year mortgage, based on your age and profile:</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div id="risk-death" style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center;">
+              <p style="font-family: var(--font-display); font-size: 2.5rem; color: var(--brand-orange); margin: 0;">0%</p>
+              <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Chance of death</p>
+            </div>
+            <div id="risk-ci" style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center;">
+              <p style="font-family: var(--font-display); font-size: 2.5rem; color: var(--brand-orange); margin: 0;">0%</p>
+              <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Chance of critical illness</p>
+            </div>
+            <div id="risk-absence" style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center;">
+              <p style="font-family: var(--font-display); font-size: 2.5rem; color: var(--brand-orange); margin: 0;">0%</p>
+              <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Chance of 2+ month absence</p>
+            </div>
+          </div>
+          <p style="text-align: center; font-size: 0.8rem; color: var(--text-secondary); margin-top: 1.5rem;">These are statistical averages and should be discussed with an adviser. Individual circumstances vary.</p>
+        </div>
+
+        <!-- Share & Download Actions -->
+        <div id="report-actions" style="text-align: center; margin: 2rem 0; padding: 1.5rem; background: var(--cream); border-radius: var(--radius-lg);">
+          <p style="font-size: 0.9rem; margin-bottom: 1rem;">Share your results or download a detailed report</p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button id="share-report-btn" class="btn btn--secondary" style="display: none;">
+              📋 Share Report Link
+            </button>
+            <button id="download-pdf-btn" class="btn btn--secondary" style="display: none;">
+              📄 Download PDF Report
+            </button>
+          </div>
+          <div id="loading-indicator" style="display: none; margin-top: 1rem;">
+            <p style="color: var(--brand-orange);">⏳ Processing...</p>
+          </div>
+        </div>
+
         <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--medium-grey);">
           <p style="margin-bottom: 1rem;">Want to discuss your results with an expert?</p>
           <a href="/contact/" class="btn btn--primary">Book a Free Consultation →</a>
@@ -335,93 +626,8 @@
 {{ end }}
 
 {{ define "scripts" }}
-<script>
-function nextStep(step) {
-  document.querySelectorAll('.wellness-step').forEach(s => s.style.display = 'none');
-  document.getElementById('step-' + step).style.display = 'block';
-  document.querySelectorAll('.step-dot').forEach((dot, i) => {
-    dot.classList.toggle('step-dot--active', i < step);
-  });
-}
-
-function calculateScore() {
-  const employment = document.getElementById('employment-status').value;
-  const credit = document.getElementById('credit-history').value;
-  const propertyValue = parseFloat(document.getElementById('property-value').value) || 0;
-  const deposit = parseFloat(document.getElementById('deposit-amount').value) || 0;
-  const surplus = document.getElementById('monthly-surplus').value;
-  const emergency = document.getElementById('emergency-fund').value;
-  const life = document.getElementById('life-insurance').value;
-  const income = document.getElementById('income-protection').value;
-  const critical = document.getElementById('critical-illness').value;
-  
-  let score = 0;
-  let strengths = [];
-  let improvements = [];
-  
-  const employmentScores = {'paye-12': 15, 'paye-under': 12, 'self-2': 12, 'self-under': 6, 'contractor': 10, 'irregular': 4};
-  score += employmentScores[employment] || 0;
-  if (employmentScores[employment] >= 12) strengths.push('Stable income');
-  else improvements.push('Employment stability');
-  
-  const creditScores = {'clean': 10, 'minor': 7, 'recent': 3, 'severe': 1};
-  score += creditScores[credit] || 0;
-  if (creditScores[credit] >= 7) strengths.push('Good credit profile');
-  else improvements.push('Credit history');
-  
-  const ltv = propertyValue > 0 ? ((propertyValue - deposit) / propertyValue) * 100 : 100;
-  if (ltv <= 75) { score += 10; strengths.push('Strong deposit'); }
-  else if (ltv <= 85) { score += 8; strengths.push('Solid deposit'); }
-  else if (ltv <= 90) { score += 6; improvements.push('Deposit size'); }
-  else { score += 3; improvements.push('Deposit size'); }
-  
-  const surplusScores = {'surplus': 20, 'breakeven': 12, 'occasional': 6, 'reliant': 0};
-  score += surplusScores[surplus] || 0;
-  if (surplusScores[surplus] >= 12) strengths.push('Good budget control');
-  else improvements.push('Monthly budget');
-  
-  const emergencyScores = {'6plus': 10, '3-6': 7, '1-3': 4, 'under1': 0};
-  score += emergencyScores[emergency] || 0;
-  if (emergencyScores[emergency] >= 7) strengths.push('Emergency savings');
-  else improvements.push('Emergency fund');
-  
-  const protectionScores = {'full': 5, 'partial': 3, 'none': 0};
-  score += protectionScores[life] || 0;
-  score += protectionScores[income] || 0;
-  score += protectionScores[critical] || 0;
-  
-  const protectionTotal = (protectionScores[life] || 0) + (protectionScores[income] || 0) + (protectionScores[critical] || 0);
-  if (protectionTotal >= 10) strengths.push('Good protection');
-  else improvements.push('Income protection');
-  
-  score = Math.min(Math.round((score / 80) * 100), 100);
-  
-  document.querySelectorAll('.wellness-step').forEach(s => s.style.display = 'none');
-  document.getElementById('results').style.display = 'block';
-  
-  const scoreEl = document.getElementById('score-value');
-  const arcEl = document.getElementById('score-arc');
-  let current = 0;
-  const interval = setInterval(() => {
-    current += 2;
-    if (current >= score) { current = score; clearInterval(interval); }
-    scoreEl.textContent = current;
-    arcEl.style.strokeDashoffset = 251 - (251 * current / 100);
-  }, 20);
-  
-  const labelEl = document.getElementById('score-label');
-  if (score >= 80) {
-    labelEl.innerHTML = '<h3 style="color: #22C55E;">Mortgage-Ready & Financially Resilient</h3><p>You appear to be in a strong position.</p>';
-  } else if (score >= 65) {
-    labelEl.innerHTML = '<h3 style="color: #84CC16;">On Track with Minor Improvements</h3><p>You\'re broadly on track.</p>';
-  } else if (score >= 50) {
-    labelEl.innerHTML = '<h3 style="color: #EAB308;">Mortgage Possible with Planning</h3><p>A mortgage may be achievable with planning.</p>';
-  } else {
-    labelEl.innerHTML = '<h3 style="color: #F97316;">Preparation Recommended</h3><p>Some focused steps could improve your position.</p>';
-  }
-  
-  document.getElementById('strengths-list').innerHTML = strengths.slice(0, 4).map(s => '<li>• ' + s + '</li>').join('');
-  document.getElementById('improve-list').innerHTML = improvements.slice(0, 4).map(s => '<li>• ' + s + '</li>').join('');
-}
-</script>
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
+<!-- Wellness Check Client -->
+<script src="/js/wellness-client.js"></script>
 {{ end }}

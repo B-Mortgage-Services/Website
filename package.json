@@ -1,0 +1,36 @@
+{
+  "name": "bms-website",
+  "version": "1.0.0",
+  "description": "B Mortgage Services website with serverless wellness check backend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "hugo --gc --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hugo",
+    "netlify",
+    "mortgage",
+    "wellness-check"
+  ],
+  "author": "B Mortgage Services",
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/functions": "^2.8.2",
+    "@sendgrid/mail": "^8.1.4",
+    "@supabase/supabase-js": "^2.50.0"
+  },
+  "optionalDependencies": {
+    "@sparticuz/chromium": "^131.0.0",
+    "canvas": "^2.11.2",
+    "chart.js": "^4.4.7",
+    "handlebars": "^4.7.8",
+    "puppeteer-core": "^23.10.4"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0",
+    "puppeteer": "^24.37.3"
+  },
+  "comment": "PDF dependencies (canvas, puppeteer, etc.) are optional for Phase 1. They will be needed for Phase 3 (PDF generation)."
+}

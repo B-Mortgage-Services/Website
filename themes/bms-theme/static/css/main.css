@@ -1135,6 +1135,272 @@ section {
 }
 
 /* ================================================
+   ENHANCED WELLNESS VISUALIZATIONS (Week 2)
+   ================================================ */
+
+/* Chart Grid - Responsive layout for radar and bar charts */
+.wellness-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.wellness-chart-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+@media (max-width: 968px) {
+  .wellness-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Runway Callout - Hero Metric */
+#runway-callout {
+  background: linear-gradient(135deg, var(--brand-orange) 0%, #D94A1F 100%);
+  border-radius: var(--radius-md);
+  padding: var(--space-2xl);
+  margin-bottom: var(--space-2xl);
+  text-align: center;
+  color: var(--white);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#runway-callout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+#runway-callout h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.95;
+}
+
+#runway-days {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: var(--space-sm);
+  line-height: 1;
+}
+
+#runway-callout p {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.95;
+  margin-bottom: var(--space-xs);
+}
+
+#runway-callout .benchmark {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Perception Gap Visual */
+#perception-gap {
+  background: var(--white);
+  border: 2px solid var(--medium-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+#perception-gap h4 {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-lg);
+  color: var(--brand-charcoal);
+  text-align: center;
+}
+
+.comparison-bars {
+  margin-bottom: var(--space-lg);
+}
+
+.estimate-bar,
+.actual-bar {
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+
+.estimate-bar {
+  background: rgba(147, 51, 234, 0.1);
+  border-left: 4px solid #9333EA;
+  color: #9333EA;
+}
+
+.actual-bar {
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 4px solid #3B82F6;
+  color: #3B82F6;
+}
+
+#gap-message {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Waterfall Chart Container */
+#waterfall-section {
+  background: var(--white);
+  border: 2px solid var(--medium-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+#waterfall-section h4 {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-sm);
+  color: var(--brand-charcoal);
+  text-align: center;
+}
+
+#waterfall-section p {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  font-size: 0.9rem;
+}
+
+#waterfall-chart-container {
+  position: relative;
+  height: 300px;
+  margin-top: var(--space-lg);
+}
+
+/* Risk Probability Cards */
+#risk-probabilities {
+  background: var(--white);
+  border: 2px solid var(--medium-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+#risk-probabilities h4 {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-sm);
+  color: var(--brand-charcoal);
+  text-align: center;
+}
+
+#risk-probabilities > p {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  font-size: 0.9rem;
+}
+
+.risk-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.risk-stat {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1px solid var(--medium-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.risk-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.risk-stat p:first-child {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--brand-orange);
+  margin-bottom: var(--space-sm);
+  line-height: 1;
+}
+
+.risk-stat p:last-child {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-disclaimer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--medium-grey);
+}
+
+/* Responsive Design for Enhanced Visualizations */
+@media (max-width: 968px) {
+  #runway-days {
+    font-size: 3rem;
+  }
+
+  #runway-callout {
+    padding: var(--space-xl);
+  }
+
+  #waterfall-chart-container {
+    height: 250px;
+  }
+
+  .risk-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-stat p:first-child {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  #runway-days {
+    font-size: 2.5rem;
+  }
+
+  #runway-callout h3 {
+    font-size: 1.125rem;
+  }
+
+  #runway-callout,
+  #perception-gap,
+  #waterfall-section,
+  #risk-probabilities {
+    padding: var(--space-lg);
+  }
+
+  #waterfall-chart-container {
+    height: 200px;
+  }
+}
+
+/* ================================================
    PROCESS STEPS
    ================================================ */
 
@@ -1817,6 +2083,7 @@ section {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
 }
 
 .form-group label {
@@ -1883,6 +2150,7 @@ section {
   box-shadow: var(--shadow-lg);
   max-width: 900px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .calculator-inputs {
@@ -1993,6 +2261,8 @@ section {
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: border-color var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-with-prefix:focus-within {
@@ -2238,6 +2508,7 @@ section {
   box-shadow: var(--shadow-lg);
   max-width: 900px;
   margin: var(--space-2xl) auto 0;
+  overflow: hidden;
 }
 
 .moving-cost__title {
@@ -2567,15 +2838,63 @@ section {
   .quote-modal__title {
     font-size: 1.25rem;
   }
+
+  .affordability-calculator,
+  .moving-cost-calculator {
+    padding: var(--space-md);
+    margin-left: calc(-1 * var(--space-sm));
+    margin-right: calc(-1 * var(--space-sm));
+    border-radius: var(--radius-lg);
+  }
+
+  .calculator-results,
+  .moving-cost__results {
+    padding: var(--space-md);
+  }
+
+  .result-tiers {
+    flex-direction: column;
+  }
+
+  .result-tier {
+    border-top: none;
+    border-left: 4px solid var(--medium-grey);
+  }
+
+  .result-tier--conservative {
+    border-left-color: var(--text-secondary);
+  }
+
+  .result-tier--standard {
+    border-left-color: var(--brand-orange);
+  }
+
+  .result-tier--maximum {
+    border-left-color: var(--brand-charcoal);
+  }
 }
 
 @media (max-width: 768px) {
+  .moving-cost-calculator {
+    padding: var(--space-lg);
+  }
+
   .moving-cost__grid {
     grid-template-columns: 1fr;
   }
 
+  .moving-cost__inputs {
+    order: 1;
+  }
+
   .moving-cost__results {
-    order: -1;
+    order: 2;
+  }
+
+  .moving-cost__inputs .input-with-prefix,
+  .moving-cost__inputs .form-input {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .moving-result__value {
@@ -2586,10 +2905,22 @@ section {
 @media (max-width: 768px) {
   .affordability-calculator {
     grid-template-columns: 1fr;
+    padding: var(--space-lg);
+  }
+
+  .calculator-inputs {
+    order: 1;
   }
 
   .calculator-results {
-    order: -1;
+    order: 2;
+  }
+
+  .input-with-prefix,
+  .form-select,
+  .form-input {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .result-tiers {

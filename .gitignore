@@ -1,1 +1,33 @@
+# Hugo build output
 public/
+resources/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+
+# Netlify
+.netlify/
+
+# Local development
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+desktop.ini
