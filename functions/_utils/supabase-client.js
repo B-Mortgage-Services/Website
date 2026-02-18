@@ -9,7 +9,6 @@
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const crypto = require('crypto');
 
 let _client = null;
 let _adminClient = null;
@@ -46,7 +45,9 @@ function getAdminClient(env) {
  * @returns {string} 8-character unique identifier
  */
 function generateReportId() {
-  return crypto.randomBytes(4).toString('hex');
+  var bytes = new Uint8Array(4);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
 }
 
 /**

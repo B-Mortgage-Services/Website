@@ -17,18 +17,9 @@
   "author": "B Mortgage Services",
   "license": "ISC",
   "dependencies": {
-    "@sendgrid/mail": "^8.1.4",
     "@supabase/supabase-js": "^2.50.0"
-  },
-  "optionalDependencies": {
-    "@sparticuz/chromium": "^131.0.0",
-    "canvas": "^2.11.2",
-    "chart.js": "^4.4.7",
-    "handlebars": "^4.7.8",
-    "puppeteer-core": "^23.10.4"
   },
   "devDependencies": {
     "wrangler": "^3.99.0"
-  },
-  "comment": "PDF dependencies (canvas, puppeteer, etc.) are optional for Phase 3 (PDF generation)."
+  }
 }
