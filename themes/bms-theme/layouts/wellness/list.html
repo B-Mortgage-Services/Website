@@ -1,48 +1,16 @@
 {{ define "main" }}
 
 <!-- Hero Section -->
-<section class="wellness-hero" style="background-image: url('{{ "images/end-img.png" | relURL }}');">
-  <div class="wellness-hero__overlay"></div>
+<section class="page-header page-header--ambient">
+  <div class="ambient-glow ambient-glow--wellness">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--3"></div>
+  </div>
   <div class="container">
-    <div class="wellness-hero__content">
-      <span class="hero__eyebrow hero__eyebrow--light">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-        </svg>
-        Free Assessment
-      </span>
-      <h1>Check Your Mortgage &amp; Financial Wellness</h1>
-      <p>Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report.</p>
-      <div class="wellness-features wellness-features--light">
-        <div class="wellness-feature">
-          <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span class="wellness-feature__text">Estimate your borrowing range</span>
-        </div>
-        <div class="wellness-feature">
-          <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span class="wellness-feature__text">Check your financial resilience</span>
-        </div>
-        <div class="wellness-feature">
-          <svg class="wellness-feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span class="wellness-feature__text">Identify top ways to strengthen your finances</span>
-        </div>
-      </div>
-      <div class="wellness-cta wellness-cta--stacked" style="margin-top: 2rem;">
-        <button type="button" class="btn btn--primary btn--large" onclick="openWellnessModal({ source: 'wellness-page' })">
-          Start Your Free Check
-          <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </button>
-        <span class="wellness-cta__note">Takes just 3 minutes &bull; No impact on your credit score</span>
-      </div>
-    </div>
+    <span class="page-header__eyebrow">Free Assessment</span>
+    <h1>Check Your Mortgage &amp; Financial Wellness</h1>
+    <p class="page-header__subtitle">Thinking about getting a mortgage? See how your finances look with our free Financial Wellness Report &mdash; covering every factor lenders care about.</p>
   </div>
 </section>
 
@@ -145,12 +113,24 @@
 </section>
 
 <!-- For Employers CTA -->
-<section class="section--charcoal">
-  <div class="container container--narrow text-center">
-    <h2>Offer This to Your Employees</h2>
-    <p style="font-size: 1.1rem;">Provide your workforce with access to our Financial Wellness Check as part of your employee benefits package &mdash; at zero cost to your organisation.</p>
-    <div style="margin-top: 2rem;">
-      <a href="/employers/" class="btn btn--white btn--large">Learn About Employer Partnerships</a>
+<section class="section--white" style="padding-top: 0;">
+  <div class="container" style="max-width: 900px;">
+    <div class="wellness-banner">
+      <div class="wellness-banner__content">
+        <div class="wellness-banner__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="wellness-banner__text">
+          <h3 class="wellness-banner__title">Offer This to Your Employees</h3>
+          <p class="wellness-banner__desc">Provide your workforce with access to our Financial Wellness Check as part of your employee benefits package &mdash; at zero cost to your organisation.</p>
+        </div>
+        <a href="/employers/" class="btn btn--primary btn--large">Learn More</a>
+      </div>
     </div>
   </div>
 </section>

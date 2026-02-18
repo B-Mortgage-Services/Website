@@ -25,7 +25,11 @@
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="{{ "images/favicon.png" | relURL }}">
-  
+
+  <!-- Sitemap & LLMs -->
+  <link rel="sitemap" type="application/xml" href="{{ "sitemap.xml" | absURL }}">
+  <link rel="author" type="text/plain" href="{{ "llms.txt" | absURL }}">
+
   {{ block "head" . }}{{ end }}
 </head>
 <body class="{{ with .Section }}page-{{ . }}{{ end }}{{ if .IsHome }} page-home{{ end }}">

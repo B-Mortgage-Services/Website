@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bmortgageservices.co.uk/sitemap.xml
+
+# LLMs
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /

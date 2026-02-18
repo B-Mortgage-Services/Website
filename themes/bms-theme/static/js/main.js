@@ -39,6 +39,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Dropdown menu toggle (mobile + accessibility)
+  document.querySelectorAll('.nav__link--dropdown').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var parent = this.parentElement;
+      var wasOpen = parent.classList.contains('nav__item--open');
+
+      // Close all dropdowns
+      document.querySelectorAll('.nav__item--dropdown').forEach(function(item) {
+        item.classList.remove('nav__item--open');
+        item.querySelector('.nav__link--dropdown').setAttribute('aria-expanded', 'false');
+      });
+
+      // Toggle clicked dropdown
+      if (!wasOpen) {
+        parent.classList.add('nav__item--open');
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav__item--dropdown')) {
+      document.querySelectorAll('.nav__item--dropdown').forEach(function(item) {
+        item.classList.remove('nav__item--open');
+        var btn = item.querySelector('.nav__link--dropdown');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {

@@ -216,6 +216,7 @@ section {
 
 .nav__list {
   display: flex;
+  align-items: center;
   list-style: none;
   gap: var(--space-lg);
 }
@@ -247,6 +248,72 @@ section {
 .nav__link:hover::after,
 .nav__link--active::after {
   width: 100%;
+}
+
+/* Dropdown Navigation */
+.nav__item--dropdown {
+  position: relative;
+}
+
+.nav__link--dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: var(--space-sm) 0;
+}
+
+.nav__link--dropdown::after {
+  display: none;
+}
+
+.nav__chevron {
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.nav__item--open .nav__chevron {
+  transform: rotate(180deg);
+}
+
+.nav__dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 220px;
+  padding: 0.5rem 0;
+  z-index: 100;
+  list-style: none;
+}
+
+.nav__item--dropdown:hover .nav__dropdown,
+.nav__item--open .nav__dropdown {
+  display: block;
+}
+
+.nav__dropdown-link {
+  display: block;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.nav__dropdown-link:hover {
+  background: var(--cream);
+  color: var(--brand-orange);
 }
 
 /* Mobile Menu Toggle */
@@ -292,6 +359,32 @@ section {
     transform: translateY(0);
     opacity: 1;
     visibility: visible;
+  }
+
+  .nav__item--dropdown {
+    position: static;
+  }
+
+  .nav__dropdown {
+    position: static;
+    transform: none;
+    box-shadow: none;
+    min-width: 0;
+    padding: 0 0 0 1rem;
+    border-left: 2px solid var(--brand-orange);
+    margin-top: 0.5rem;
+  }
+
+  .nav__item--dropdown:hover .nav__dropdown {
+    display: none;
+  }
+
+  .nav__item--open .nav__dropdown {
+    display: block;
+  }
+
+  .nav__dropdown-link {
+    padding: 0.5rem 0.75rem;
   }
 }
 
@@ -762,6 +855,88 @@ section {
     order: -1;
     max-width: 500px;
     margin: 0 auto;
+  }
+}
+
+/* Tool CTA Banner (Individuals page) */
+.tool-cta {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.tool-cta__content {
+  flex: 1;
+}
+
+.tool-cta__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 0.5rem;
+}
+
+.tool-cta__desc {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 1.25rem;
+}
+
+.tool-cta__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1.5rem;
+}
+
+.tool-cta__features li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.tool-cta__features li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.tool-cta__visual {
+  flex-shrink: 0;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(240, 91, 40, 0.06);
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .tool-cta {
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .tool-cta__features {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .tool-cta__visual {
+    display: none;
   }
 }
 
@@ -3620,7 +3795,318 @@ section {
   }
 }
 
-/* NEW Wellness CTA Overlay Layout */
+/* Wellness Showcase (Homepage) */
+.wellness-showcase {
+  padding: var(--space-4xl) 0;
+  background: linear-gradient(135deg, #FFF5F0 0%, #FEF6F0 50%, #FFFFFF 100%);
+  overflow: hidden;
+}
+
+.wellness-showcase__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
+.wellness-showcase__content {
+  max-width: 520px;
+}
+
+.wellness-showcase__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--brand-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-md);
+}
+
+.wellness-showcase__title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.2;
+  color: var(--brand-charcoal);
+  margin-bottom: var(--space-md);
+}
+
+.wellness-showcase__subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: var(--space-xl);
+}
+
+.wellness-showcase__features {
+  list-style: none;
+  margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wellness-showcase__features li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.wellness-showcase__check {
+  width: 22px;
+  height: 22px;
+  color: #22c55e;
+  flex-shrink: 0;
+}
+
+.wellness-showcase__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.wellness-showcase__note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Exploded Infographic */
+.wellness-showcase__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wellness-infographic {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1;
+}
+
+/* Centre gauge — image dial */
+.wellness-infographic__gauge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  text-align: center;
+  z-index: 1;
+}
+
+.wellness-infographic__dial-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.wellness-infographic__score {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wellness-infographic__score-value {
+  font-family: var(--font-display);
+  font-size: 3.75rem;
+  font-weight: 700;
+  color: #5B4A6A;
+  line-height: 1;
+}
+
+.wellness-infographic__score-max {
+  font-size: 1rem;
+  color: #5B4A6A;
+  margin-top: -0.25rem;
+}
+
+/* Pillar cards */
+.wellness-infographic__pillar {
+  position: absolute;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wellness-infographic__pillar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+.wellness-infographic__pillar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.wellness-infographic__pillar-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-charcoal);
+}
+
+.wellness-infographic__pillar-detail {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Pillar icon colours */
+.wellness-infographic__pillar--tl .wellness-infographic__pillar-icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.wellness-infographic__pillar--tr .wellness-infographic__pillar-icon {
+  background: rgba(240, 91, 40, 0.1);
+  color: var(--brand-orange);
+}
+
+.wellness-infographic__pillar--bl .wellness-infographic__pillar-icon {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.wellness-infographic__pillar--br .wellness-infographic__pillar-icon {
+  background: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+}
+
+/* Pillar positions (exploded around gauge) */
+.wellness-infographic__pillar--tl {
+  top: 2%;
+  left: 0;
+  transform: rotate(-1.5deg);
+}
+
+.wellness-infographic__pillar--tr {
+  top: 2%;
+  right: 0;
+  transform: rotate(1.5deg);
+}
+
+.wellness-infographic__pillar--bl {
+  bottom: 8%;
+  left: 0;
+  transform: rotate(1deg);
+}
+
+.wellness-infographic__pillar--br {
+  bottom: 8%;
+  right: 0;
+  transform: rotate(-1deg);
+}
+
+/* Connecting dots */
+.wellness-infographic__pillar::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-orange);
+  opacity: 0.3;
+}
+
+.wellness-infographic__pillar--tl::after {
+  bottom: -16px;
+  right: 20px;
+}
+
+.wellness-infographic__pillar--tr::after {
+  bottom: -16px;
+  left: 20px;
+}
+
+.wellness-infographic__pillar--bl::after {
+  top: -16px;
+  right: 20px;
+}
+
+.wellness-infographic__pillar--br::after {
+  top: -16px;
+  left: 20px;
+}
+
+/* Mobile */
+@media (max-width: 968px) {
+  .wellness-showcase__grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-2xl);
+  }
+
+  .wellness-showcase__content {
+    max-width: none;
+  }
+
+  .wellness-showcase__actions {
+    align-items: center;
+  }
+
+  .wellness-showcase__features {
+    display: inline-flex;
+    text-align: left;
+  }
+
+  .wellness-infographic {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .wellness-infographic {
+    aspect-ratio: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    max-width: 100%;
+  }
+
+  .wellness-infographic__gauge {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    grid-column: 1 / -1;
+    width: 240px;
+    margin: 0 auto var(--space-md);
+  }
+
+  .wellness-infographic__pillar {
+    position: static;
+    transform: none;
+    width: auto;
+  }
+
+  .wellness-infographic__pillar::after {
+    display: none;
+  }
+}
+
+/* OLD Wellness CTA Overlay Layout (kept for reference) */
 .wellness-cta-overlay {
   position: relative;
   min-height: 550px;
