@@ -147,7 +147,7 @@
   <div class="container">
     <div class="text-center mb-4">
       <h2>How Much Could You Borrow?</h2>
-      <p class="calculator-intro">Get an instant estimate based on your income. Lenders typically offer between 3.5x and 5x your annual salary, some will consider upto 6x.</p>
+      <p class="calculator-intro">Get an instant estimate based on your income. Lenders typically offer between 3.5x and 4.5x your annual salary, with some considering up to 6x subject to eligibility.</p>
     </div>
 
     <div class="affordability-calculator">
@@ -249,7 +249,7 @@
           <div class="result-tier result-tier--maximum">
             <div class="result-tier__header">
               <span class="result-tier__label">Maximum</span>
-              <span class="result-tier__multiplier">5x income</span>
+              <span class="result-tier__multiplier">6x income</span>
             </div>
             <div class="result-tier__amount" id="result-maximum">£0</div>
             <p class="result-tier__desc">Subject to eligibility criteria</p>
@@ -405,6 +405,28 @@
         </svg>
         Print Results
       </button>
+    </div>
+  </div>
+</section>
+
+<!-- Wellness Assessment CTA Banner -->
+<section class="section--white" style="padding-top: 0;">
+  <div class="container" style="max-width: 900px;">
+    <div class="wellness-banner" id="wellnessBanner">
+      <div class="wellness-banner__content">
+        <div class="wellness-banner__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <div class="wellness-banner__text">
+          <h3 class="wellness-banner__title">How Resilient Are Your Finances?</h3>
+          <p class="wellness-banner__desc">You've crunched the numbers on affordability. Now check your full financial wellness &mdash; including protection, savings resilience, and what happens if life throws a curveball.</p>
+        </div>
+        <button type="button" class="btn btn--primary btn--large" onclick="openWellnessModal({ source: 'individuals-banner' })">
+          Get Your Free Wellness Score
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -972,6 +994,9 @@ function calculateAffordability() {
   updateRepaymentDisplay('repayment-conservative', conservative, termYears);
   updateRepaymentDisplay('repayment-standard', standard, termYears);
   updateRepaymentDisplay('repayment-maximum', maximum, termYears);
+
+  // Save to sessionStorage for wellness assessment pre-fill
+  saveAffordabilityToSession();
 }
 
 function toggleFaq(element) {
@@ -1088,6 +1113,52 @@ function calculateMovingCosts() {
     document.getElementById('legalFeesLabel').textContent = 'Purchase Legal Fees';
   } else {
     document.getElementById('legalFeesLabel').textContent = 'Legal Fees';
+  }
+
+  // Save to sessionStorage for wellness assessment pre-fill
+  saveAffordabilityToSession();
+}
+
+function saveAffordabilityToSession() {
+  try {
+    var yourIncome = parseFormattedNumber(document.getElementById('yourIncome').value);
+    var data = {
+      timestamp: Date.now(),
+      source: 'individuals-calculator',
+      applicationType: applicationType,
+      applicant1Gross: yourIncome,
+      applicant1NetMonthly: Math.round(calculateNetPay(yourIncome) / 12),
+      mortgagePurpose: document.getElementById('mortgagePurpose').value,
+      totalMonthlyCommitments: Math.round(
+        parseFormattedNumber(document.getElementById('creditCards').value) * 0.03 +
+        parseFormattedNumber(document.getElementById('loansHP').value) +
+        parseFormattedNumber(document.getElementById('otherOutgoings').value)
+      )
+    };
+
+    if (applicationType === 'joint') {
+      var partnerIncome = parseFormattedNumber(document.getElementById('partnerIncome').value);
+      data.applicant2Gross = partnerIncome;
+      data.applicant2NetMonthly = Math.round(calculateNetPay(partnerIncome) / 12);
+    }
+
+    // Capture moving cost calc values if visible
+    var movingCalc = document.getElementById('movingCostCalculator');
+    if (movingCalc && movingCalc.style.display !== 'none') {
+      var pv = parseFormattedNumber(document.getElementById('housePrice').value);
+      var dep = parseFormattedNumber(document.getElementById('depositAmount').value);
+      if (pv > 0) data.propertyValue = pv;
+      if (dep > 0) data.deposit = dep;
+      if (pv > 0 && dep > 0) data.mortgageAmount = Math.max(0, pv - dep);
+      var termEl = document.getElementById('movingMortgageTerm');
+      if (termEl) data.mortgageTerm = parseInt(termEl.value) || 25;
+      var rateEl = document.getElementById('movingInterestRate');
+      if (rateEl) data.interestRate = parseFloat(rateEl.value) || 0;
+    }
+
+    sessionStorage.setItem('bms_affordability_data', JSON.stringify(data));
+  } catch (e) {
+    // Silently fail - session data is a nice-to-have
   }
 }
 

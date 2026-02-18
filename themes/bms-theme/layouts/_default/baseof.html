@@ -41,5 +41,8 @@
   <!-- Scripts -->
   <script src="{{ "js/main.js" | relURL }}"></script>
   {{ block "scripts" . }}{{ end }}
+
+  <!-- Site-wide Wellness Modal -->
+  {{ partial "wellness-modal.html" . }}
 </body>
 </html>

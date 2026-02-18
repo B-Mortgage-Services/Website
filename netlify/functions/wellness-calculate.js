@@ -74,7 +74,11 @@ exports.handler = async (event) => {
       category: scoringResult.category,
       has_email: !!data.email,
       employment_type: data.employment,
-      ltv_bracket: getLTVBracket(scoringResult.breakdown.deposit.ltv)
+      ltv_bracket: getLTVBracket(scoringResult.breakdown.deposit.ltv),
+      lti_ratio: scoringResult.mortgageMetrics?.lti?.ratio || null,
+      dti_ratio: scoringResult.mortgageMetrics?.dti?.ratio || null,
+      has_gross_income: !!data.grossAnnualIncome,
+      income_estimated: scoringResult.mortgageMetrics?.grossIncome?.isEstimated || false
     });
 
     // TODO: In Phase 3, generate PDF here and upload to Supabase Storage
@@ -143,7 +147,11 @@ exports.handler = async (event) => {
         riskAssessment: scoringResult.riskAssessment,
         household: scoringResult.household,
         employerBenefits: scoringResult.employerBenefits,
-        benchmarks: scoringResult.benchmarks
+        benchmarks: scoringResult.benchmarks,
+        stateBenefit: scoringResult.stateBenefit,
+
+        // ========== MORTGAGE ELIGIBILITY METRICS ==========
+        mortgageMetrics: scoringResult.mortgageMetrics
       })
     };
 

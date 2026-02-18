@@ -288,7 +288,30 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!cookieConsent) {
     // Show cookie banner if needed
   }
-  
+
+  // Wellness modal - close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var wellnessModal = document.getElementById('wellnessModal');
+      if (wellnessModal && wellnessModal.classList.contains('wellness-modal--open')) {
+        if (typeof closeWellnessModal === 'function') {
+          closeWellnessModal();
+        }
+      }
+    }
+  });
+
+  // Wellness modal - declarative trigger support
+  // Any element with data-wellness-trigger attribute will open the modal
+  document.querySelectorAll('[data-wellness-trigger]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (typeof openWellnessModal === 'function') {
+        openWellnessModal({ source: this.dataset.wellnessSource || 'generic' });
+      }
+    });
+  });
+
 });
 
 // FAQ toggle function (global for onclick handlers)

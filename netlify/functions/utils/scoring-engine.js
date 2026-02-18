@@ -4,12 +4,12 @@
  * This module contains the proprietary scoring algorithm for B Mortgage Services
  * wellness check. It evaluates mortgage readiness across 4 key pillars:
  *
- * 1. Mortgage Eligibility (35%): Employment status + credit history
- * 2. Affordability & Budget (30%): Deposit size + monthly surplus
+ * 1. Mortgage Eligibility (35%): Employment + credit + LTI ratio + DTI ratio
+ * 2. Affordability & Budget (30%): Deposit/LTV + monthly surplus
  * 3. Financial Resilience (20%): Emergency fund coverage
  * 4. Protection Readiness (15%): Life, income, and critical illness insurance
  *
- * Maximum raw score: 80 points (scaled to 0-100)
+ * Maximum raw score: 90 points (scaled to 0-100, dynamic max when DTI/LTI unavailable)
  *
  * Enhanced features:
  * - Financial runway calculation (deadline to breadline)
@@ -19,6 +19,193 @@
  */
 
 const riskData = require('./risk-data');
+
+// ========== MORTGAGE ELIGIBILITY METRICS ==========
+
+/**
+ * Resolve gross annual income from available data sources
+ * Priority: 1) Explicit gross annual, 2) Estimate from net monthly (×12 × 1.3)
+ * The 1.3 multiplier is conservative — errs toward a worse LTI (safer advice)
+ * @param {number} grossAnnual - Explicitly provided gross annual income
+ * @param {number} monthlyNet - Net monthly take-home income
+ * @returns {Object} { grossAnnual, grossMonthly, source, isEstimated }
+ */
+function resolveGrossIncome(grossAnnual, monthlyNet) {
+  if (grossAnnual && grossAnnual > 0) {
+    return {
+      grossAnnual: grossAnnual,
+      grossMonthly: grossAnnual / 12,
+      source: 'provided',
+      isEstimated: false
+    };
+  }
+
+  if (monthlyNet && monthlyNet > 0) {
+    const estimatedGross = Math.round(monthlyNet * 12 * 1.3);
+    return {
+      grossAnnual: estimatedGross,
+      grossMonthly: estimatedGross / 12,
+      source: 'estimated',
+      isEstimated: true
+    };
+  }
+
+  return {
+    grossAnnual: 0,
+    grossMonthly: 0,
+    source: 'unavailable',
+    isEstimated: false
+  };
+}
+
+/**
+ * Calculate Loan-to-Income ratio and score
+ * UK FCA/PRA cap: banks must limit >4.5x LTI lending to ~15% of new mortgages
+ * @param {number} mortgageAmount - Loan amount (propertyValue - deposit)
+ * @param {number} grossAnnualIncome - Total household gross annual income
+ * @returns {Object} { ratio, score, tier, description, maxScore, ratioFormatted, fcaCap }
+ */
+function calculateLTI(mortgageAmount, grossAnnualIncome) {
+  if (!grossAnnualIncome || grossAnnualIncome <= 0 || !mortgageAmount || mortgageAmount <= 0) {
+    return {
+      ratio: null,
+      score: null,
+      tier: 'unavailable',
+      description: 'Insufficient data to calculate LTI',
+      maxScore: 10,
+      ratioFormatted: null,
+      fcaCap: 4.5
+    };
+  }
+
+  const ratio = mortgageAmount / grossAnnualIncome;
+  let score, tier, description;
+
+  if (ratio < 3.5) {
+    score = 10; tier = 'excellent';
+    description = 'Well within standard lending limits';
+  } else if (ratio < 4.0) {
+    score = 8; tier = 'good';
+    description = 'Comfortable borrowing level for most lenders';
+  } else if (ratio < 4.5) {
+    score = 6; tier = 'acceptable';
+    description = 'Within FCA cap but approaching the limit';
+  } else if (ratio < 5.0) {
+    score = 3; tier = 'stretched';
+    description = 'Above standard FCA cap — specialist lender may be required';
+  } else {
+    score = 1; tier = 'difficult';
+    description = 'Significantly above standard lending multiples';
+  }
+
+  return {
+    ratio: Math.round(ratio * 100) / 100,
+    score,
+    tier,
+    description,
+    maxScore: 10,
+    ratioFormatted: ratio.toFixed(1) + 'x',
+    fcaCap: 4.5
+  };
+}
+
+/**
+ * Calculate Debt-to-Income ratio and score
+ * Uses user's rate for primary DTI, and BoE 6.5% stress test for comparison
+ * @param {number} mortgageAmount - Loan amount
+ * @param {number} grossMonthlyIncome - Household gross monthly income
+ * @param {number} monthlyCommitments - Other monthly debt commitments
+ * @param {number} mortgageTerm - Mortgage term in years (default 25)
+ * @param {number} userRate - User's interest rate from calculator (default 4.5%)
+ * @returns {Object} DTI result with ratio, stress-tested ratio, score, and breakdown
+ */
+function calculateDTI(mortgageAmount, grossMonthlyIncome, monthlyCommitments, mortgageTerm, userRate) {
+  // Skip if no income OR no debt data to assess
+  if (!grossMonthlyIncome || grossMonthlyIncome <= 0 ||
+      ((!mortgageAmount || mortgageAmount <= 0) && (!monthlyCommitments || monthlyCommitments <= 0))) {
+    return {
+      ratio: null,
+      score: null,
+      tier: 'unavailable',
+      description: 'Insufficient data to calculate DTI',
+      maxScore: 8,
+      ratioFormatted: null,
+      stressTestedRatio: null,
+      stressTestedFormatted: null,
+      estimatedMortgagePayment: 0,
+      stressTestedPayment: 0,
+      monthlyCommitments: 0,
+      totalMonthlyDebt: 0,
+      rateUsed: 0,
+      stressRate: 6.5,
+      termUsed: 25
+    };
+  }
+
+  const STRESS_RATE = 6.5;
+  const DEFAULT_RATE = 4.5;
+  const DEFAULT_TERM = 25;
+  const rate = userRate && userRate > 0 ? userRate : DEFAULT_RATE;
+  const term = mortgageTerm || DEFAULT_TERM;
+  const commitments = monthlyCommitments || 0;
+
+  // Calculate monthly mortgage payment at user's rate
+  let estimatedMortgagePayment = 0;
+  let stressTestedPayment = 0;
+  if (mortgageAmount && mortgageAmount > 0) {
+    const monthlyRate = rate / 100 / 12;
+    const numPayments = term * 12;
+    estimatedMortgagePayment = mortgageAmount *
+      (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+      (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+    // Also calculate at stress test rate
+    const stressMonthlyRate = STRESS_RATE / 100 / 12;
+    stressTestedPayment = mortgageAmount *
+      (stressMonthlyRate * Math.pow(1 + stressMonthlyRate, numPayments)) /
+      (Math.pow(1 + stressMonthlyRate, numPayments) - 1);
+  }
+
+  const totalMonthlyDebt = estimatedMortgagePayment + commitments;
+  const ratio = (totalMonthlyDebt / grossMonthlyIncome) * 100;
+
+  const stressTotalDebt = stressTestedPayment + commitments;
+  const stressTestedRatio = (stressTotalDebt / grossMonthlyIncome) * 100;
+
+  let score, tier, description;
+
+  if (ratio < 25) {
+    score = 8; tier = 'excellent';
+    description = 'Very comfortable debt servicing capacity';
+  } else if (ratio < 35) {
+    score = 6; tier = 'good';
+    description = 'Within standard lender comfort zone';
+  } else if (ratio < 45) {
+    score = 3; tier = 'stretched';
+    description = 'Approaching lender limits — some flexibility concerns';
+  } else {
+    score = 1; tier = 'high';
+    description = 'Above typical lender thresholds — may restrict options';
+  }
+
+  return {
+    ratio: Math.round(ratio * 10) / 10,
+    score,
+    tier,
+    description,
+    maxScore: 8,
+    ratioFormatted: ratio.toFixed(1) + '%',
+    stressTestedRatio: Math.round(stressTestedRatio * 10) / 10,
+    stressTestedFormatted: stressTestedRatio.toFixed(1) + '%',
+    estimatedMortgagePayment: Math.round(estimatedMortgagePayment),
+    stressTestedPayment: Math.round(stressTestedPayment),
+    monthlyCommitments: Math.round(commitments),
+    totalMonthlyDebt: Math.round(totalMonthlyDebt),
+    rateUsed: rate,
+    stressRate: STRESS_RATE,
+    termUsed: term
+  };
+}
 
 /**
  * Calculate wellness score from user input data
@@ -36,7 +223,7 @@ function calculate(data) {
     life,
     income,
     critical,
-    // New enhanced fields
+    // Enhanced fields
     age,
     smoker,
     monthlyIncome,
@@ -50,7 +237,14 @@ function calculate(data) {
     // Income protection details
     ipMonthlyBenefit,
     ipDeferredPeriod,
-    ipBenefitPeriod
+    ipBenefitPeriod,
+    // Mortgage eligibility metrics (DTI/LTI)
+    grossAnnualIncome,
+    partnerGrossAnnualIncome,
+    totalMonthlyCommitments,
+    mortgageTerm,
+    interestRate,
+    mortgageAmount
   } = data;
 
   let rawScore = 0;
@@ -64,6 +258,11 @@ function calculate(data) {
   const strengths = [];
   const improvements = [];
 
+  // Parse property and deposit values early (used by both Pillar 1 DTI/LTI and Pillar 2 LTV)
+  const propertyVal = parseFloat(propertyValue) || 0;
+  const depositVal = parseFloat(deposit) || 0;
+  const ltv = propertyVal > 0 ? ((propertyVal - depositVal) / propertyVal) * 100 : 100;
+
   // Calculate runway early for use in Financial Resilience pillar scoring
   // Now accounts for SSP and Income Protection
   const runway = calculateRunway(
@@ -75,49 +274,105 @@ function calculate(data) {
     employment  // employment type for correct state benefit
   );
 
-  // PILLAR 1: Mortgage Eligibility (35% - max 25 points)
-  // Employment Status (max 15 points)
+  // PILLAR 1: Mortgage Eligibility (35% - max 35 points with DTI/LTI, 17 without)
+  // Employment Status (max 10 points)
   const employmentScores = {
-    'paye-12': 15,
-    'paye-under': 12,
-    'self-2': 12,
-    'self-under': 6,
-    'contractor': 10,
-    'irregular': 4
+    'paye-12': 10,
+    'paye-under': 8,
+    'self-2': 8,
+    'self-under': 4,
+    'contractor': 7,
+    'irregular': 3
   };
   const employmentScore = employmentScores[employment] || 0;
   rawScore += employmentScore;
   pillarScores.mortgageEligibility += employmentScore;
 
-  if (employmentScore >= 12) {
+  if (employmentScore >= 8) {
     strengths.push('Stable income');
   } else {
     improvements.push('Employment stability');
   }
 
-  // Credit History (max 10 points)
+  // Credit History (max 7 points)
   const creditScores = {
-    'clean': 10,
-    'minor': 7,
-    'recent': 3,
+    'clean': 7,
+    'minor': 5,
+    'recent': 2,
     'severe': 1
   };
   const creditScore = creditScores[credit] || 0;
   rawScore += creditScore;
   pillarScores.mortgageEligibility += creditScore;
 
-  if (creditScore >= 7) {
+  if (creditScore >= 5) {
     strengths.push('Good credit profile');
   } else {
     improvements.push('Credit history');
   }
 
-  // PILLAR 2: Affordability & Budget (30% - max 30 points)
-  // Deposit/LTV (max 10 points)
-  const propertyVal = parseFloat(propertyValue) || 0;
-  const depositVal = parseFloat(deposit) || 0;
-  const ltv = propertyVal > 0 ? ((propertyVal - depositVal) / propertyVal) * 100 : 100;
+  // --- LTI & DTI Scoring (max 10 + 8 = 18 points) ---
 
+  // Resolve gross income (explicit > estimated from net > unavailable)
+  const incomeResolution = resolveGrossIncome(
+    parseFloat(grossAnnualIncome) || 0,
+    parseFloat(monthlyIncome) || 0
+  );
+
+  let totalGrossAnnual = incomeResolution.grossAnnual;
+  let partnerGrossResolution = null;
+  if (parseFloat(partnerGrossAnnualIncome) > 0 || parseFloat(partnerIncome) > 0) {
+    partnerGrossResolution = resolveGrossIncome(
+      parseFloat(partnerGrossAnnualIncome) || 0,
+      parseFloat(partnerIncome) || 0
+    );
+    totalGrossAnnual += partnerGrossResolution.grossAnnual;
+  }
+
+  // Derive mortgage/loan amount
+  const loanAmount = (parseFloat(mortgageAmount) > 0)
+    ? parseFloat(mortgageAmount)
+    : Math.max(0, propertyVal - depositVal);
+
+  // Track dynamic max score (adjusts when DTI/LTI data unavailable)
+  let maxPossibleScore = 90; // 35 + 30 + 10 + 15
+
+  // LTI Scoring (max 10 points)
+  const ltiResult = calculateLTI(loanAmount, totalGrossAnnual);
+  if (ltiResult.score !== null) {
+    rawScore += ltiResult.score;
+    pillarScores.mortgageEligibility += ltiResult.score;
+    if (ltiResult.score >= 8) {
+      strengths.push('Healthy loan-to-income ratio');
+    } else if (ltiResult.score <= 3) {
+      improvements.push('Loan-to-income ratio');
+    }
+  } else {
+    maxPossibleScore -= 10;
+  }
+
+  // DTI Scoring (max 8 points)
+  const dtiResult = calculateDTI(
+    loanAmount,
+    totalGrossAnnual / 12,
+    parseFloat(totalMonthlyCommitments) || 0,
+    parseInt(mortgageTerm) || 25,
+    parseFloat(interestRate) || 0
+  );
+  if (dtiResult.score !== null) {
+    rawScore += dtiResult.score;
+    pillarScores.mortgageEligibility += dtiResult.score;
+    if (dtiResult.score >= 6) {
+      strengths.push('Comfortable debt-to-income ratio');
+    } else if (dtiResult.score <= 3) {
+      improvements.push('Debt-to-income ratio');
+    }
+  } else {
+    maxPossibleScore -= 8;
+  }
+
+  // PILLAR 2: Affordability & Budget (30% - max 30 points)
+  // Deposit/LTV (max 10 points) — propertyVal, depositVal, ltv already parsed above
   let depositScore = 0;
   if (ltv <= 75) {
     depositScore = 10;
@@ -212,8 +467,8 @@ function calculate(data) {
     improvements.push('Income protection');
   }
 
-  // Scale raw score (0-80) to final score (0-100)
-  const finalScore = Math.min(Math.round((rawScore / 80) * 100), 100);
+  // Scale raw score to final score (0-100) using dynamic max
+  const finalScore = Math.min(Math.round((rawScore / maxPossibleScore) * 100), 100);
 
   // Determine score interpretation
   let interpretation = '';
@@ -233,8 +488,10 @@ function calculate(data) {
   }
 
   // Calculate pillar percentages (for visualization)
+  // Pillar 1 max is dynamic: 17 (employment + credit) + 10 (LTI if available) + 8 (DTI if available)
+  const pillar1Max = 17 + (ltiResult.score !== null ? 10 : 0) + (dtiResult.score !== null ? 8 : 0);
   const pillarPercentages = {
-    mortgageEligibility: Math.round((pillarScores.mortgageEligibility / 25) * 100),
+    mortgageEligibility: Math.round((pillarScores.mortgageEligibility / pillar1Max) * 100),
     affordabilityBudget: Math.round((pillarScores.affordabilityBudget / 30) * 100),
     financialResilience: Math.round((pillarScores.financialResilience / 10) * 100),
     protectionReadiness: Math.round((pillarScores.protectionReadiness / 15) * 100)
@@ -297,13 +554,15 @@ function calculate(data) {
       employment: {
         value: employment,
         score: employmentScore,
-        maxScore: 15
+        maxScore: 10
       },
       credit: {
         value: credit,
         score: creditScore,
-        maxScore: 10
+        maxScore: 7
       },
+      lti: ltiResult,
+      dti: dtiResult,
       deposit: {
         value: depositVal,
         propertyValue: propertyVal,
@@ -361,7 +620,26 @@ function calculate(data) {
     stateBenefit: stateBenefit,
 
     // UK benchmarks for comparison
-    benchmarks: UK_BENCHMARKS
+    benchmarks: UK_BENCHMARKS,
+
+    // Mortgage eligibility metrics (DTI, LTI, LTV dashboard)
+    mortgageMetrics: {
+      lti: ltiResult,
+      dti: dtiResult,
+      ltv: {
+        ratio: ltv,
+        formatted: ltv.toFixed(1) + '%',
+        tier: ltv <= 75 ? 'excellent' : ltv <= 85 ? 'good' : ltv <= 90 ? 'acceptable' : 'stretched'
+      },
+      grossIncome: {
+        total: totalGrossAnnual,
+        applicant1: incomeResolution,
+        applicant2: partnerGrossResolution,
+        isEstimated: incomeResolution.isEstimated || (partnerGrossResolution && partnerGrossResolution.isEstimated)
+      },
+      loanAmount: loanAmount,
+      maxPossibleScore: maxPossibleScore
+    }
   };
 }
 
