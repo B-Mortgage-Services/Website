@@ -157,9 +157,9 @@ function radarChart(pillars, theme) {
     (p.protectionReadiness || 0) / 100
   ];
   var labels = ['Mortgage\nEligibility', 'Affordability\n& Budget', 'Financial\nResilience', 'Protection\nReadiness'];
-  var cx = 150;
-  var cy = 150;
-  var maxR = 100;
+  var cx = 210;
+  var cy = 160;
+  var maxR = 110;
 
   // Axis angles: top, right, bottom, left (0, 90, 180, 270 degrees)
   var angles = [-90, 0, 90, 180];
@@ -227,7 +227,7 @@ function radarChart(pillars, theme) {
       Math.round(vals[l] * 100) + '%</text>';
   }
 
-  return '<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;">' +
+  return '<svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;">' +
     gridLines +
     axisLines +
     '<polygon points="' + dataPoints.join(' ') + '" fill="rgba(240,91,40,0.15)" stroke="' + ORANGE + '" stroke-width="2" />' +

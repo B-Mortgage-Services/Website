@@ -197,7 +197,7 @@
       (p.protectionReadiness || 0) / 100
     ];
     var labels = ['Mortgage\nEligibility', 'Affordability\n& Budget', 'Financial\nResilience', 'Protection\nReadiness'];
-    var cx = 150, cy = 150, maxR = 100;
+    var cx = 210, cy = 160, maxR = 110;
     var angles = [-90, 0, 90, 180];
 
     function ptAt(deg, ratio) {
@@ -250,7 +250,7 @@
       labelMkp += '<text x="' + ddp.x + '" y="' + (ddp.y + (vals[l] < 0.3 ? 0 : -2)) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="700" fill="' + ORANGE + '">' + Math.round(vals[l] * 100) + '%</text>';
     }
 
-    return '<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="report-radar">' +
+    return '<svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg" class="report-radar">' +
       gridLines + axisLines +
       '<polygon points="' + dataPoints.join(' ') + '" fill="rgba(240,91,40,0.15)" stroke="' + ORANGE + '" stroke-width="2" />' +
       labelMkp + '</svg>';
@@ -507,22 +507,6 @@
       }
       html += '</div>';
 
-      // Affordability breakdown
-      if (hasDTI && mm.dti.estimatedMortgagePayment > 0) {
-        html += '<h3 class="report-label-heading">Monthly Affordability Breakdown</h3>';
-        html += '<table class="report-aff-table">';
-        html += '<tr><td>Estimated mortgage payment (at ' + mm.dti.rateUsed + '%)</td><td>\u00a3' + fmt(mm.dti.estimatedMortgagePayment) + '</td></tr>';
-        if (mm.dti.monthlyCommitments > 0) {
-          html += '<tr><td>Other monthly commitments</td><td>\u00a3' + fmt(mm.dti.monthlyCommitments) + '</td></tr>';
-        }
-        html += '<tr class="report-aff-total"><td>Total monthly debt</td><td>\u00a3' + fmt(mm.dti.totalMonthlyDebt) + '</td></tr>';
-        html += '<tr><td>Gross monthly income</td><td>\u00a3' + fmt(Math.round((mm.grossIncome ? mm.grossIncome.total : 0) / 12)) + '</td></tr>';
-        if (mm.dti.stressTestedPayment > 0) {
-          html += '<tr class="report-aff-stress"><td>Mortgage payment at stress test (' + mm.dti.stressRate + '%)</td><td>\u00a3' + fmt(mm.dti.stressTestedPayment) + '</td></tr>';
-        }
-        html += '</table>';
-      }
-
       // Property summary
       if (data.breakdown.deposit.propertyValue) {
         html += '<h3 class="report-label-heading">Property &amp; Mortgage Summary</h3>';
@@ -540,6 +524,22 @@
           html += '</div>';
         }
         html += '</div>';
+      }
+
+      // Affordability breakdown
+      if (hasDTI && mm.dti.estimatedMortgagePayment > 0) {
+        html += '<h3 class="report-label-heading">Monthly Affordability Breakdown</h3>';
+        html += '<table class="report-aff-table">';
+        html += '<tr><td>Estimated mortgage payment (at ' + mm.dti.rateUsed + '%)</td><td>\u00a3' + fmt(mm.dti.estimatedMortgagePayment) + '</td></tr>';
+        if (mm.dti.monthlyCommitments > 0) {
+          html += '<tr><td>Other monthly commitments</td><td>\u00a3' + fmt(mm.dti.monthlyCommitments) + '</td></tr>';
+        }
+        html += '<tr class="report-aff-total"><td>Total monthly debt</td><td>\u00a3' + fmt(mm.dti.totalMonthlyDebt) + '</td></tr>';
+        html += '<tr><td>Gross monthly income</td><td>\u00a3' + fmt(Math.round((mm.grossIncome ? mm.grossIncome.total : 0) / 12)) + '</td></tr>';
+        if (mm.dti.stressTestedPayment > 0) {
+          html += '<tr class="report-aff-stress"><td>Mortgage payment at stress test (' + mm.dti.stressRate + '%)</td><td>\u00a3' + fmt(mm.dti.stressTestedPayment) + '</td></tr>';
+        }
+        html += '</table>';
       }
 
       html += '</div></section>';

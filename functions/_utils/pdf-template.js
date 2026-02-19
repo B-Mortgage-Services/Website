@@ -277,7 +277,7 @@ module.exports = function renderHTML(data) {
     }
     .pillars__chart {
       display: inline-block;
-      width: 260px;
+      width: 340px;
       margin: 0 auto 14px;
     }
     .pillars__cards {
@@ -864,26 +864,6 @@ module.exports = function renderHTML(data) {
         '</div>' : ''}
     </div>
 
-    ${(hasDTI && mm.dti.estimatedMortgagePayment > 0) ? `
-    <!-- Monthly Affordability Breakdown -->
-    <h3>Monthly Affordability Breakdown</h3>
-    <table class="aff-table">
-      <tr>
-        <td>Estimated mortgage payment (at ${mm.dti.rateUsed}%)</td>
-        <td>&pound;${fmt(mm.dti.estimatedMortgagePayment)}</td>
-      </tr>
-      ${mm.dti.monthlyCommitments > 0 ? '<tr><td>Other monthly commitments</td><td>&pound;' + fmt(mm.dti.monthlyCommitments) + '</td></tr>' : ''}
-      <tr class="aff-total">
-        <td>Total monthly debt</td>
-        <td>&pound;${fmt(mm.dti.totalMonthlyDebt)}</td>
-      </tr>
-      <tr>
-        <td>Gross monthly income</td>
-        <td>&pound;${fmt(Math.round((mm.grossIncome ? mm.grossIncome.total : 0) / 12))}</td>
-      </tr>
-      ${mm.dti.stressTestedPayment > 0 ? '<tr class="aff-stress"><td>Mortgage payment at stress test (' + mm.dti.stressRate + '%)</td><td>&pound;' + fmt(mm.dti.stressTestedPayment) + '</td></tr>' : ''}
-    </table>` : ''}
-
     <!-- Property & Mortgage Summary -->
     ${data.breakdown.deposit.propertyValue ? `
     <h3>Property &amp; Mortgage Summary</h3>
@@ -905,6 +885,26 @@ module.exports = function renderHTML(data) {
         <div class="stat-box__label">Loan to Value</div>
       </div>
     </div>` : ''}
+
+    ${(hasDTI && mm.dti.estimatedMortgagePayment > 0) ? `
+    <!-- Monthly Affordability Breakdown -->
+    <h3>Monthly Affordability Breakdown</h3>
+    <table class="aff-table">
+      <tr>
+        <td>Estimated mortgage payment (at ${mm.dti.rateUsed}%)</td>
+        <td>&pound;${fmt(mm.dti.estimatedMortgagePayment)}</td>
+      </tr>
+      ${mm.dti.monthlyCommitments > 0 ? '<tr><td>Other monthly commitments</td><td>&pound;' + fmt(mm.dti.monthlyCommitments) + '</td></tr>' : ''}
+      <tr class="aff-total">
+        <td>Total monthly debt</td>
+        <td>&pound;${fmt(mm.dti.totalMonthlyDebt)}</td>
+      </tr>
+      <tr>
+        <td>Gross monthly income</td>
+        <td>&pound;${fmt(Math.round((mm.grossIncome ? mm.grossIncome.total : 0) / 12))}</td>
+      </tr>
+      ${mm.dti.stressTestedPayment > 0 ? '<tr class="aff-stress"><td>Mortgage payment at stress test (' + mm.dti.stressRate + '%)</td><td>&pound;' + fmt(mm.dti.stressTestedPayment) + '</td></tr>' : ''}
+    </table>` : ''}
 
     <div class="ftr">
       <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>

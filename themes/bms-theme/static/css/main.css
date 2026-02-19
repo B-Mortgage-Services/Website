@@ -5937,7 +5937,6 @@ video.wellness-cta-overlay__media {
 
 .report-radar {
   width: 100%;
-  max-width: 220px;
 }
 
 /* Pillars layout */
@@ -5948,7 +5947,7 @@ video.wellness-cta-overlay__media {
 
 .report-pillars__chart {
   display: inline-block;
-  width: 320px;
+  width: 420px;
   max-width: 100%;
   margin: 0 auto 1.25rem;
 }
