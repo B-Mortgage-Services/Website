@@ -360,8 +360,8 @@ function displayResults(data) {
   }
 
   // Scroll modal container to top
-  var container = document.querySelector('.wellness-modal__container');
-  if (container) container.scrollTo(0, 0);
+  var scrollEl = document.querySelector('.wellness-modal__scroll');
+  if (scrollEl) scrollEl.scrollTo(0, 0);
 
   // Update progress dots to show all complete
   var dots = document.querySelectorAll('.step-dot');
@@ -1212,8 +1212,8 @@ function nextStep(step) {
   }
 
   // Scroll modal container to top
-  var container = document.querySelector('.wellness-modal__container');
-  if (container) container.scrollTo(0, 0);
+  var scrollEl = document.querySelector('.wellness-modal__scroll');
+  if (scrollEl) scrollEl.scrollTo(0, 0);
 }
 
 // ========================================

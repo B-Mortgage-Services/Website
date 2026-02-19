@@ -5276,10 +5276,15 @@ video.wellness-cta-overlay__media {
   max-width: 760px;
   width: 92%;
   max-height: 90vh;
-  overflow-y: auto;
-  padding: var(--space-2xl);
+  overflow: hidden;
   transform: translateY(20px);
   transition: transform 0.3s ease;
+}
+
+.wellness-modal__scroll {
+  overflow-y: auto;
+  max-height: 90vh;
+  padding: var(--space-2xl);
 }
 
 .wellness-modal--open .wellness-modal__container {
@@ -5401,9 +5406,13 @@ video.wellness-cta-overlay__media {
   .wellness-modal__container {
     width: 100%;
     max-height: 95vh;
-    padding: var(--space-lg);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     margin-top: auto;
+  }
+
+  .wellness-modal__scroll {
+    max-height: 95vh;
+    padding: var(--space-lg);
   }
 
   .wellness-modal__close {
