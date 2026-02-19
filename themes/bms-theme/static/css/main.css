@@ -2317,6 +2317,103 @@ section {
   }
 }
 
+/* Workplace benefits warning */
+.workplace-warning {
+  background: rgba(240, 91, 40, 0.05);
+  border: 2px solid var(--brand-orange);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: 0 20px 50px rgba(240, 91, 40, 0.15);
+}
+
+.workplace-warning__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.workplace-warning__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: rgba(240, 91, 40, 0.12);
+  border-radius: var(--radius-lg);
+  color: var(--brand-orange);
+}
+
+.workplace-warning__title {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.workplace-warning__intro {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--space-xl);
+}
+
+.workplace-warning__risks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.workplace-warning__risk h4 {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+
+.workplace-warning__risk p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.workplace-warning__sidebar {
+  border-left: 3px solid var(--brand-orange);
+  background: rgba(240, 91, 40, 0.08);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--space-lg) var(--space-xl);
+}
+
+.workplace-warning__sidebar h4 {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.workplace-warning__sidebar p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .workplace-warning {
+    padding: var(--space-xl);
+  }
+
+  .workplace-warning__header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .workplace-warning__title {
+    font-size: 1.25rem;
+  }
+}
+
 /* Pill badges */
 .pill {
   display: inline-flex;

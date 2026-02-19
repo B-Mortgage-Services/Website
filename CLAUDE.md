@@ -42,13 +42,32 @@ Browser (wellness-client.js)
 
 ### Key directories
 - `themes/bms-theme/layouts/` — Hugo templates (Go templating). Page-specific layouts in subfolders (`individuals/`, `employers/`, `wellness/`, etc.), reusable parts in `partials/`.
-- `themes/bms-theme/static/css/main.css` — Single stylesheet, ~5000 lines. BEM naming (`.block__element--modifier`), CSS custom properties for brand colours and spacing.
+- `themes/bms-theme/static/css/main.css` — Single stylesheet, ~5500 lines. BEM naming (`.block__element--modifier`), CSS custom properties for brand colours and spacing.
 - `themes/bms-theme/static/js/` — Vanilla JS, no frameworks. `main.js` (site-wide), `wellness-client.js` (modal/form/results ~900 lines).
 - `functions/api/` — Cloudflare Pages Function endpoints. `wellness-calculate.js` (POST handler), `wellness-pdf.js` (GET handler for PDF generation).
 - `functions/_utils/` — Shared modules (prefixed `_` so Cloudflare doesn't expose as routes). `scoring-engine.js` (~1000 lines, core algorithm), `supabase-client.js`, `risk-data.js`, `pdf-generator.js`, `pdf-template.js`.
 - `content/` — Hugo markdown content pages.
+- `static/images/` — Images, partner logos, and PDF downloads (privacy-policy.pdf, financial-wellness-brochure.pdf).
 - `supabase/migrations/` — SQL schema for `wellness_reports` and `wellness_analytics` tables.
 - `netlify/` — Legacy Netlify Functions (kept for reference, no longer active).
+
+### Site structure & navigation
+
+The Hugo menu (`hugo.toml`) supports nested dropdowns. The header partial (`partials/header.html`) renders children via `{{ if .HasChildren }}`.
+
+```
+Home
+Individuals (identifier: "individuals")
+  └─ Protection (/individuals/protection/)
+Employers
+Tools
+  ├─ Affordability Calculator
+  ├─ Budget Planner
+  └─ Financial Wellness
+Contact
+```
+
+To add a new child page: add a `[[menu.main]]` entry with `parent = "<identifier>"`, create `content/<section>/<page>/_index.md`, and add a layout at `themes/bms-theme/layouts/<section>/<page>/list.html`.
 
 ### Cloudflare Pages Functions
 
@@ -92,7 +111,7 @@ The scoring engine (`functions/_utils/scoring-engine.js`) calculates a 0-100 sco
 | Pillar | Max Points | Components |
 |--------|-----------|------------|
 | Mortgage Eligibility | 35 | Employment (10) + Credit (7) + LTI (10) + DTI (8) |
-| Affordability & Budget | 30 | Deposit/LTV (10) + Monthly surplus (20) |
+| Affordability & Budget | 30 | Deposit/LTV (20) + Monthly surplus (10) |
 | Financial Resilience | 10 | Emergency fund runway |
 | Protection Readiness | 15 | Life (5) + Income protection (5) + Critical illness (5) |
 
@@ -166,6 +185,31 @@ Track what has been built, key decisions, and gotchas so future sessions can pic
 - `saveAffordabilityToSession()` captures: both incomes, property, deposit, mortgage term, interest rate, mortgage amount
 - Print function correctly labels "Maximum (up to 6x)"
 
+**Protection Page (`/individuals/protection/`)**
+- Full page with 7 sections: Hero, Why Protection is Non-Negotiable (19-day stat), Three Pillars (Life/Critical Illness/Income Protection), Safety Net Graphic (dark section), Shortfall Calculator, Complex Lives Callout, Final CTA
+- Interactive shortfall calculator with editable text input (monthly outgoings, default £2,500) + range slider (time off work, 1–24 months, default 6)
+- Calculator updates dynamically: monthly void, SSP percentage bar, and N-month total risk
+- Added to nav menu as dropdown child under Individuals (`identifier` + `parent` pattern in `hugo.toml`)
+- Layout: `themes/bms-theme/layouts/individuals/protection/list.html`
+- Content: `content/individuals/protection/_index.md`
+
+**Employer Page Enhancements**
+- Company Insights Banner: dark gradient section targeting HR managers about anonymised employee data insights (3 feature cards)
+- Trust Bar: partner logos with welcoming message for employer audience
+- Orange CTA Banner: "Ready to Get Started?" with condensed 3-step process
+- Merged 4 compliance cards (Independent, Regulated & Confidential) into "How This Benefits Your Organisation" section (now 8 cards)
+- Commented out redundant sections: "Support Across Every Stage", "Easy for Employers", "Independent, Regulated & Confidential"
+- All "Request Employer Information Pack" buttons changed to "Download Info Pack" pointing to `/images/financial-wellness-brochure.pdf`
+
+**Broken Link Audit & Fixes (Feb 2026)**
+- `/employers/brochure/` → direct PDF download (`/images/financial-wellness-brochure.pdf`)
+- `/refer/` → `/contact/` (no referral page exists yet)
+- `/privacy/` and `/privacy-policy/` → `/images/privacy-policy.pdf` (placeholder PDF)
+- Contact page email typo fixed: `bmortgagesolutions` → `bmortgageservices`
+- Contact page employer brochure: removed `/static/` prefix from path
+- Calendly URL typo: `enquity` → `enquiry` (employers page, 2 instances)
+- Removed `/terms/` and `/complaints/` from footer (no content yet)
+
 ### Known Gotchas
 
 - **Variable ordering in scoring-engine.js**: `propertyVal`, `depositVal`, `ltv` must be parsed before Pillar 1 (they were originally in Pillar 2). If you add new metrics that reference these, they're available early in `calculate()`.
@@ -183,3 +227,7 @@ Track what has been built, key decisions, and gotchas so future sessions can pic
 - Restrict CORS origin for production
 - Custom domain setup (currently on `*.pages.dev`)
 - No automated tests — scoring engine would benefit from unit tests
+- Terms of Service and Complaints pages (removed from footer, need content/PDFs)
+- Referral page (`/refer/`) — currently redirects to `/contact/`
+- Privacy policy PDF is a placeholder — replace with final version
+- Calendly URL `workplace-advice-enquiry` — verify this is the correct Calendly event slug
