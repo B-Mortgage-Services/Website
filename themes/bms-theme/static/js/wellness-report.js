@@ -145,18 +145,18 @@
     var bx1 = cx + bw * Math.cos(pRad), by1 = cy + bw * Math.sin(pRad);
     var bx2 = cx - bw * Math.cos(pRad), by2 = cy - bw * Math.sin(pRad);
 
-    var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="' + CHARCOAL + '" />';
-    var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + CHARCOAL + '" /><circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + ORANGE + '" />';
+    var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="#FFFFFF" />';
+    var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#FFFFFF" /><circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + ORANGE + '" />';
 
-    var txt = '<text x="' + cx + '" y="' + (cy + 36) + '" text-anchor="middle" font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="' + CHARCOAL + '">' + Math.round(s) + '</text>' +
-      '<text x="' + cx + '" y="' + (cy + 52) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">out of ' + m + '</text>';
+    var txt = '<text x="' + cx + '" y="' + (cy + 36) + '" text-anchor="middle" font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="#FFFFFF">' + Math.round(s) + '</text>' +
+      '<text x="' + cx + '" y="' + (cy + 52) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,0.6)">out of ' + m + '</text>';
 
     var scaleLbls = '';
     var scaleVals = [0, 25, 50, 75, 100];
     for (var si = 0; si < scaleVals.length; si++) {
       var sA = (180 + scaleVals[si] / 100 * 180) * Math.PI / 180;
       var sx = cx + (outerR + 14) * Math.cos(sA), sy = cy + (outerR + 14) * Math.sin(sA);
-      scaleLbls += '<text x="' + sx + '" y="' + (sy + 3) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + SLATE + '">' + scaleVals[si] + '</text>';
+      scaleLbls += '<text x="' + sx + '" y="' + (sy + 3) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,0.6)">' + scaleVals[si] + '</text>';
     }
 
     return '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" class="report-gauge">' +
@@ -188,13 +188,13 @@
         var gp = ptAt(angles[a], levels[g]);
         pts.push(gp.x + ',' + gp.y);
       }
-      gridLines += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="1" />';
+      gridLines += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" />';
     }
 
     var axisLines = '';
     for (var i = 0; i < angles.length; i++) {
       var ep = ptAt(angles[i], 1);
-      axisLines += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ep.x + '" y2="' + ep.y + '" stroke="' + LIGHT_GREY + '" stroke-width="1" />';
+      axisLines += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ep.x + '" y2="' + ep.y + '" stroke="rgba(255,255,255,0.2)" stroke-width="1" />';
     }
 
     var dataPoints = [];
@@ -215,7 +215,7 @@
       var lp = ptAt(angles[l], 1);
       var lo = labelOffsets[l];
       var parts = labels[l].split('\n');
-      labelMkp += '<text x="' + (lp.x + lo.dx) + '" y="' + (lp.y + lo.dy) + '" text-anchor="' + lo.anchor + '" font-family="Inter,system-ui,sans-serif" font-size="10" fill="' + SLATE + '">';
+      labelMkp += '<text x="' + (lp.x + lo.dx) + '" y="' + (lp.y + lo.dy) + '" text-anchor="' + lo.anchor + '" font-family="Inter,system-ui,sans-serif" font-size="10" fill="rgba(255,255,255,0.75)">';
       for (var pl = 0; pl < parts.length; pl++) {
         labelMkp += '<tspan x="' + (lp.x + lo.dx) + '" dy="' + (pl === 0 ? '0' : '12') + '">' + parts[pl] + '</tspan>';
       }

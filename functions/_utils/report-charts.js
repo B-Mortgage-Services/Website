@@ -33,10 +33,16 @@ function watermark() {
  * @param {number} max - Maximum score (default 100)
  * @returns {string} SVG markup
  */
-function gaugeChart(score, max) {
+function gaugeChart(score, max, theme) {
   var s = Math.max(0, Math.min(score || 0, max || 100));
   var m = max || 100;
   var pct = s / m;
+  var isDark = theme === 'dark';
+  var textColor = isDark ? '#FFFFFF' : CHARCOAL;
+  var subTextColor = isDark ? 'rgba(255,255,255,0.6)' : SLATE;
+  var needleColor = isDark ? '#FFFFFF' : CHARCOAL;
+  var hubColor = isDark ? '#FFFFFF' : CHARCOAL;
+  var trackColor = isDark ? 'rgba(255,255,255,0.15)' : LIGHT_GREY;
 
   var cx = 150;
   var cy = 140;
@@ -89,7 +95,7 @@ function gaugeChart(score, max) {
 
   // Thin inner track (subtle background ring)
   var trackPath = arcPath(cx, cy, innerR - 4, 180, 180);
-  var track = '<path d="' + trackPath + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="2" opacity="0.4" />';
+  var track = '<path d="' + trackPath + '" fill="none" stroke="' + trackColor + '" stroke-width="2" opacity="0.4" />';
 
   // Needle: rotates from 180deg (0%) to 360deg (100%)
   var needleAngle = 180 + (pct * 180);
@@ -104,16 +110,16 @@ function gaugeChart(score, max) {
   var by1 = cy + bw * Math.sin(perpRad);
   var bx2 = cx - bw * Math.cos(perpRad);
   var by2 = cy - bw * Math.sin(perpRad);
-  var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="' + CHARCOAL + '" />';
-  var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + CHARCOAL + '" />' +
+  var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="' + needleColor + '" />';
+  var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + hubColor + '" />' +
     '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + ORANGE + '" />';
 
   // Score text (centred below needle hub)
   var scoreText = '<text x="' + cx + '" y="' + (cy + 36) + '" text-anchor="middle" ' +
-    'font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="' + CHARCOAL + '">' +
+    'font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="' + textColor + '">' +
     Math.round(s) + '</text>' +
     '<text x="' + cx + '" y="' + (cy + 52) + '" text-anchor="middle" ' +
-    'font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">out of ' + m + '</text>';
+    'font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + subTextColor + '">out of ' + m + '</text>';
 
   // Scale labels at 0, 25, 50, 75, 100 positions
   var scaleLbls = '';
@@ -123,7 +129,7 @@ function gaugeChart(score, max) {
     var sx = cx + (outerR + 14) * Math.cos(sAngle);
     var sy = cy + (outerR + 14) * Math.sin(sAngle);
     scaleLbls += '<text x="' + sx + '" y="' + (sy + 3) + '" text-anchor="middle" ' +
-      'font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + SLATE + '">' + scaleVals[si] + '</text>';
+      'font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + subTextColor + '">' + scaleVals[si] + '</text>';
   }
 
   return '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;">' +
@@ -138,8 +144,12 @@ function gaugeChart(score, max) {
  * @param {Object} pillars - { mortgageEligibility, affordabilityBudget, financialResilience, protectionReadiness } as 0-100 percentages
  * @returns {string} SVG markup
  */
-function radarChart(pillars) {
+function radarChart(pillars, theme) {
   var p = pillars || {};
+  var isDark = theme === 'dark';
+  var labelColor = isDark ? 'rgba(255,255,255,0.75)' : SLATE;
+  var gridColor = isDark ? 'rgba(255,255,255,0.15)' : LIGHT_GREY;
+  var axisColor = isDark ? 'rgba(255,255,255,0.2)' : LIGHT_GREY;
   var vals = [
     (p.mortgageEligibility || 0) / 100,
     (p.affordabilityBudget || 0) / 100,
@@ -172,14 +182,14 @@ function radarChart(pillars) {
       var gp = pointAt(angles[a], gridLevels[g]);
       pts.push(gp.x + ',' + gp.y);
     }
-    gridLines += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="1" />';
+    gridLines += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' + gridColor + '" stroke-width="1" />';
   }
 
   // Axis lines
   var axisLines = '';
   for (var i = 0; i < angles.length; i++) {
     var ep = pointAt(angles[i], 1);
-    axisLines += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ep.x + '" y2="' + ep.y + '" stroke="' + LIGHT_GREY + '" stroke-width="1" />';
+    axisLines += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ep.x + '" y2="' + ep.y + '" stroke="' + axisColor + '" stroke-width="1" />';
   }
 
   // Data polygon
@@ -203,7 +213,7 @@ function radarChart(pillars) {
     var lo = labelOffsets[l];
     var parts = labels[l].split('\n');
     labelMarkup += '<text x="' + (lp.x + lo.dx) + '" y="' + (lp.y + lo.dy) + '" text-anchor="' + lo.anchor + '" ' +
-      'font-family="Inter,system-ui,sans-serif" font-size="10" fill="' + SLATE + '">';
+      'font-family="Inter,system-ui,sans-serif" font-size="10" fill="' + labelColor + '">';
     for (var pl = 0; pl < parts.length; pl++) {
       labelMarkup += '<tspan x="' + (lp.x + lo.dx) + '" dy="' + (pl === 0 ? '0' : '12') + '">' + parts[pl] + '</tspan>';
     }

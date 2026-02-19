@@ -5822,7 +5822,7 @@ video.wellness-cta-overlay__media {
 
 .report-section--hero {
   background: var(--brand-charcoal);
-  padding-top: var(--space-3xl);
+  padding-top: calc(80px + var(--space-3xl));
   padding-bottom: var(--space-4xl);
 }
 

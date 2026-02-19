@@ -10,6 +10,7 @@
  */
 
 var charts = require('./report-charts');
+var logos = require('./report-logos');
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -632,7 +633,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logoWhite.png" alt="B Mortgage Services"></div>
+      <div class="hdr__brand"><img class="hdr__logo" src="${logos.LOGO_WHITE}" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
@@ -642,7 +643,7 @@ module.exports = function renderHTML(data) {
     <!-- Score Hero: Gauge + Category -->
     <div class="score-hero">
       <div class="score-hero__gauge">
-        ${charts.gaugeChart(data.score, 100, charts.ORANGE)}
+        ${charts.gaugeChart(data.score, 100, 'dark')}
       </div>
       <div class="score-hero__text">
         <div class="score-hero__category">${escHtml(data.category)}</div>
@@ -654,7 +655,7 @@ module.exports = function renderHTML(data) {
     <h2>The Four <span class="accent">Pillars</span></h2>
     <div class="pillars">
       <div class="pillars__chart">
-        ${charts.radarChart(pp)}
+        ${charts.radarChart(pp, 'dark')}
       </div>
       <div class="pillars__cards">
         <div class="p-card p-card--elig">
@@ -705,7 +706,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logo.jpg" alt="B Mortgage Services"></div>
+      <div class="hdr__brand"><img class="hdr__logo" src="${logos.LOGO_REGULAR}" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
@@ -803,7 +804,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logo.jpg" alt="B Mortgage Services"></div>
+      <div class="hdr__brand"><img class="hdr__logo" src="${logos.LOGO_REGULAR}" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
@@ -875,7 +876,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logo.jpg" alt="B Mortgage Services"></div>
+      <div class="hdr__brand"><img class="hdr__logo" src="${logos.LOGO_REGULAR}" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
