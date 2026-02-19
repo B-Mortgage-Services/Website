@@ -124,9 +124,7 @@ function resetWellnessForm() {
   var sliderDisplay = document.getElementById('perception-value');
   if (sliderDisplay) sliderDisplay.textContent = '3 months';
 
-  // Hide pre-fill notice
-  var notice = document.getElementById('prefillNotice');
-  if (notice) notice.style.display = 'none';
+  // Pre-fill notice removed — no-op
 
   // Remove prefill badges
   var badges = document.querySelectorAll('.prefill-badge');
@@ -138,9 +136,9 @@ function resetWellnessForm() {
     prefilledGroups[n].classList.remove('form-group--prefilled');
   }
 
-  // Reset mortgage metrics dashboard
-  var metricsEl = document.getElementById('mortgage-metrics-dashboard');
-  if (metricsEl) { metricsEl.innerHTML = ''; metricsEl.style.display = 'none'; }
+  // Reset gauge container
+  var gaugeContainer = document.getElementById('score-gauge-container');
+  if (gaugeContainer) gaugeContainer.innerHTML = '';
 
   // Reset chart instances
   Object.values(currentChartInstances).forEach(function(chart) { chart.destroy(); });
@@ -222,10 +220,8 @@ function applySessionData() {
     prefilledCount++;
   }
 
-  // Show pre-fill notice if any fields were populated
+  // Silently highlight pre-filled fields (notice removed)
   if (prefilledCount > 0) {
-    var notice = document.getElementById('prefillNotice');
-    if (notice) notice.style.display = 'flex';
     highlightPrefilledFields();
   }
 }
@@ -378,42 +374,131 @@ function displayResults(data) {
   updateCategoryLabel(data.score, data.category, data.interpretation);
   updateStrengthsAndImprovements(data.strengths, data.improvements);
 
-  // Display non-chart metrics immediately
-  if (data.runway) displayRunway(data.runway);
-  if (data.mortgageMetrics) displayMortgageMetrics(data.mortgageMetrics);
-  if (data.perceptionGap) displayPerceptionGap(data.perceptionGap);
-  if (data.riskAssessment) displayRiskProbabilities(data.riskAssessment);
-  if (data.stateBenefit && data.benchmarks) {
-    renderBenefitExplanation(data.stateBenefit, data.benchmarks, data.waterfall);
-  }
+  // Sections below are commented out — detail moved to full report page
+  // if (data.runway) displayRunway(data.runway);
+  // if (data.mortgageMetrics) displayMortgageMetrics(data.mortgageMetrics);
+  // if (data.perceptionGap) displayPerceptionGap(data.perceptionGap);
+  // if (data.riskAssessment) displayRiskProbabilities(data.riskAssessment);
+  // if (data.stateBenefit && data.benchmarks) {
+  //   renderBenefitExplanation(data.stateBenefit, data.benchmarks, data.waterfall);
+  // }
 
-  // Defer chart rendering for next paint cycle (modal canvas sizing)
-  requestAnimationFrame(function() {
-    setTimeout(function() {
-      if (typeof Chart !== 'undefined') {
-        renderCharts(data.chartData, data.pillarPercentages);
-        if (data.waterfall && data.household) {
-          renderWaterfallChart(data.waterfall, data.household.monthlyEssentials);
-        }
-      }
-    }, 150);
-  });
+  // Chart rendering commented out — charts live on full report page
+  // requestAnimationFrame(function() {
+  //   setTimeout(function() {
+  //     if (typeof Chart !== 'undefined') {
+  //       renderCharts(data.chartData, data.pillarPercentages);
+  //       if (data.waterfall && data.household) {
+  //         renderWaterfallChart(data.waterfall, data.household.monthlyEssentials);
+  //       }
+  //     }
+  //   }, 150);
+  // });
 
   // Update share/download buttons
   updateActionButtons(data.reportId, data.reportUrl);
 }
 
 /**
- * Animate the score gauge
+ * Render speedometer gauge SVG into the score container.
+ * Port of gaugeChart() from report-charts.js for client-side use.
+ */
+function renderGaugeSVG(score, max) {
+  var s = Math.max(0, Math.min(score || 0, max || 100));
+  var m = max || 100;
+  var pct = s / m;
+
+  var ORANGE = '#F05B28';
+  var CHARCOAL = '#2D2D2D';
+  var SLATE = '#64748B';
+  var LIGHT_GREY = '#E5E7EB';
+
+  var cx = 150, cy = 140, outerR = 110, innerR = 72;
+  var trackColor = LIGHT_GREY;
+
+  var segments = [
+    { color: '#E85D3A', start: 180, sweep: 36 },
+    { color: '#F0983E', start: 216, sweep: 36 },
+    { color: '#C5B944', start: 252, sweep: 36 },
+    { color: '#7BAA45', start: 288, sweep: 36 },
+    { color: '#4A6B5A', start: 324, sweep: 36 }
+  ];
+
+  function arcPath(cxp, cyp, r, startDeg, sweepDeg) {
+    var s1 = (startDeg - 0.5) * Math.PI / 180;
+    var s2 = (startDeg + sweepDeg + 0.5) * Math.PI / 180;
+    var x1 = cxp + r * Math.cos(s1), y1 = cyp + r * Math.sin(s1);
+    var x2 = cxp + r * Math.cos(s2), y2 = cyp + r * Math.sin(s2);
+    var large = sweepDeg > 180 ? 1 : 0;
+    return 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2;
+  }
+
+  function segmentPath(cxp, cyp, outer, inner, startDeg, sweepDeg) {
+    var a1 = (startDeg - 0.3) * Math.PI / 180;
+    var a2 = (startDeg + sweepDeg + 0.3) * Math.PI / 180;
+    var ox1 = cxp + outer * Math.cos(a1), oy1 = cyp + outer * Math.sin(a1);
+    var ox2 = cxp + outer * Math.cos(a2), oy2 = cyp + outer * Math.sin(a2);
+    var ix1 = cxp + inner * Math.cos(a1), iy1 = cyp + inner * Math.sin(a1);
+    var ix2 = cxp + inner * Math.cos(a2), iy2 = cyp + inner * Math.sin(a2);
+    var large = sweepDeg > 180 ? 1 : 0;
+    return 'M ' + ox1 + ' ' + oy1 +
+      ' A ' + outer + ' ' + outer + ' 0 ' + large + ' 1 ' + ox2 + ' ' + oy2 +
+      ' L ' + ix2 + ' ' + iy2 +
+      ' A ' + inner + ' ' + inner + ' 0 ' + large + ' 0 ' + ix1 + ' ' + iy1 + ' Z';
+  }
+
+  var segPaths = '';
+  for (var i = 0; i < segments.length; i++) {
+    var seg = segments[i];
+    segPaths += '<path d="' + segmentPath(cx, cy, outerR, innerR, seg.start, seg.sweep) + '" fill="' + seg.color + '" />';
+  }
+
+  var trackPath = arcPath(cx, cy, innerR - 4, 180, 180);
+  var track = '<path d="' + trackPath + '" fill="none" stroke="' + trackColor + '" stroke-width="2" opacity="0.4" />';
+
+  var needleAngle = 180 + (pct * 180);
+  var needleLen = outerR - 8;
+  var needleRad = needleAngle * Math.PI / 180;
+  var nx = cx + needleLen * Math.cos(needleRad);
+  var ny = cy + needleLen * Math.sin(needleRad);
+  var perpRad = needleRad + Math.PI / 2;
+  var bw = 4;
+  var bx1 = cx + bw * Math.cos(perpRad), by1 = cy + bw * Math.sin(perpRad);
+  var bx2 = cx - bw * Math.cos(perpRad), by2 = cy - bw * Math.sin(perpRad);
+  var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="' + CHARCOAL + '" />';
+  var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + CHARCOAL + '" />' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + ORANGE + '" />';
+
+  var scoreText = '<text x="' + cx + '" y="' + (cy + 36) + '" text-anchor="middle" ' +
+    'font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="' + CHARCOAL + '">' +
+    Math.round(s) + '</text>' +
+    '<text x="' + cx + '" y="' + (cy + 52) + '" text-anchor="middle" ' +
+    'font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">out of ' + m + '</text>';
+
+  var scaleLbls = '';
+  var scaleVals = [0, 25, 50, 75, 100];
+  for (var si = 0; si < scaleVals.length; si++) {
+    var sAngle = (180 + scaleVals[si] / 100 * 180) * Math.PI / 180;
+    var sx = cx + (outerR + 14) * Math.cos(sAngle);
+    var sy = cy + (outerR + 14) * Math.sin(sAngle);
+    scaleLbls += '<text x="' + sx + '" y="' + (sy + 3) + '" text-anchor="middle" ' +
+      'font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + SLATE + '">' + scaleVals[si] + '</text>';
+  }
+
+  return '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;">' +
+    segPaths + track + needle + hub + scoreText + scaleLbls + '</svg>';
+}
+
+/**
+ * Animate the speedometer gauge from 0 to finalScore
  */
 function animateScore(finalScore) {
-  var scoreEl = document.getElementById('score-value');
-  var arcEl = document.getElementById('score-arc');
-  if (!scoreEl || !arcEl) return;
+  var container = document.getElementById('score-gauge-container');
+  if (!container) return;
 
   var current = 0;
   var duration = 2000;
-  var increment = finalScore / (duration / 20);
+  var increment = finalScore / (duration / 30);
 
   var interval = setInterval(function() {
     current += increment;
@@ -421,10 +506,8 @@ function animateScore(finalScore) {
       current = finalScore;
       clearInterval(interval);
     }
-    scoreEl.textContent = Math.round(current);
-    var offset = 251 - (251 * current / 100);
-    arcEl.style.strokeDashoffset = offset;
-  }, 20);
+    container.innerHTML = renderGaugeSVG(Math.round(current), 100);
+  }, 30);
 }
 
 /**
@@ -1096,8 +1179,8 @@ async function calculateScore() {
       return;
     }
 
-    // Ensure Chart.js is loaded before submitting
-    await ensureChartJs();
+    // Chart.js no longer needed in modal — charts live on full report page
+    // await ensureChartJs();
 
     var result = await submitWellnessCheck(formData);
     displayResults(result);

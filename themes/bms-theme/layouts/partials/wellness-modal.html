@@ -17,16 +17,7 @@
       <div class="step-dot" data-step="4"></div>
     </div>
 
-    <!-- Pre-fill Notice (hidden by default) -->
-    <div class="wellness-modal__prefill-notice" id="prefillNotice" style="display: none;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-      </svg>
-      <p style="margin: 0; flex: 1;">We've pre-filled some fields from your affordability calculation. Feel free to edit them.</p>
-      <button type="button" onclick="this.parentElement.style.display='none'" aria-label="Dismiss" style="background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
+    <!-- Pre-fill Notice (removed — data silently pre-filled) -->
 
     <!-- Step 1: Personal & Employment -->
     <div class="wellness-step" id="step-1">
@@ -334,28 +325,10 @@
 
       <!-- ===== SECTION: Your Score ===== -->
       <div class="results-section">
-        <!-- Score Gauge -->
+        <!-- Score Gauge (speedometer dial) -->
         <div style="text-align: center; padding: 1.5rem 0 0;">
           <h3 class="results-section__heading">Your Mortgage Readiness Score</h3>
-          <div style="position: relative; width: 200px; height: 120px; margin: 1rem auto 0;">
-            <svg viewBox="0 0 200 120" style="width: 100%; height: 100%;">
-              <defs>
-                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:#EF4444"/>
-                  <stop offset="25%" style="stop-color:#F97316"/>
-                  <stop offset="50%" style="stop-color:#EAB308"/>
-                  <stop offset="75%" style="stop-color:#84CC16"/>
-                  <stop offset="100%" style="stop-color:#22C55E"/>
-                </linearGradient>
-              </defs>
-              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e5e5e5" stroke-width="12" stroke-linecap="round"/>
-              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#scoreGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" id="score-arc"/>
-            </svg>
-            <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); text-align: center;">
-              <span id="score-value" style="font-family: var(--font-display); font-size: 3rem; color: var(--brand-charcoal);">0</span>
-              <span style="font-size: 1rem; color: var(--text-secondary);">/100</span>
-            </div>
-          </div>
+          <div id="score-gauge-container" style="max-width: 280px; margin: 1rem auto 0;"></div>
           <div id="score-label" style="margin-top: 1rem;"></div>
         </div>
 
@@ -371,6 +344,8 @@
           </div>
         </div>
       </div>
+
+      {{/* ===== COMMENTED OUT — sections moved to full report page =====
 
       <!-- ===== SECTION: Financial Runway ===== -->
       <div class="results-section">
@@ -465,6 +440,8 @@
         </div>
       </div>
 
+      ===== END COMMENTED OUT ===== */}}
+
       <!-- ===== SECTION: Actions ===== -->
       <div class="results-section" style="border-bottom: none; padding-bottom: 0;">
         <div id="report-actions" style="text-align: center; padding: 1.5rem; background: var(--cream); border-radius: var(--radius-lg);">
@@ -472,7 +449,7 @@
           <p style="font-size: 0.9rem; margin-bottom: 1rem;">Share your results or download a detailed report to discuss with an adviser.</p>
           <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
             <a id="view-full-report-btn" class="btn btn--primary" href="#" style="display: none;" target="_blank" rel="noopener">View Full Report</a>
-            <button id="share-report-btn" class="btn btn--secondary" style="display: none;">Share Report Link</button>
+            {{/* <button id="share-report-btn" class="btn btn--secondary" style="display: none;">Share Report Link</button> */}}
             <button id="download-pdf-btn" class="btn btn--secondary" style="display: none;">Download PDF Report</button>
           </div>
           <div id="loading-indicator" style="display: none; margin-top: 1rem;">
