@@ -1,993 +1,888 @@
 /**
- * PDF Report Template — pure JS template literals (no Handlebars)
+ * PDF Report Template — Premium Editorial Design
  *
- * Cloudflare Workers block `new Function()` which Handlebars uses internally.
- * This module exports a single `renderHTML(data)` function that builds the
- * complete HTML string using JavaScript template literals and local helpers.
+ * Pure JS template literals (no Handlebars — Workers block `new Function()`).
+ * Uses SVG chart generators from report-charts.js for gauge, radar, runway,
+ * waterfall, and mini-bar visuals.
+ *
+ * Typography: Playfair Display (headings) + Inter (body/data)
+ * Layout: 4-page A4 with generous white space, subtle shadows, B watermark
  */
 
-// ── Helper functions ──────────────────────────────────────────────────────────
+var charts = require('./report-charts');
 
-function formatNumber(num) {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function fmt(num) {
   var val = parseFloat(num) || 0;
   return val.toLocaleString('en-GB', { maximumFractionDigits: 0 });
 }
 
-function formatDecimal(num, decimals) {
-  var val = parseFloat(num) || 0;
-  return val.toFixed(typeof decimals === 'number' ? decimals : 1);
+function fmtDec(num, d) {
+  return (parseFloat(num) || 0).toFixed(typeof d === 'number' ? d : 1);
 }
 
-function round(num) {
-  return Math.round(parseFloat(num) || 0);
-}
-
-function scorePercent(score, maxScore) {
+function pct(score, max) {
   var s = parseFloat(score) || 0;
-  var m = parseFloat(maxScore) || 1;
+  var m = parseFloat(max) || 1;
   return Math.round((s / m) * 100);
 }
 
-function subtract(a, b) {
-  return (parseFloat(a) || 0) - (parseFloat(b) || 0);
+function escHtml(str) {
+  return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function isShortfall(income, essentials) {
-  return (parseFloat(income) || 0) < (parseFloat(essentials) || 0);
-}
-
-function shortfallAmount(income, essentials) {
-  return Math.round((parseFloat(essentials) || 0) - (parseFloat(income) || 0));
-}
-
-function surplusAmount(income, essentials) {
-  return Math.round((parseFloat(income) || 0) - (parseFloat(essentials) || 0));
-}
-
-// ── Template renderer ─────────────────────────────────────────────────────────
+// ── Template Renderer ────────────────────────────────────────────────────────
 
 module.exports = function renderHTML(data) {
-  var lastWaterfallItem = (data.waterfall && data.waterfall.length > 0)
+  var lastWF = (data.waterfall && data.waterfall.length > 0)
     ? data.waterfall[data.waterfall.length - 1]
     : null;
+
+  var pp = data.pillarPercentages || {};
+
+  // Pre-build score breakdown rows
+  var breakdownRows = [
+    { label: 'Employment Status', score: data.breakdown.employment.score, max: data.breakdown.employment.maxScore },
+    { label: 'Credit History', score: data.breakdown.credit.score, max: data.breakdown.credit.maxScore },
+    { label: 'Deposit / LTV', score: data.breakdown.deposit.score, max: data.breakdown.deposit.maxScore },
+    { label: 'Monthly Surplus', score: data.breakdown.surplus.score, max: data.breakdown.surplus.maxScore },
+    { label: 'Emergency Savings', score: data.breakdown.emergency.score, max: data.breakdown.emergency.maxScore },
+    { label: 'Protection Cover', score: data.breakdown.protection.totalScore, max: data.breakdown.protection.maxScore }
+  ];
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Financial Wellness Report - B Mortgage Services</title>
+  <title>Financial Wellness Report — B Mortgage Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ========== PDF BASE STYLES ========== */
-    @page {
-      size: A4;
-      margin: 15mm 20mm;
-    }
+    /* ═══════ RESET & BASE ═══════ */
+    @page { size: A4; margin: 0; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --orange: #F05B28;
+      --charcoal: #2D2D2D;
+      --slate: #64748B;
+      --light: #F3F4F6;
+      --border: #E5E7EB;
+      --white: #FFFFFF;
+      --off-white: #FAFAFA;
+      --green: #22C55E;
+      --red: #EF4444;
+      --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --sans: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 11px;
-      line-height: 1.5;
-      color: #2D2D2D;
+      font-family: var(--sans);
+      font-size: 10px;
+      line-height: 1.55;
+      color: var(--charcoal);
+      background: var(--white);
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
 
-    /* Page break control */
+    /* ═══════ PAGE SHELL ═══════ */
     .page {
-      page-break-after: always;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 28mm 24mm 20mm;
       position: relative;
-      min-height: 250mm;
+      page-break-after: always;
+      overflow: hidden;
     }
+    .page:last-child { page-break-after: avoid; }
+    .page--alt { background: var(--off-white); }
 
-    .page:last-child {
-      page-break-after: avoid;
-    }
-
-    /* ========== BRAND COLORS ========== */
-    :root {
-      --brand-orange: #F05B28;
-      --brand-charcoal: #2D2D2D;
-      --brand-cream: #FFF8F5;
-      --text-secondary: #6B7280;
-      --green: #22C55E;
-      --yellow: #EAB308;
-      --red: #EF4444;
-      --blue: #3B82F6;
-      --purple: #A855F7;
-      --light-grey: #F3F4F6;
-    }
-
-    /* ========== HEADER / FOOTER ========== */
-    .page-header {
+    /* ═══════ HEADER BAR ═══════ */
+    .hdr {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--brand-orange);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--orange);
     }
-
-    .page-header__logo {
+    .hdr__brand {
+      font-family: var(--serif);
       font-size: 14px;
       font-weight: 700;
-      color: var(--brand-orange);
+      color: var(--orange);
+      letter-spacing: 0.01em;
+    }
+    .hdr__meta {
+      font-size: 8.5px;
+      color: var(--slate);
+      text-align: right;
+      line-height: 1.4;
     }
 
-    .page-header__date {
-      font-size: 9px;
-      color: var(--text-secondary);
-    }
-
-    .page-footer {
+    /* ═══════ FOOTER ═══════ */
+    .ftr {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 8px;
-      color: var(--text-secondary);
-      padding-top: 10px;
-      border-top: 1px solid #E5E7EB;
+      bottom: 12mm;
+      left: 24mm;
+      right: 24mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5px;
+      color: var(--slate);
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
     }
 
-    /* ========== TYPOGRAPHY ========== */
+    /* ═══════ TYPOGRAPHY ═══════ */
+    .t-serif { font-family: var(--serif); }
+    .t-sans  { font-family: var(--sans); }
+
     h1 {
-      font-size: 22px;
-      color: var(--brand-charcoal);
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--charcoal);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
       margin-bottom: 6px;
     }
 
     h2 {
-      font-size: 16px;
-      color: var(--brand-orange);
-      margin-bottom: 12px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #E5E7EB;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--charcoal);
+      letter-spacing: -0.01em;
+      margin-bottom: 14px;
     }
+    h2 .accent { color: var(--orange); }
 
     h3 {
-      font-size: 13px;
-      color: var(--brand-charcoal);
-      margin-bottom: 8px;
-    }
-
-    p {
-      margin-bottom: 6px;
-    }
-
-    /* ========== COMPONENTS ========== */
-    .score-hero {
-      text-align: center;
-      background: linear-gradient(135deg, var(--brand-orange) 0%, #D94A1F 100%);
-      color: white;
-      padding: 25px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    .score-hero__number {
-      font-size: 64px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .score-hero__max {
-      font-size: 24px;
-      opacity: 0.8;
-    }
-
-    .score-hero__category {
-      font-size: 16px;
-      margin-top: 6px;
-      opacity: 0.95;
-    }
-
-    .score-hero__interpretation {
+      font-family: var(--sans);
       font-size: 11px;
-      margin-top: 4px;
-      opacity: 0.85;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
     }
 
-    /* Runway Hero */
-    .runway-hero {
+    .subtitle {
+      font-size: 11px;
+      color: var(--slate);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    /* ═══════ SCORE HERO ═══════ */
+    .score-hero {
       display: flex;
       align-items: center;
-      gap: 20px;
-      background: var(--brand-cream);
-      padding: 16px 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      border-left: 4px solid var(--brand-orange);
+      gap: 28px;
+      margin-bottom: 28px;
     }
-
-    .runway-hero__days {
-      font-size: 42px;
-      font-weight: 700;
-      color: var(--brand-orange);
-      line-height: 1;
+    .score-hero__gauge {
+      flex-shrink: 0;
+      width: 180px;
     }
-
-    .runway-hero__label {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .runway-hero__detail {
+    .score-hero__text {
       flex: 1;
     }
-
-    .runway-hero__detail p {
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    /* Pillar Grid */
-    .pillar-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .pillar-card {
-      background: var(--light-grey);
-      padding: 14px;
-      border-radius: 8px;
-      border-left: 4px solid;
-    }
-
-    .pillar-card--eligibility { border-left-color: var(--green); }
-    .pillar-card--affordability { border-left-color: var(--blue); }
-    .pillar-card--resilience { border-left-color: var(--yellow); }
-    .pillar-card--protection { border-left-color: var(--purple); }
-
-    .pillar-card__title {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-secondary);
+    .score-hero__category {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--charcoal);
       margin-bottom: 4px;
     }
-
-    .pillar-card__score {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--brand-charcoal);
+    .score-hero__interp {
+      font-size: 10.5px;
+      color: var(--slate);
+      line-height: 1.55;
     }
 
-    .pillar-card__bar {
-      height: 6px;
-      background: #E5E7EB;
-      border-radius: 3px;
-      margin-top: 6px;
-      overflow: hidden;
+    /* ═══════ PILLAR SECTION ═══════ */
+    .pillars {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 24px;
     }
-
-    .pillar-card__fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.3s ease;
+    .pillars__chart {
+      flex-shrink: 0;
+      width: 240px;
     }
-
-    /* Strengths & Improvements */
-    .two-column {
+    .pillars__cards {
+      flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 10px;
+    }
+    .p-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .p-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 3px;
+    }
+    .p-card--elig::before  { background: var(--green); }
+    .p-card--aff::before   { background: #3B82F6; }
+    .p-card--res::before   { background: #EAB308; }
+    .p-card--prot::before  { background: #A855F7; }
+
+    .p-card__label {
+      font-size: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate);
+      margin-bottom: 2px;
+    }
+    .p-card__pct {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.1;
+    }
+
+    /* ═══════ STRENGTHS / IMPROVEMENTS ═══════ */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
       margin-bottom: 20px;
     }
-
-    .column-card {
-      padding: 14px;
+    .si-card {
       border-radius: 8px;
+      padding: 14px 16px;
     }
-
-    .column-card--green {
+    .si-card--green {
       background: #F0FDF4;
       border: 1px solid #BBF7D0;
     }
-
-    .column-card--orange {
+    .si-card--orange {
       background: #FFF7ED;
       border: 1px solid #FED7AA;
     }
-
-    .column-card__title {
-      font-size: 11px;
+    .si-card__title {
+      font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 8px;
     }
-
-    .column-card--green .column-card__title { color: var(--green); }
-    .column-card--orange .column-card__title { color: var(--brand-orange); }
-
-    .column-card__list {
+    .si-card--green .si-card__title { color: var(--green); }
+    .si-card--orange .si-card__title { color: var(--orange); }
+    .si-card__list {
       list-style: none;
       padding: 0;
     }
-
-    .column-card__list li {
-      padding: 3px 0;
-      font-size: 10px;
+    .si-card__list li {
+      padding: 2px 0;
+      font-size: 9.5px;
+      line-height: 1.45;
     }
+    .si-card--green .si-card__list li::before { content: "\\2713\\0020"; color: var(--green); font-weight: 700; }
+    .si-card--orange .si-card__list li::before { content: "\\2192\\0020"; color: var(--orange); font-weight: 700; }
 
-    .column-card__list li::before {
-      content: "\\2713 ";
-      font-weight: 700;
-    }
-
-    .column-card--green .column-card__list li::before { color: var(--green); }
-    .column-card--orange .column-card__list li::before { content: "\\2192 "; color: var(--brand-orange); }
-
-    /* Chart placeholder */
-    .chart-container {
-      background: var(--light-grey);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .chart-container img {
-      max-width: 100%;
-      height: auto;
-    }
-
-    /* Perception Gap */
-    .perception-grid {
+    /* ═══════ STAT GRID ═══════ */
+    .stat-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
     }
-
-    .perception-box {
+    .stat-box {
       text-align: center;
-      padding: 14px;
+      padding: 14px 8px 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      background: white;
-      border: 1px solid #E5E7EB;
     }
-
-    .perception-box--actual {
-      border-color: var(--brand-orange);
-      border-width: 2px;
-    }
-
-    .perception-box__value {
-      font-size: 32px;
+    .stat-box__val {
+      font-size: 20px;
       font-weight: 700;
-      color: var(--brand-charcoal);
+      color: var(--charcoal);
+      line-height: 1.1;
     }
-
-    .perception-box--actual .perception-box__value {
-      color: var(--brand-orange);
-    }
-
-    .perception-box__label {
-      font-size: 9px;
-      color: var(--text-secondary);
+    .stat-box__label {
+      font-size: 7.5px;
       text-transform: uppercase;
-    }
-
-    .perception-box__unit {
-      font-size: 10px;
-      color: var(--text-secondary);
-    }
-
-    /* Waterfall Table */
-    .waterfall-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 16px;
-      font-size: 10px;
-    }
-
-    .waterfall-table th {
-      background: var(--brand-charcoal);
-      color: white;
-      padding: 8px 10px;
-      text-align: left;
-      font-size: 9px;
-      text-transform: uppercase;
-    }
-
-    .waterfall-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #E5E7EB;
-    }
-
-    .waterfall-table tr:nth-child(even) td {
-      background: #F9FAFB;
-    }
-
-    .waterfall-bar {
-      height: 14px;
-      border-radius: 3px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .waterfall-bar--income { background: var(--blue); }
-    .waterfall-bar--shortfall { background: var(--red); opacity: 0.3; }
-
-    /* Risk Cards */
-    .risk-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .risk-card {
-      text-align: center;
-      padding: 16px 12px;
-      border-radius: 8px;
-      background: var(--light-grey);
-      border-top: 3px solid;
-    }
-
-    .risk-card--death { border-top-color: var(--red); }
-    .risk-card--ci { border-top-color: var(--yellow); }
-    .risk-card--absence { border-top-color: var(--blue); }
-
-    .risk-card__value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--brand-charcoal);
-    }
-
-    .risk-card__label {
-      font-size: 9px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--slate);
       margin-top: 4px;
     }
 
-    .risk-card__context {
-      font-size: 9px;
-      color: var(--text-secondary);
-      margin-top: 6px;
+    /* ═══════ BREAKDOWN TABLE ═══════ */
+    .bd-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 22px;
     }
-
-    /* Employer Benefits */
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
+    .bd-table th {
+      font-size: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate);
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--charcoal);
     }
+    .bd-table th:last-child { text-align: right; }
+    .bd-table td {
+      padding: 9px 10px;
+      font-size: 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .bd-table td:first-child { font-weight: 600; }
+    .bd-table td:last-child { text-align: right; font-weight: 700; }
+    .bd-table .bar-cell { width: 130px; }
 
-    .benefit-card {
-      padding: 12px;
-      border-radius: 8px;
-      background: var(--light-grey);
+    /* ═══════ RUNWAY SECTION ═══════ */
+    .runway-hero {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 22px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    .runway-hero__big {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .runway-hero__unit {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate);
+    }
+    .runway-hero__body { flex: 1; }
+    .runway-hero__body p {
+      font-size: 10px;
+      color: var(--slate);
+      line-height: 1.5;
     }
 
-    .benefit-card__icon {
-      width: 32px;
-      height: 32px;
+    /* ═══════ WATERFALL SECTION ═══════ */
+    .wf-chart {
+      margin-bottom: 14px;
+    }
+
+    .shortfall-callout {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 8px;
+      padding: 14px 18px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .shortfall-callout__val {
+      font-size: 28px;
+      font-weight: 700;
+      color: #991B1B;
+      line-height: 1.1;
+    }
+    .shortfall-callout__label {
+      font-size: 9px;
+      color: #7F1D1D;
+      margin-top: 4px;
+    }
+
+    /* ═══════ RISK CARDS ═══════ */
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .risk-card {
+      text-align: center;
+      padding: 16px 10px 14px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      position: relative;
+    }
+    .risk-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 8px 8px 0 0;
+    }
+    .risk-card--death::before   { background: var(--red); }
+    .risk-card--ci::before      { background: #EAB308; }
+    .risk-card--absence::before { background: #3B82F6; }
+
+    .risk-card__icon {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .risk-card__val {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1;
+    }
+    .risk-card__label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--slate);
+      margin-top: 4px;
+    }
+    .risk-card__ctx {
+      font-size: 8px;
+      color: var(--slate);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    /* ═══════ RECOMMENDATION CARDS ═══════ */
+    .rec-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+    }
+    .rec-card__num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
+      background: var(--orange);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
+      line-height: 1;
     }
-
-    .benefit-card__icon--yes { background: #DCFCE7; }
-    .benefit-card__icon--no { background: #FEE2E2; }
-
-    .benefit-card__text {
-      font-size: 10px;
-    }
-
-    .benefit-card__label {
-      font-weight: 600;
-      color: var(--brand-charcoal);
-    }
-
-    .benefit-card__value {
-      color: var(--text-secondary);
-    }
-
-    /* Recommendations */
-    .recommendation {
-      padding: 14px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      border-left: 4px solid var(--brand-orange);
-      background: var(--brand-cream);
-    }
-
-    .recommendation__title {
-      font-size: 12px;
+    .rec-card__body { flex: 1; }
+    .rec-card__title {
+      font-size: 11px;
       font-weight: 700;
-      color: var(--brand-charcoal);
+      color: var(--charcoal);
+      margin-bottom: 3px;
+    }
+    .rec-card__text {
+      font-size: 9.5px;
+      color: var(--slate);
+      line-height: 1.5;
+    }
+
+    /* ═══════ CTA BOX ═══════ */
+    .cta {
+      background: var(--charcoal);
+      border-radius: 10px;
+      padding: 26px 28px;
+      text-align: center;
+      margin-top: 18px;
+    }
+    .cta h3 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--white);
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .cta p {
+      font-size: 10px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 10px;
+      line-height: 1.55;
+    }
+    .cta__contact {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--orange);
+    }
+
+    /* ═══════ DISCLAIMER ═══════ */
+    .disc {
+      font-size: 7.5px;
+      color: var(--slate);
+      line-height: 1.4;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ═══════ WATERMARK ═══════ */
+    .wm-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════ INFO BOXES ═══════ */
+    .info-box {
+      border-left: 3px solid;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+    .info-box--blue {
+      background: #F0F4FF;
+      border-left-color: #3B82F6;
+    }
+    .info-box--amber {
+      background: #FFF7ED;
+      border-left-color: #F59E0B;
+    }
+    .info-box__title {
+      font-size: 9.5px;
+      font-weight: 700;
       margin-bottom: 4px;
     }
-
-    .recommendation__text {
-      font-size: 10px;
-      color: var(--text-secondary);
+    .info-box--blue .info-box__title { color: #1E3A5F; }
+    .info-box--amber .info-box__title { color: #92400E; }
+    .info-box p {
+      color: #374151;
+      font-size: 8.5px;
+      margin-bottom: 4px;
     }
+    .info-box p:last-child { margin-bottom: 0; }
 
-    /* CTA Box */
-    .cta-box {
-      text-align: center;
-      background: var(--brand-charcoal);
-      color: white;
-      padding: 24px;
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-
-    .cta-box h3 {
-      color: white;
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .cta-box p {
-      opacity: 0.8;
-      font-size: 11px;
-    }
-
-    .cta-box__contact {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--brand-orange);
-      font-weight: 600;
-    }
-
-    /* Household Summary */
-    .household-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .household-stat {
-      text-align: center;
-      padding: 12px 8px;
-      background: var(--light-grey);
-      border-radius: 8px;
-    }
-
-    .household-stat__value {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--brand-charcoal);
-    }
-
-    .household-stat__label {
-      font-size: 8px;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    /* Disclaimer */
-    .disclaimer {
-      font-size: 8px;
-      color: var(--text-secondary);
-      line-height: 1.4;
-      margin-top: 16px;
-      padding-top: 10px;
-      border-top: 1px solid #E5E7EB;
-    }
+    /* ═══════ UTILITY ═══════ */
+    .mb-0 { margin-bottom: 0 !important; }
+    .mb-sm { margin-bottom: 8px; }
+    .mb-md { margin-bottom: 16px; }
+    .text-sm { font-size: 8.5px; }
+    .text-slate { color: var(--slate); }
+    .text-center { text-align: center; }
+    .text-italic { font-style: italic; }
   </style>
 </head>
 <body>
 
-  <!-- ========== PAGE 1: EXECUTIVE SUMMARY ========== -->
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PAGE 1 — EXECUTIVE SUMMARY
+       ═══════════════════════════════════════════════════════════════════════ -->
   <div class="page">
-    <div class="page-header">
-      <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
+    <div class="wm-wrap">${charts.watermark()}</div>
+
+    <div class="hdr">
+      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
-    <h1>Your Financial Wellness Report</h1>
-    <p style="color: var(--text-secondary); margin-bottom: 20px;">A personalised snapshot of your mortgage readiness and financial resilience.</p>
+    <h1>Your Financial <span style="color:var(--orange);">Wellness</span> Report</h1>
+    <p class="subtitle">A personalised snapshot of your mortgage readiness, financial resilience, and protection cover.</p>
 
-    <!-- Score Hero -->
+    <!-- Score Hero: Gauge + Category -->
     <div class="score-hero">
-      <div>
-        <span class="score-hero__number">${data.score}</span><span class="score-hero__max">/100</span>
+      <div class="score-hero__gauge">
+        ${charts.gaugeChart(data.score, 100, charts.ORANGE)}
       </div>
-      <div class="score-hero__category">${data.category}</div>
-      <div class="score-hero__interpretation">${data.interpretation}</div>
-    </div>
-
-    <!-- Runway Hero -->
-    <div class="runway-hero">
-      <div>
-        <div class="runway-hero__days">${data.runway.days}</div>
-        <div class="runway-hero__label">days</div>
-      </div>
-      <div class="runway-hero__detail">
-        <h3>Your Financial Runway</h3>
-        <p>If your income stopped, your savings would cover essential outgoings for approximately <strong>${data.runway.days} days (${data.runway.months} months)</strong>.</p>
-        <p>UK average: ${data.benchmarks.averageDeadlineDays} days &middot; Target: ${data.benchmarks.targetDeadlineDays}+ days</p>
+      <div class="score-hero__text">
+        <div class="score-hero__category">${escHtml(data.category)}</div>
+        <p class="score-hero__interp">${escHtml(data.interpretation)}</p>
       </div>
     </div>
 
-    <!-- Four Pillar Cards -->
-    <h2>Four Pillar Breakdown</h2>
-    <div class="pillar-grid">
-      <div class="pillar-card pillar-card--eligibility">
-        <div class="pillar-card__title">Mortgage Eligibility</div>
-        <div class="pillar-card__score">${data.pillarPercentages.mortgageEligibility}%</div>
-        <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.mortgageEligibility}%; background: var(--green);"></div>
-        </div>
+    <!-- Four Pillars: Radar + Cards -->
+    <h2>The Four <span class="accent">Pillars</span></h2>
+    <div class="pillars">
+      <div class="pillars__chart">
+        ${charts.radarChart(pp)}
       </div>
-      <div class="pillar-card pillar-card--affordability">
-        <div class="pillar-card__title">Affordability & Budget</div>
-        <div class="pillar-card__score">${data.pillarPercentages.affordabilityBudget}%</div>
-        <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.affordabilityBudget}%; background: var(--blue);"></div>
+      <div class="pillars__cards">
+        <div class="p-card p-card--elig">
+          <div class="p-card__label">Mortgage Eligibility</div>
+          <div class="p-card__pct">${pp.mortgageEligibility || 0}%</div>
         </div>
-      </div>
-      <div class="pillar-card pillar-card--resilience">
-        <div class="pillar-card__title">Financial Resilience</div>
-        <div class="pillar-card__score">${data.pillarPercentages.financialResilience}%</div>
-        <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.financialResilience}%; background: var(--yellow);"></div>
+        <div class="p-card p-card--aff">
+          <div class="p-card__label">Affordability &amp; Budget</div>
+          <div class="p-card__pct">${pp.affordabilityBudget || 0}%</div>
         </div>
-      </div>
-      <div class="pillar-card pillar-card--protection">
-        <div class="pillar-card__title">Protection Readiness</div>
-        <div class="pillar-card__score">${data.pillarPercentages.protectionReadiness}%</div>
-        <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.protectionReadiness}%; background: var(--purple);"></div>
+        <div class="p-card p-card--res">
+          <div class="p-card__label">Financial Resilience</div>
+          <div class="p-card__pct">${pp.financialResilience || 0}%</div>
+        </div>
+        <div class="p-card p-card--prot">
+          <div class="p-card__label">Protection Readiness</div>
+          <div class="p-card__pct">${pp.protectionReadiness || 0}%</div>
         </div>
       </div>
     </div>
 
     <!-- Strengths & Improvements -->
-    <div class="two-column">
-      <div class="column-card column-card--green">
-        <div class="column-card__title">Your Strengths</div>
-        <ul class="column-card__list">
-          ${(data.strengths || []).map(function (s) { return '<li>' + s + '</li>'; }).join('\n          ')}
+    <div class="two-col">
+      <div class="si-card si-card--green">
+        <div class="si-card__title">Your Strengths</div>
+        <ul class="si-card__list">
+          ${(data.strengths || []).map(function (s) { return '<li>' + escHtml(s) + '</li>'; }).join('\n          ')}
         </ul>
       </div>
-      <div class="column-card column-card--orange">
-        <div class="column-card__title">Areas to Improve</div>
-        <ul class="column-card__list">
-          ${(data.improvements || []).map(function (s) { return '<li>' + s + '</li>'; }).join('\n          ')}
+      <div class="si-card si-card--orange">
+        <div class="si-card__title">Areas to Improve</div>
+        <ul class="si-card__list">
+          ${(data.improvements || []).map(function (s) { return '<li>' + escHtml(s) + '</li>'; }).join('\n          ')}
         </ul>
       </div>
     </div>
 
-    <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 1 of 4 &middot; Report ID: ${data.reportId}
+    <div class="ftr">
+      <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
+      <span>Page 1 of 4 &middot; ${data.reportId}</span>
     </div>
   </div>
 
-  <!-- ========== PAGE 2: DETAILED ANALYSIS ========== -->
-  <div class="page">
-    <div class="page-header">
-      <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PAGE 2 — FINANCIAL HEALTH
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="page page--alt">
+    <div class="wm-wrap">${charts.watermark()}</div>
+
+    <div class="hdr">
+      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
-    <h2>Detailed Score Analysis</h2>
+    <h2>Your Financial <span class="accent">Health</span></h2>
 
-    <!-- Household Summary -->
-    <h3>Your Household Finances</h3>
-    <div class="household-grid">
-      <div class="household-stat">
-        <div class="household-stat__value">&pound;${formatNumber(data.household.monthlyIncome)}</div>
-        <div class="household-stat__label">Monthly Income</div>
+    <!-- Household Dashboard -->
+    <h3>Household Dashboard</h3>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.household.monthlyIncome)}</div>
+        <div class="stat-box__label">Monthly Income</div>
       </div>
-      <div class="household-stat">
-        <div class="household-stat__value">&pound;${formatNumber(data.household.monthlyEssentials)}</div>
-        <div class="household-stat__label">Monthly Essentials</div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.household.monthlyEssentials)}</div>
+        <div class="stat-box__label">Monthly Essentials</div>
       </div>
-      <div class="household-stat">
-        <div class="household-stat__value">&pound;${formatNumber(data.household.accessibleSavings)}</div>
-        <div class="household-stat__label">Accessible Savings</div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.household.accessibleSavings)}</div>
+        <div class="stat-box__label">Accessible Savings</div>
       </div>
-      <div class="household-stat">
-        <div class="household-stat__value">&pound;${formatNumber(data.household.monthlySurplus)}</div>
-        <div class="household-stat__label">Monthly Surplus</div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.household.monthlySurplus)}</div>
+        <div class="stat-box__label">Monthly Surplus</div>
       </div>
     </div>
 
-    <!-- Score Breakdown Table -->
+    <!-- Score Breakdown -->
     <h3>Score Breakdown</h3>
-    <table class="waterfall-table" style="margin-bottom: 20px;">
+    <table class="bd-table">
       <thead>
         <tr>
-          <th>Category</th>
-          <th>Your Score</th>
-          <th>Max Score</th>
-          <th>Percentage</th>
+          <th>Component</th>
+          <th style="width:130px;">Progress</th>
+          <th>Score</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><strong>Employment Status</strong></td>
-          <td>${data.breakdown.employment.score}</td>
-          <td>${data.breakdown.employment.maxScore}</td>
-          <td>${scorePercent(data.breakdown.employment.score, data.breakdown.employment.maxScore)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Credit History</strong></td>
-          <td>${data.breakdown.credit.score}</td>
-          <td>${data.breakdown.credit.maxScore}</td>
-          <td>${scorePercent(data.breakdown.credit.score, data.breakdown.credit.maxScore)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Deposit / LTV</strong></td>
-          <td>${data.breakdown.deposit.score}</td>
-          <td>${data.breakdown.deposit.maxScore}</td>
-          <td>${scorePercent(data.breakdown.deposit.score, data.breakdown.deposit.maxScore)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Monthly Surplus</strong></td>
-          <td>${data.breakdown.surplus.score}</td>
-          <td>${data.breakdown.surplus.maxScore}</td>
-          <td>${scorePercent(data.breakdown.surplus.score, data.breakdown.surplus.maxScore)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Emergency Savings</strong></td>
-          <td>${data.breakdown.emergency.score}</td>
-          <td>${data.breakdown.emergency.maxScore}</td>
-          <td>${scorePercent(data.breakdown.emergency.score, data.breakdown.emergency.maxScore)}%</td>
-        </tr>
-        <tr>
-          <td><strong>Protection Cover</strong></td>
-          <td>${data.breakdown.protection.totalScore}</td>
-          <td>${data.breakdown.protection.maxScore}</td>
-          <td>${scorePercent(data.breakdown.protection.totalScore, data.breakdown.protection.maxScore)}%</td>
-        </tr>
-      </tbody>
-    </table>
-
-    ${data.breakdown.deposit.propertyValue ? `<h3>Property & Deposit</h3>
-    <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-card__text">
-          <div class="benefit-card__label">Property Value</div>
-          <div class="benefit-card__value">&pound;${formatNumber(data.breakdown.deposit.propertyValue)}</div>
-        </div>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-card__text">
-          <div class="benefit-card__label">Deposit</div>
-          <div class="benefit-card__value">&pound;${formatNumber(data.breakdown.deposit.value)}</div>
-        </div>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-card__text">
-          <div class="benefit-card__label">Loan to Value</div>
-          <div class="benefit-card__value">${formatDecimal(data.breakdown.deposit.ltv, 1)}%</div>
-        </div>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-card__text">
-          <div class="benefit-card__label">Mortgage Amount</div>
-          <div class="benefit-card__value">&pound;${formatNumber(subtract(data.breakdown.deposit.propertyValue, data.breakdown.deposit.value))}</div>
-        </div>
-      </div>
-    </div>` : ''}
-
-    <div class="disclaimer">
-      Scores are calculated based on the information you provided. Actual mortgage eligibility depends on lender criteria, credit checks, and professional assessment.
-    </div>
-
-    <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 2 of 4 &middot; Report ID: ${data.reportId}
-    </div>
-  </div>
-
-  <!-- ========== PAGE 3: FINANCIAL RESILIENCE ========== -->
-  <div class="page">
-    <div class="page-header">
-      <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
-    </div>
-
-    <h2>Financial Resilience</h2>
-
-    <!-- Perception Gap -->
-    <h3>Reality Check</h3>
-    <div class="perception-grid">
-      <div class="perception-box">
-        <div class="perception-box__label">You Estimated</div>
-        <div class="perception-box__value">${round(data.perceptionGap.estimatedDays)}</div>
-        <div class="perception-box__unit">days</div>
-      </div>
-      <div class="perception-box perception-box--actual">
-        <div class="perception-box__label">The Reality</div>
-        <div class="perception-box__value">${data.runway.days}</div>
-        <div class="perception-box__unit">days</div>
-      </div>
-    </div>
-    <p style="text-align: center; font-size: 10px; color: var(--text-secondary); margin-bottom: 20px;">${data.perceptionGap.message}</p>
-
-    <!-- Income Waterfall -->
-    <h3>What If You Couldn't Work?</h3>
-    <p style="font-size: 10px; color: var(--text-secondary); margin-bottom: 10px;">
-      This shows what would happen to your income over 6 months if you were unable to work due to illness or injury.
-    </p>
-    <table class="waterfall-table">
-      <thead>
-        <tr>
-          <th>Month</th>
-          <th>Income Source</th>
-          <th>Monthly Income</th>
-          <th>vs. Essentials</th>
-          <th>Cumulative Shortfall</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${(data.waterfall || []).map(function (item) {
-          var vsEssentials = isShortfall(item.income, data.household.monthlyEssentials)
-            ? '<span style="color: var(--red); font-weight: 600;">-&pound;' + formatNumber(shortfallAmount(item.income, data.household.monthlyEssentials)) + '</span>'
-            : '<span style="color: var(--green); font-weight: 600;">+&pound;' + formatNumber(surplusAmount(item.income, data.household.monthlyEssentials)) + '</span>';
-          var cumShortfall = item.cumulativeShortfall
-            ? '<span style="color: var(--red); font-weight: 600;">-&pound;' + formatNumber(item.cumulativeShortfall) + '</span>'
-            : '<span style="color: var(--green);">&pound;0</span>';
-          return '<tr>'
-            + '<td>Month ' + item.month + '</td>'
-            + '<td>' + item.source + '</td>'
-            + '<td>&pound;' + formatNumber(item.income) + '</td>'
-            + '<td>' + vsEssentials + '</td>'
-            + '<td>' + cumShortfall + '</td>'
-            + '</tr>';
+        ${breakdownRows.map(function (row) {
+          var rowPct = pct(row.score, row.max);
+          var rowColor = charts.pillarColor(rowPct);
+          return '<tr>' +
+            '<td>' + escHtml(row.label) + '</td>' +
+            '<td class="bar-cell">' + charts.miniBar(rowPct, rowColor) + '</td>' +
+            '<td>' + row.score + ' / ' + row.max + '</td>' +
+            '</tr>';
         }).join('\n        ')}
       </tbody>
     </table>
 
-    ${(lastWaterfallItem && lastWaterfallItem.cumulativeShortfall) ? `<div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; text-align: center;">
-      <p style="font-size: 11px; font-weight: 700; color: #991B1B; margin: 0;">
-        Total 6-month shortfall: &pound;${formatNumber(lastWaterfallItem.cumulativeShortfall)}
-      </p>
-      <p style="font-size: 9px; color: #7F1D1D; margin: 4px 0 0 0;">
-        This is the amount you would need to find from savings or other sources to cover your essential outgoings over 6 months without adequate income protection.
-      </p>
+    ${data.breakdown.deposit.propertyValue ? `
+    <!-- Property & Mortgage -->
+    <h3>Property &amp; Mortgage</h3>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.breakdown.deposit.propertyValue)}</div>
+        <div class="stat-box__label">Property Value</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.breakdown.deposit.value)}</div>
+        <div class="stat-box__label">Deposit</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__val">${fmtDec(data.breakdown.deposit.ltv, 1)}%</div>
+        <div class="stat-box__label">Loan to Value</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt((parseFloat(data.breakdown.deposit.propertyValue) || 0) - (parseFloat(data.breakdown.deposit.value) || 0))}</div>
+        <div class="stat-box__label">Mortgage Amount</div>
+      </div>
     </div>` : ''}
 
-    <!-- State Benefit Explanation -->
-    <div style="background: #F0F4FF; border-left: 3px solid #3B82F6; padding: 10px 14px; margin-bottom: 10px; border-radius: 0 4px 4px 0;">
-      <p style="font-size: 10px; font-weight: 600; color: #1E3A5F; margin: 0 0 6px 0;">Understanding Your State Benefit Entitlement</p>
-      ${data.stateBenefit.type === 'SSP'
-        ? `<p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        As a PAYE employee, you are entitled to <strong>Statutory Sick Pay (SSP)</strong> of &pound;${data.benchmarks.sspWeekly}/week (&pound;${data.benchmarks.sspMonthly}/month) for up to ${data.benchmarks.sspMaxWeeks} weeks. SSP is payable from day 1 of sickness (from April 2026). Your employer may also offer enhanced sick pay above this level.
-      </p>
-      <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        After SSP ends, you may be eligible for <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week, subject to your NI contribution record, and <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element).
-      </p>`
-        : `<p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        As a self-employed individual, you are <strong>not eligible for SSP</strong>. You may claim <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week (&pound;${data.benchmarks.esaMonthlyAssessment}/month) during the 13-week assessment phase, rising to &pound;${data.benchmarks.esaWeeklySupportGroup}/week in the Support Group. Eligibility depends on Class 2 NI contributions.
-      </p>
-      <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        You may also qualify for <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element). The Minimum Income Floor does not apply if you have limited capability for work.
-      </p>`}
-    </div>
-
-    <!-- WCA Warning -->
-    <div style="background: #FFF7ED; border-left: 3px solid #F59E0B; padding: 10px 14px; margin-bottom: 10px; border-radius: 0 4px 4px 0;">
-      <p style="font-size: 10px; font-weight: 600; color: #92400E; margin: 0 0 6px 0;">&#9888; Important: State Benefits Are Not Guaranteed</p>
-      <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        To receive ESA or the health-related element of Universal Credit, you must pass the <strong>Work Capability Assessment (WCA)</strong> &mdash; a strict, points-based functional test. Approximately <strong>1 in 5 claimants are found fit for work</strong> at initial assessment and receive no health-related benefit. The WCA assesses what you can functionally do, not your diagnosis &mdash; having a medical condition alone is not sufficient.
-      </p>
-      <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        The assessment process typically takes <strong>around 4 months</strong> from claim to decision. During this period you would receive only the basic UC rate with no health element. If you need to challenge a decision, it can take 6&ndash;9 months or more.
-      </p>
-      <p style="font-size: 8px; color: #6B7280; margin: 4px 0 0 0; font-style: italic;">
-        Rates shown are for 2025/26. Actual entitlement depends on individual circumstances, NI record, and household income. UC is means-tested. This is for illustration only and does not constitute benefits advice.
-      </p>
-    </div>
-
-    <!-- Employer Benefits -->
-    <h3>Your Employer Safety Net</h3>
-    <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-card__icon ${data.employerBenefits.sickPay.exists ? 'benefit-card__icon--yes' : 'benefit-card__icon--no'}">
-          ${data.employerBenefits.sickPay.exists ? '&#10003;' : '&#10007;'}
-        </div>
-        <div class="benefit-card__text">
-          <div class="benefit-card__label">Employer Sick Pay</div>
-          <div class="benefit-card__value">${data.employerBenefits.sickPay.description}</div>
-        </div>
+    <!-- Financial Runway -->
+    <h3>Financial Runway</h3>
+    <div class="runway-hero">
+      <div>
+        <div class="runway-hero__big">${data.runway.days}</div>
+        <div class="runway-hero__unit">days</div>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-card__icon ${data.employerBenefits.deathInService.exists ? 'benefit-card__icon--yes' : 'benefit-card__icon--no'}">
-          ${data.employerBenefits.deathInService.exists ? '&#10003;' : '&#10007;'}
-        </div>
-        <div class="benefit-card__text">
-          <div class="benefit-card__label">Death in Service</div>
-          <div class="benefit-card__value">${data.employerBenefits.deathInService.description}</div>
-        </div>
+      <div class="runway-hero__body">
+        <p>If your income stopped today, your accessible savings would cover essential outgoings for approximately <strong>${data.runway.days} days (${data.runway.months} months)</strong>.</p>
       </div>
     </div>
+    ${charts.runwayBars(data.runway.days, data.benchmarks.averageDeadlineDays, data.benchmarks.targetDeadlineDays)}
 
-    <div class="disclaimer">
-      Financial runway calculation accounts for ${data.stateBenefit.label} (&pound;${data.stateBenefit.monthlyAmount}/month) and any personal income protection cover declared. Actual benefit entitlement depends on individual circumstances and may vary.
-    </div>
-
-    <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 3 of 4 &middot; Report ID: ${data.reportId}
+    <div class="ftr">
+      <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
+      <span>Page 2 of 4 &middot; ${data.reportId}</span>
     </div>
   </div>
 
-  <!-- ========== PAGE 4: RISK & RECOMMENDATIONS ========== -->
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PAGE 3 — THE REALITY CHECK
+       ═══════════════════════════════════════════════════════════════════════ -->
   <div class="page">
-    <div class="page-header">
-      <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
+    <div class="wm-wrap">${charts.watermark()}</div>
+
+    <div class="hdr">
+      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
-    <h2>Mortgage Term Risk Statistics</h2>
-    <p style="font-size: 10px; color: var(--text-secondary); margin-bottom: 14px;">
-      ${data.riskAssessment.summary}
-    </p>
+    <h2>The Reality <span class="accent">Check</span></h2>
+    <p class="subtitle mb-md">What happens to your household finances if you can't work for an extended period?</p>
 
+    <!-- Income Waterfall Chart -->
+    <div class="wf-chart">
+      ${charts.waterfallChart(data.waterfall, data.household.monthlyEssentials)}
+    </div>
+
+    ${(lastWF && lastWF.cumulativeShortfall) ? `
+    <div class="shortfall-callout">
+      <div class="shortfall-callout__val">&pound;${fmt(lastWF.cumulativeShortfall)}</div>
+      <div class="shortfall-callout__label">Total 6-month shortfall — the amount you'd need from savings or other sources to cover essential outgoings.</div>
+    </div>` : ''}
+
+    <!-- Risk Statistics -->
+    <h3>The Statistics Over a 25-Year Mortgage</h3>
     <div class="risk-grid">
       <div class="risk-card risk-card--death">
-        <div class="risk-card__value">${data.riskAssessment.formatted.death}</div>
+        <div class="risk-card__icon">&#9760;</div>
+        <div class="risk-card__val">${data.riskAssessment.formatted.death}</div>
         <div class="risk-card__label">Chance of Death</div>
-        <div class="risk-card__context">During 25-year mortgage</div>
+        <div class="risk-card__ctx">During a 25-year mortgage term</div>
       </div>
       <div class="risk-card risk-card--ci">
-        <div class="risk-card__value">${data.riskAssessment.formatted.criticalIllness}</div>
+        <div class="risk-card__icon">&#9829;</div>
+        <div class="risk-card__val">${data.riskAssessment.formatted.criticalIllness}</div>
         <div class="risk-card__label">Critical Illness</div>
-        <div class="risk-card__context">Diagnosis probability</div>
+        <div class="risk-card__ctx">Probability of diagnosis</div>
       </div>
       <div class="risk-card risk-card--absence">
-        <div class="risk-card__value">${data.riskAssessment.formatted.longTermAbsence}</div>
+        <div class="risk-card__icon">&#9201;</div>
+        <div class="risk-card__val">${data.riskAssessment.formatted.longTermAbsence}</div>
         <div class="risk-card__label">2+ Month Absence</div>
-        <div class="risk-card__context">From work during term</div>
+        <div class="risk-card__ctx">From work during term</div>
       </div>
     </div>
 
-    <p style="font-size: 9px; color: var(--text-secondary); font-style: italic; margin-bottom: 20px;">
-      These are statistical averages based on age (${data.riskAssessment.probabilities.ageBracket}) and smoking status (${data.riskAssessment.probabilities.smokingStatus}). Individual risk varies. Discuss with a qualified adviser.
+    <p class="text-sm text-slate text-italic mb-md">
+      Statistics based on age bracket (${escHtml(data.riskAssessment.probabilities.ageBracket)}) and smoking status (${escHtml(data.riskAssessment.probabilities.smokingStatus)}). Individual risk varies — discuss with a qualified adviser.
     </p>
 
-    <!-- Recommendations -->
-    <h2>Your Next Steps</h2>
+    <!-- State Benefit Info -->
+    <div class="info-box info-box--blue">
+      <div class="info-box__title">Understanding Your State Benefit Entitlement</div>
+      ${data.stateBenefit.type === 'SSP'
+        ? `<p>As a PAYE employee, you are entitled to <strong>Statutory Sick Pay (SSP)</strong> of &pound;${data.benchmarks.sspWeekly}/week (&pound;${data.benchmarks.sspMonthly}/month) for up to ${data.benchmarks.sspMaxWeeks} weeks. SSP is payable from day 1 of sickness (from April 2026).</p>
+           <p>After SSP ends, you may be eligible for <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week and <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element).</p>`
+        : `<p>As self-employed, you are <strong>not eligible for SSP</strong>. You may claim <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week (&pound;${data.benchmarks.esaMonthlyAssessment}/month) during the 13-week assessment phase, rising to &pound;${data.benchmarks.esaWeeklySupportGroup}/week in the Support Group.</p>
+           <p>You may also qualify for <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element).</p>`}
+    </div>
 
-    ${(data.recommendations || []).map(function (rec) {
-      return '<div class="recommendation">'
-        + '<div class="recommendation__title">' + rec.title + '</div>'
-        + '<div class="recommendation__text">' + rec.text + '</div>'
-        + '</div>';
+    <div class="info-box info-box--amber">
+      <div class="info-box__title">&#9888; State Benefits Are Not Guaranteed</div>
+      <p>To receive ESA or Universal Credit health element, you must pass the <strong>Work Capability Assessment</strong> — approximately <strong>1 in 5 claimants are found fit for work</strong> at initial assessment. The process takes around 4 months from claim to decision.</p>
+    </div>
+
+    <div class="ftr">
+      <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
+      <span>Page 3 of 4 &middot; ${data.reportId}</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PAGE 4 — NEXT STEPS
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="page page--alt">
+    <div class="wm-wrap">${charts.watermark()}</div>
+
+    <div class="hdr">
+      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
+    </div>
+
+    <h2>Your Next <span class="accent">Steps</span></h2>
+    <p class="subtitle">Based on your results, here are the most impactful actions you can take right now.</p>
+
+    ${(data.recommendations || []).map(function (rec, idx) {
+      return '<div class="rec-card">' +
+        '<div class="rec-card__num">' + (idx + 1) + '</div>' +
+        '<div class="rec-card__body">' +
+          '<div class="rec-card__title">' + escHtml(rec.title) + '</div>' +
+          '<div class="rec-card__text">' + escHtml(rec.text) + '</div>' +
+        '</div>' +
+        '</div>';
     }).join('\n    ')}
 
-    <!-- CTA -->
-    <div class="cta-box">
-      <h3>Ready to Take the Next Step?</h3>
-      <p>Book a free, no-obligation consultation with one of our mortgage advisers. We'll review your report and create a personalised action plan.</p>
-      <div class="cta-box__contact">
-        bmortgageservices.co.uk &middot; info@bmortgagesolutions.co.uk
+    <!-- Employer Benefits Summary -->
+    <h3 style="margin-top:18px;">Your Employer Safety Net</h3>
+    <div class="stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+      <div class="stat-box" style="text-align:left; padding: 12px 16px;">
+        <div style="font-size:9px; font-weight:600; color:var(--charcoal); margin-bottom:2px;">Employer Sick Pay</div>
+        <div style="font-size:9px; color:var(--slate);">${escHtml(data.employerBenefits.sickPay.description)}</div>
+      </div>
+      <div class="stat-box" style="text-align:left; padding: 12px 16px;">
+        <div style="font-size:9px; font-weight:600; color:var(--charcoal); margin-bottom:2px;">Death in Service</div>
+        <div style="font-size:9px; color:var(--slate);">${escHtml(data.employerBenefits.deathInService.description)}</div>
       </div>
     </div>
 
-    <div class="disclaimer">
-      This report is for informational purposes only and does not constitute financial advice. B Mortgage Services is authorised and regulated by the Financial Conduct Authority. Your home may be repossessed if you do not keep up repayments on your mortgage. Report generated ${data.generatedDate}. Data based on ${data.benchmarks.averageDeadlineDays}-day UK average deadline (L&amp;G 2022), SSP rates from April 2026, and risk probabilities from CMI mortality tables.
+    <!-- CTA -->
+    <div class="cta">
+      <h3>Ready to Take the Next Step?</h3>
+      <p>Book a free, no-obligation consultation. We'll review your report, discuss your goals, and create a personalised action plan.</p>
+      <div class="cta__contact">bmortgageservices.co.uk &middot; info@bmortgagesolutions.co.uk</div>
     </div>
 
-    <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 4 of 4 &middot; Report ID: ${data.reportId}
+    <div class="disc">
+      This report is for informational purposes only and does not constitute financial advice. B Mortgage Services is authorised and regulated by the Financial Conduct Authority. Your home may be repossessed if you do not keep up repayments on your mortgage. Report generated ${data.generatedDate}. Risk probabilities from CMI mortality tables and ONS data. State benefit rates for 2025/26. UK average financial runway: ${data.benchmarks.averageDeadlineDays} days (L&amp;G 2022). Your data is held securely and processed in accordance with our privacy policy.
+    </div>
+
+    <div class="ftr">
+      <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
+      <span>Page 4 of 4 &middot; ${data.reportId}</span>
     </div>
   </div>
 

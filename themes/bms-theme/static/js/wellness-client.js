@@ -321,6 +321,16 @@ async function submitWellnessCheck(formData) {
       score: data.score
     }));
 
+    // Save full report data to sessionStorage for the web report page
+    try {
+      sessionStorage.setItem('bms_report_' + data.reportId, JSON.stringify({
+        data: data,
+        expiry: Date.now() + 30 * 60 * 1000  // 30 minutes
+      }));
+    } catch (e) {
+      // sessionStorage full or unavailable — non-critical
+    }
+
     return data;
 
   } catch (error) {
@@ -914,6 +924,12 @@ function renderCharts(chartData, pillarPercentages) {
  * Update action buttons (share, download)
  */
 function updateActionButtons(reportId, reportUrl) {
+  var viewBtn = document.getElementById('view-full-report-btn');
+  if (viewBtn) {
+    viewBtn.style.display = 'inline-block';
+    viewBtn.href = '/wellness/report/?id=' + encodeURIComponent(reportId);
+  }
+
   var shareBtn = document.getElementById('share-report-btn');
   if (shareBtn) {
     shareBtn.style.display = 'inline-block';

@@ -54,8 +54,9 @@ export async function onRequestPost(context) {
     // Save report to Supabase
     const reportId = await supabaseClient.saveReport(env, scoringResult, data.email || null);
 
-    // Build report URL
-    const reportUrl = `${env.REPORT_BASE_URL || 'https://bmortgageservices.co.uk/wellness/report/'}${reportId}`;
+    // Build report URL (query-param format matches web report page)
+    const baseUrl = env.REPORT_BASE_URL || 'https://bmortgageservices.co.uk/wellness/report/';
+    const reportUrl = `${baseUrl}?id=${reportId}`;
 
     // Log analytics (anonymized)
     await supabaseClient.logAnalytics(env, {

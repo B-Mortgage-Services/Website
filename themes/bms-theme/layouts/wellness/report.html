@@ -1,0 +1,34 @@
+{{ define "head" }}
+  <!-- Report page fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+{{ end }}
+
+{{ define "main" }}
+<div class="report-page" id="report-page">
+
+  <!-- Loading state -->
+  <div class="report-loading" id="report-loading">
+    <div class="report-loading__inner">
+      <div class="report-loading__spinner"></div>
+      <p class="report-loading__text">Loading your report&hellip;</p>
+    </div>
+  </div>
+
+  <!-- Error state (hidden by default) -->
+  <div class="report-error" id="report-error" style="display:none;">
+    <div class="report-error__inner">
+      <h2>Report Not Found</h2>
+      <p>This report may have expired or the link may be invalid.</p>
+      <a href="/wellness/" class="btn btn--primary">Take the Assessment</a>
+    </div>
+  </div>
+
+  <!-- Report content (populated by JS) -->
+  <div class="report-content" id="report-content" style="display:none;"></div>
+
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+<script src="{{ "js/wellness-report.js" | relURL }}"></script>
+{{ end }}

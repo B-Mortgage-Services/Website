@@ -1,0 +1,571 @@
+/**
+ * Wellness Report — Client-side renderer
+ *
+ * Reads report data from sessionStorage (instant) or falls back to
+ * GET /api/wellness-report?reportId={id}. Renders a premium editorial
+ * layout with inline SVG charts.
+ *
+ * Uses ES5 var declarations for broad browser compatibility.
+ */
+
+(function () {
+  'use strict';
+
+  // ── Brand Constants ──────────────────────────────────────────────────────
+  var ORANGE = '#F05B28';
+  var CHARCOAL = '#2D2D2D';
+  var SLATE = '#64748B';
+  var LIGHT_GREY = '#E5E7EB';
+  var GREEN = '#22C55E';
+  var RED = '#EF4444';
+
+  // ── DOM References ───────────────────────────────────────────────────────
+  var loadingEl = document.getElementById('report-loading');
+  var errorEl = document.getElementById('report-error');
+  var contentEl = document.getElementById('report-content');
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  var params = new URLSearchParams(window.location.search);
+  var reportId = params.get('id') || params.get('reportId');
+
+  if (!reportId) {
+    showError();
+    return;
+  }
+
+  // Try sessionStorage first, then API
+  var sessionKey = 'bms_report_' + reportId;
+  var cached = sessionStorage.getItem(sessionKey);
+
+  if (cached) {
+    try {
+      var parsed = JSON.parse(cached);
+      if (parsed.data && parsed.expiry && parsed.expiry > Date.now()) {
+        renderReport(parsed.data, reportId);
+        return;
+      }
+    } catch (e) {
+      // Corrupted cache — fall through to API
+    }
+  }
+
+  // Fallback: fetch from API
+  fetchReport(reportId);
+
+  // ── Fetch from API ───────────────────────────────────────────────────────
+  function fetchReport(id) {
+    fetch('/api/wellness-report?reportId=' + encodeURIComponent(id))
+      .then(function (res) {
+        if (!res.ok) throw new Error('Report not found');
+        return res.json();
+      })
+      .then(function (json) {
+        if (!json.data) throw new Error('Invalid report data');
+        renderReport(json.data, id);
+      })
+      .catch(function () {
+        showError();
+      });
+  }
+
+  // ── State helpers ────────────────────────────────────────────────────────
+  function showError() {
+    loadingEl.style.display = 'none';
+    errorEl.style.display = '';
+  }
+
+  // ── Format helpers ───────────────────────────────────────────────────────
+  function fmt(num) {
+    var val = parseFloat(num) || 0;
+    return val.toLocaleString('en-GB', { maximumFractionDigits: 0 });
+  }
+
+  function fmtDec(num, d) {
+    return (parseFloat(num) || 0).toFixed(typeof d === 'number' ? d : 1);
+  }
+
+  function esc(str) {
+    var div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function pct(score, max) {
+    var s = parseFloat(score) || 0;
+    var m = parseFloat(max) || 1;
+    return Math.round((s / m) * 100);
+  }
+
+  function pillarColor(p) {
+    if (p >= 75) return GREEN;
+    if (p >= 50) return ORANGE;
+    return RED;
+  }
+
+  // ── SVG Chart Generators (client-side mirrors of report-charts.js) ─────
+
+  function gaugeChart(score, max) {
+    var s = Math.max(0, Math.min(score || 0, max || 100));
+    var m = max || 100;
+    var fraction = s / m;
+    var radius = 80;
+    var cx = 100, cy = 100;
+    var strokeW = 12;
+    var circ = 2 * Math.PI * radius;
+    var arcLen = circ * 0.75;
+    var filled = arcLen * fraction;
+    var gap = circ - arcLen;
+
+    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="report-gauge">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="' + strokeW + '" stroke-dasharray="' + arcLen + ' ' + gap + '" stroke-linecap="round" transform="rotate(135 ' + cx + ' ' + cy + ')" />' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" stroke="' + ORANGE + '" stroke-width="' + strokeW + '" stroke-dasharray="' + filled + ' ' + (circ - filled) + '" stroke-linecap="round" transform="rotate(135 ' + cx + ' ' + cy + ')" />' +
+      '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="42" font-weight="700" fill="' + CHARCOAL + '">' + Math.round(s) + '</text>' +
+      '<text x="' + cx + '" y="' + (cy + 14) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="14" fill="' + SLATE + '">/ ' + m + '</text>' +
+      '</svg>';
+  }
+
+  function radarChart(pillars) {
+    var p = pillars || {};
+    var vals = [
+      (p.mortgageEligibility || 0) / 100,
+      (p.affordabilityBudget || 0) / 100,
+      (p.financialResilience || 0) / 100,
+      (p.protectionReadiness || 0) / 100
+    ];
+    var labels = ['Mortgage\nEligibility', 'Affordability\n& Budget', 'Financial\nResilience', 'Protection\nReadiness'];
+    var cx = 150, cy = 150, maxR = 100;
+    var angles = [-90, 0, 90, 180];
+
+    function ptAt(deg, ratio) {
+      var rad = deg * Math.PI / 180;
+      return { x: cx + Math.cos(rad) * maxR * ratio, y: cy + Math.sin(rad) * maxR * ratio };
+    }
+
+    var gridLines = '';
+    var levels = [0.25, 0.5, 0.75, 1.0];
+    for (var g = 0; g < levels.length; g++) {
+      var pts = [];
+      for (var a = 0; a < angles.length; a++) {
+        var gp = ptAt(angles[a], levels[g]);
+        pts.push(gp.x + ',' + gp.y);
+      }
+      gridLines += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="1" />';
+    }
+
+    var axisLines = '';
+    for (var i = 0; i < angles.length; i++) {
+      var ep = ptAt(angles[i], 1);
+      axisLines += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ep.x + '" y2="' + ep.y + '" stroke="' + LIGHT_GREY + '" stroke-width="1" />';
+    }
+
+    var dataPoints = [];
+    for (var d = 0; d < angles.length; d++) {
+      var dp = ptAt(angles[d], vals[d]);
+      dataPoints.push(dp.x + ',' + dp.y);
+    }
+
+    var labelOffsets = [
+      { dx: 0, dy: -18, anchor: 'middle' },
+      { dx: 18, dy: 4, anchor: 'start' },
+      { dx: 0, dy: 22, anchor: 'middle' },
+      { dx: -18, dy: 4, anchor: 'end' }
+    ];
+
+    var labelMkp = '';
+    for (var l = 0; l < angles.length; l++) {
+      var lp = ptAt(angles[l], 1);
+      var lo = labelOffsets[l];
+      var parts = labels[l].split('\n');
+      labelMkp += '<text x="' + (lp.x + lo.dx) + '" y="' + (lp.y + lo.dy) + '" text-anchor="' + lo.anchor + '" font-family="Inter,system-ui,sans-serif" font-size="10" fill="' + SLATE + '">';
+      for (var pl = 0; pl < parts.length; pl++) {
+        labelMkp += '<tspan x="' + (lp.x + lo.dx) + '" dy="' + (pl === 0 ? '0' : '12') + '">' + parts[pl] + '</tspan>';
+      }
+      labelMkp += '</text>';
+
+      var ddp = ptAt(angles[l], vals[l]);
+      labelMkp += '<text x="' + ddp.x + '" y="' + (ddp.y + (vals[l] < 0.3 ? 0 : -2)) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="700" fill="' + ORANGE + '">' + Math.round(vals[l] * 100) + '%</text>';
+    }
+
+    return '<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="report-radar">' +
+      gridLines + axisLines +
+      '<polygon points="' + dataPoints.join(' ') + '" fill="rgba(240,91,40,0.15)" stroke="' + ORANGE + '" stroke-width="2" />' +
+      labelMkp + '</svg>';
+  }
+
+  function runwayBars(userDays, avgDays, targetDays) {
+    var user = Math.max(0, userDays || 0);
+    var avg = avgDays || 19;
+    var target = targetDays || 90;
+    var maxVal = Math.max(user, target) * 1.15;
+    var barW = 400, barH = 28, gapV = 16, labelW = 100;
+
+    function bLen(val) { return Math.round((val / maxVal) * (barW - labelW)); }
+
+    var userLen = bLen(user), avgLen = bLen(avg), targetLen = bLen(target);
+    var userCol = user >= target ? GREEN : (user >= 60 ? ORANGE : RED);
+
+    return '<svg viewBox="0 0 ' + barW + ' ' + (barH * 3 + gapV * 4) + '" xmlns="http://www.w3.org/2000/svg" class="report-runway-bars">' +
+      '<text x="0" y="' + (gapV + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="600" fill="' + CHARCOAL + '">Your Runway</text>' +
+      '<rect x="' + labelW + '" y="' + gapV + '" width="' + userLen + '" height="' + barH + '" rx="4" fill="' + userCol + '" />' +
+      '<text x="' + (labelW + userLen + 8) + '" y="' + (gapV + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700" fill="' + CHARCOAL + '">' + user + ' days</text>' +
+      '<text x="0" y="' + (gapV * 2 + barH * 1.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" fill="' + SLATE + '">UK Average</text>' +
+      '<rect x="' + labelW + '" y="' + (gapV * 2 + barH) + '" width="' + avgLen + '" height="' + barH + '" rx="4" fill="' + LIGHT_GREY + '" />' +
+      '<text x="' + (labelW + avgLen + 8) + '" y="' + (gapV * 2 + barH * 1.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">' + avg + ' days</text>' +
+      '<text x="0" y="' + (gapV * 3 + barH * 2.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" fill="' + SLATE + '">Target</text>' +
+      '<rect x="' + labelW + '" y="' + (gapV * 3 + barH * 2) + '" width="' + targetLen + '" height="' + barH + '" rx="4" fill="none" stroke="' + SLATE + '" stroke-width="1.5" stroke-dasharray="6 3" />' +
+      '<text x="' + (labelW + targetLen + 8) + '" y="' + (gapV * 3 + barH * 2.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">' + target + '+ days</text>' +
+      '</svg>';
+  }
+
+  function waterfallChart(waterfall, essentials) {
+    if (!waterfall || waterfall.length === 0) return '';
+    var w = 500, h = 280, pL = 60, pR = 20, pT = 30, pB = 50;
+    var cW = w - pL - pR, cH = h - pT - pB;
+    var maxVal = essentials * 1.15;
+    var bW = Math.floor(cW / waterfall.length) - 8;
+
+    function yPos(val) { return pT + cH - (val / maxVal * cH); }
+
+    var essY = yPos(essentials);
+    var bars = '', lbls = '';
+
+    for (var i = 0; i < waterfall.length; i++) {
+      var item = waterfall[i];
+      var x = pL + i * (bW + 8) + 4;
+      var iH = Math.max(0, item.income / maxVal * cH);
+      var iY = pT + cH - iH;
+
+      bars += '<rect x="' + x + '" y="' + iY + '" width="' + bW + '" height="' + iH + '" rx="3" fill="' + ORANGE + '" opacity="0.85" />';
+
+      if (item.income < essentials) {
+        var sH = (essentials - item.income) / maxVal * cH;
+        bars += '<rect x="' + x + '" y="' + essY + '" width="' + bW + '" height="' + sH + '" fill="' + LIGHT_GREY + '" opacity="0.5" />';
+      }
+
+      lbls += '<text x="' + (x + bW / 2) + '" y="' + (h - pB + 16) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="' + SLATE + '">Month ' + item.month + '</text>';
+      lbls += '<text x="' + (x + bW / 2) + '" y="' + (iY - 6) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-weight="600" fill="' + CHARCOAL + '">\u00a3' + fmt(item.income) + '</text>';
+    }
+
+    var essLine = '<line x1="' + pL + '" y1="' + essY + '" x2="' + (w - pR) + '" y2="' + essY + '" stroke="' + RED + '" stroke-width="1.5" stroke-dasharray="6 3" />';
+    var essLbl = '<text x="' + (w - pR) + '" y="' + (essY - 6) + '" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="9" font-weight="600" fill="' + RED + '">Essentials \u00a3' + fmt(essentials) + '</text>';
+
+    var yLabels = '';
+    var steps = [0, 0.25, 0.5, 0.75, 1.0];
+    for (var s = 0; s < steps.length; s++) {
+      var yVal = Math.round(maxVal * steps[s]);
+      var yy = yPos(yVal);
+      yLabels += '<text x="' + (pL - 8) + '" y="' + (yy + 3) + '" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + SLATE + '">\u00a3' + fmt(yVal) + '</text>';
+      if (steps[s] > 0 && steps[s] < 1) {
+        yLabels += '<line x1="' + pL + '" y1="' + yy + '" x2="' + (w - pR) + '" y2="' + yy + '" stroke="' + LIGHT_GREY + '" stroke-width="0.5" />';
+      }
+    }
+
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" class="report-waterfall">' +
+      yLabels + bars + essLine + essLbl + lbls + '</svg>';
+  }
+
+  function miniBar(p, color) {
+    var val = Math.max(0, Math.min(p || 0, 100));
+    return '<svg viewBox="0 0 120 8" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:120px;vertical-align:middle;">' +
+      '<rect x="0" y="0" width="120" height="8" rx="4" fill="' + LIGHT_GREY + '" />' +
+      '<rect x="0" y="0" width="' + Math.round(val * 1.2) + '" height="8" rx="4" fill="' + (color || ORANGE) + '" />' +
+      '</svg>';
+  }
+
+  // ── Recommendations (mirrors pdf-generator.js logic) ─────────────────────
+
+  function generateRecommendations(data) {
+    var recs = [];
+
+    if (data.runway && data.runway.days < 90) {
+      recs.push({
+        title: 'Build Your Emergency Fund',
+        text: 'Your financial runway of ' + data.runway.days + ' days is below the recommended 3-month target. Aim to build accessible savings to cover at least 90 days of essential outgoings (\u00a3' + fmt(data.household.monthlyEssentials * 3) + ').'
+      });
+    }
+
+    if (data.breakdown.protection.totalScore < 10) {
+      recs.push({
+        title: 'Review Your Protection Cover',
+        text: 'Your protection cover has room for improvement. Income protection, life insurance, and critical illness cover can safeguard your mortgage payments if the unexpected happens.'
+      });
+    }
+
+    if (data.breakdown.deposit.ltv > 90) {
+      recs.push({
+        title: 'Boost Your Deposit',
+        text: 'Your current LTV is ' + Math.round(data.breakdown.deposit.ltv) + '%. Increasing your deposit to reach 90% LTV or below could unlock better mortgage rates and reduce monthly payments.'
+      });
+    }
+
+    if (data.breakdown.credit.score < 7) {
+      recs.push({
+        title: 'Strengthen Your Credit Profile',
+        text: 'Improving your credit history could significantly boost your mortgage options. Register on the electoral roll, ensure all bills are paid on time, and check your credit report for errors.'
+      });
+    }
+
+    if (data.breakdown.surplus.score < 12) {
+      recs.push({
+        title: 'Improve Your Monthly Budget',
+        text: 'Lenders look for a comfortable surplus after mortgage payments. Review your monthly outgoings for potential savings and aim to demonstrate consistent saving habits over 3-6 months.'
+      });
+    }
+
+    if (recs.length < 2) {
+      recs.push({
+        title: 'Book a Mortgage Review',
+        text: 'You\u2019re in a strong position. A professional mortgage review can help you find the best rates and products for your situation, potentially saving thousands over your mortgage term.'
+      });
+    }
+
+    return recs.slice(0, 4);
+  }
+
+  // ── Main Render ──────────────────────────────────────────────────────────
+
+  function renderReport(data, id) {
+    var pp = data.pillarPercentages || {};
+    var lastWF = (data.waterfall && data.waterfall.length > 0)
+      ? data.waterfall[data.waterfall.length - 1]
+      : null;
+
+    var breakdownRows = [
+      { label: 'Employment Status', score: data.breakdown.employment.score, max: data.breakdown.employment.maxScore },
+      { label: 'Credit History', score: data.breakdown.credit.score, max: data.breakdown.credit.maxScore },
+      { label: 'Deposit / LTV', score: data.breakdown.deposit.score, max: data.breakdown.deposit.maxScore },
+      { label: 'Monthly Surplus', score: data.breakdown.surplus.score, max: data.breakdown.surplus.maxScore },
+      { label: 'Emergency Savings', score: data.breakdown.emergency.score, max: data.breakdown.emergency.maxScore },
+      { label: 'Protection Cover', score: data.breakdown.protection.totalScore, max: data.breakdown.protection.maxScore }
+    ];
+
+    // Generate recommendations client-side (not included in API response)
+    var recs = data.recommendations || generateRecommendations(data);
+
+    var generatedDate = new Date().toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    var html = '';
+
+    // ── Section 1: Executive Summary ─────────────────────────────────────
+
+    html += '<section class="report-section report-section--hero">';
+    html += '<div class="container">';
+    html += '<div class="report-header">';
+    html += '<h1 class="report-title">Your Financial <span class="report-title__accent">Wellness</span> Report</h1>';
+    html += '<p class="report-subtitle">A personalised snapshot of your mortgage readiness, financial resilience, and protection cover.</p>';
+    html += '</div>';
+
+    // Score hero
+    html += '<div class="report-score-hero">';
+    html += '<div class="report-score-hero__gauge">' + gaugeChart(data.score, 100) + '</div>';
+    html += '<div class="report-score-hero__text">';
+    html += '<h2 class="report-score-hero__category">' + esc(data.category) + '</h2>';
+    html += '<p class="report-score-hero__interp">' + esc(data.interpretation) + '</p>';
+    html += '</div>';
+    html += '</div>';
+
+    // Four pillars
+    html += '<h2 class="report-section__heading">The Four <span class="report-section__heading-accent">Pillars</span></h2>';
+    html += '<div class="report-pillars">';
+    html += '<div class="report-pillars__chart">' + radarChart(pp) + '</div>';
+    html += '<div class="report-pillars__cards">';
+
+    var pillarData = [
+      { key: 'mortgageEligibility', label: 'Mortgage Eligibility', cls: 'elig' },
+      { key: 'affordabilityBudget', label: 'Affordability & Budget', cls: 'aff' },
+      { key: 'financialResilience', label: 'Financial Resilience', cls: 'res' },
+      { key: 'protectionReadiness', label: 'Protection Readiness', cls: 'prot' }
+    ];
+
+    for (var pi = 0; pi < pillarData.length; pi++) {
+      var pd = pillarData[pi];
+      html += '<div class="report-pcard report-pcard--' + pd.cls + '">';
+      html += '<div class="report-pcard__label">' + esc(pd.label) + '</div>';
+      html += '<div class="report-pcard__pct">' + (pp[pd.key] || 0) + '%</div>';
+      html += '</div>';
+    }
+    html += '</div>'; // pillars__cards
+    html += '</div>'; // report-pillars
+
+    // Strengths & Improvements
+    html += '<div class="report-two-col">';
+    html += '<div class="report-sicard report-sicard--green">';
+    html += '<h3 class="report-sicard__title">Your Strengths</h3>';
+    html += '<ul class="report-sicard__list">';
+    (data.strengths || []).forEach(function (s) { html += '<li>' + esc(s) + '</li>'; });
+    html += '</ul></div>';
+    html += '<div class="report-sicard report-sicard--orange">';
+    html += '<h3 class="report-sicard__title">Areas to Improve</h3>';
+    html += '<ul class="report-sicard__list">';
+    (data.improvements || []).forEach(function (s) { html += '<li>' + esc(s) + '</li>'; });
+    html += '</ul></div>';
+    html += '</div>'; // two-col
+
+    html += '</div></section>'; // section 1
+
+    // ── Section 2: Financial Health ──────────────────────────────────────
+
+    html += '<section class="report-section report-section--alt">';
+    html += '<div class="container">';
+    html += '<h2 class="report-section__heading">Your Financial <span class="report-section__heading-accent">Health</span></h2>';
+
+    // Household dashboard
+    html += '<h3 class="report-label-heading">Household Dashboard</h3>';
+    html += '<div class="report-stat-grid">';
+
+    var stats = [
+      { val: '\u00a3' + fmt(data.household.monthlyIncome), label: 'Monthly Income' },
+      { val: '\u00a3' + fmt(data.household.monthlyEssentials), label: 'Monthly Essentials' },
+      { val: '\u00a3' + fmt(data.household.accessibleSavings), label: 'Accessible Savings' },
+      { val: '\u00a3' + fmt(data.household.monthlySurplus), label: 'Monthly Surplus' }
+    ];
+    for (var si = 0; si < stats.length; si++) {
+      html += '<div class="report-stat-box">';
+      html += '<div class="report-stat-box__val">' + stats[si].val + '</div>';
+      html += '<div class="report-stat-box__label">' + stats[si].label + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Score breakdown
+    html += '<h3 class="report-label-heading">Score Breakdown</h3>';
+    html += '<table class="report-bd-table"><thead><tr>';
+    html += '<th>Component</th><th>Progress</th><th>Score</th>';
+    html += '</tr></thead><tbody>';
+    for (var bi = 0; bi < breakdownRows.length; bi++) {
+      var row = breakdownRows[bi];
+      var rowPct = pct(row.score, row.max);
+      var rowCol = pillarColor(rowPct);
+      html += '<tr>';
+      html += '<td>' + esc(row.label) + '</td>';
+      html += '<td>' + miniBar(rowPct, rowCol) + '</td>';
+      html += '<td>' + row.score + ' / ' + row.max + '</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+
+    // Property & Mortgage (conditional)
+    if (data.breakdown.deposit.propertyValue) {
+      html += '<h3 class="report-label-heading">Property & Mortgage</h3>';
+      html += '<div class="report-stat-grid">';
+      var propStats = [
+        { val: '\u00a3' + fmt(data.breakdown.deposit.propertyValue), label: 'Property Value' },
+        { val: '\u00a3' + fmt(data.breakdown.deposit.value), label: 'Deposit' },
+        { val: fmtDec(data.breakdown.deposit.ltv, 1) + '%', label: 'Loan to Value' },
+        { val: '\u00a3' + fmt((parseFloat(data.breakdown.deposit.propertyValue) || 0) - (parseFloat(data.breakdown.deposit.value) || 0)), label: 'Mortgage Amount' }
+      ];
+      for (var ps = 0; ps < propStats.length; ps++) {
+        html += '<div class="report-stat-box">';
+        html += '<div class="report-stat-box__val">' + propStats[ps].val + '</div>';
+        html += '<div class="report-stat-box__label">' + propStats[ps].label + '</div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    // Financial runway
+    html += '<h3 class="report-label-heading">Financial Runway</h3>';
+    html += '<div class="report-runway-hero">';
+    html += '<div class="report-runway-hero__big">' + data.runway.days + '</div>';
+    html += '<div class="report-runway-hero__unit">days</div>';
+    html += '<div class="report-runway-hero__body">';
+    html += '<p>If your income stopped today, your savings would cover essential outgoings for approximately <strong>' + data.runway.days + ' days (' + data.runway.months + ' months)</strong>.</p>';
+    html += '</div></div>';
+    html += '<div class="report-runway-chart">' + runwayBars(data.runway.days, data.benchmarks.averageDeadlineDays, data.benchmarks.targetDeadlineDays) + '</div>';
+
+    html += '</div></section>'; // section 2
+
+    // ── Section 3: The Reality Check ─────────────────────────────────────
+
+    html += '<section class="report-section">';
+    html += '<div class="container">';
+    html += '<h2 class="report-section__heading">The Reality <span class="report-section__heading-accent">Check</span></h2>';
+    html += '<p class="report-section__intro">What happens to your household finances if you can\'t work for an extended period?</p>';
+
+    // Waterfall chart
+    html += '<div class="report-wf-chart">' + waterfallChart(data.waterfall, data.household.monthlyEssentials) + '</div>';
+
+    // Shortfall callout
+    if (lastWF && lastWF.cumulativeShortfall) {
+      html += '<div class="report-shortfall-callout">';
+      html += '<div class="report-shortfall-callout__val">\u00a3' + fmt(lastWF.cumulativeShortfall) + '</div>';
+      html += '<p class="report-shortfall-callout__label">Total 6-month shortfall — the amount you\'d need from savings or other sources to cover essential outgoings.</p>';
+      html += '</div>';
+    }
+
+    // Risk stats
+    html += '<h3 class="report-label-heading">The Statistics Over a 25-Year Mortgage</h3>';
+    html += '<div class="report-risk-grid">';
+
+    var risks = [
+      { cls: 'death', icon: '\u2620', val: data.riskAssessment.formatted.death, label: 'Chance of Death', ctx: 'During a 25-year mortgage term' },
+      { cls: 'ci', icon: '\u2665', val: data.riskAssessment.formatted.criticalIllness, label: 'Critical Illness', ctx: 'Probability of diagnosis' },
+      { cls: 'absence', icon: '\u23F1', val: data.riskAssessment.formatted.longTermAbsence, label: '2+ Month Absence', ctx: 'From work during term' }
+    ];
+    for (var ri = 0; ri < risks.length; ri++) {
+      var rk = risks[ri];
+      html += '<div class="report-risk-card report-risk-card--' + rk.cls + '">';
+      html += '<div class="report-risk-card__icon">' + rk.icon + '</div>';
+      html += '<div class="report-risk-card__val">' + rk.val + '</div>';
+      html += '<div class="report-risk-card__label">' + rk.label + '</div>';
+      html += '<div class="report-risk-card__ctx">' + rk.ctx + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    html += '<p class="report-footnote">Statistics based on age bracket (' + esc(data.riskAssessment.probabilities.ageBracket) + ') and smoking status (' + esc(data.riskAssessment.probabilities.smokingStatus) + '). Individual risk varies.</p>';
+
+    html += '</div></section>'; // section 3
+
+    // ── Section 4: Next Steps ────────────────────────────────────────────
+
+    html += '<section class="report-section report-section--alt">';
+    html += '<div class="container">';
+    html += '<h2 class="report-section__heading">Your Next <span class="report-section__heading-accent">Steps</span></h2>';
+    html += '<p class="report-section__intro">Based on your results, here are the most impactful actions you can take right now.</p>';
+
+    // Recommendation cards (recs generated at top of renderReport)
+    for (var rci = 0; rci < recs.length; rci++) {
+      html += '<div class="report-rec-card">';
+      html += '<div class="report-rec-card__num">' + (rci + 1) + '</div>';
+      html += '<div class="report-rec-card__body">';
+      html += '<h4 class="report-rec-card__title">' + esc(recs[rci].title) + '</h4>';
+      html += '<p class="report-rec-card__text">' + esc(recs[rci].text) + '</p>';
+      html += '</div></div>';
+    }
+
+    // CTA
+    html += '<div class="report-cta">';
+    html += '<h3 class="report-cta__title">Ready to Take the Next Step?</h3>';
+    html += '<p class="report-cta__text">Book a free, no-obligation consultation. We\'ll review your report, discuss your goals, and create a personalised action plan.</p>';
+    html += '<a href="https://calendly.com/bmortgageservices" class="btn btn--primary report-cta__btn" target="_blank" rel="noopener">Book a Free Consultation</a>';
+    html += '<p class="report-cta__contact">bmortgageservices.co.uk &middot; info@bmortgagesolutions.co.uk</p>';
+    html += '</div>';
+
+    // Disclaimer
+    html += '<p class="report-disclaimer">This report is for informational purposes only and does not constitute financial advice. B Mortgage Services is authorised and regulated by the Financial Conduct Authority. Your home may be repossessed if you do not keep up repayments on your mortgage. Report generated ' + generatedDate + '. Report ID: ' + esc(id) + '.</p>';
+
+    html += '</div></section>'; // section 4
+
+    // ── Actions bar (download PDF, print) ────────────────────────────────
+
+    html += '<section class="report-section report-actions">';
+    html += '<div class="container">';
+    html += '<div class="report-actions__inner">';
+    html += '<button type="button" class="btn btn--secondary report-actions__print" onclick="window.print()">Print Report</button>';
+    html += '<a href="/api/wellness-pdf?reportId=' + encodeURIComponent(id) + '" class="btn btn--primary report-actions__pdf" target="_blank" rel="noopener">Download PDF</a>';
+    html += '</div>';
+    html += '</div></section>';
+
+    // ── Inject and show ──────────────────────────────────────────────────
+    contentEl.innerHTML = html;
+    loadingEl.style.display = 'none';
+    contentEl.style.display = '';
+
+    // Update page title
+    document.title = 'Your Financial Wellness Report | B Mortgage Services';
+  }
+
+})();
