@@ -33,6 +33,28 @@ function escHtml(str) {
   return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// ── Metric Gauge Helpers ─────────────────────────────────────────────────────
+
+function tierColor(tier) {
+  var map = { excellent: '#22C55E', good: '#84CC16', acceptable: '#EAB308', stretched: '#F97316', difficult: '#EF4444', high: '#EF4444' };
+  return map[tier] || '#6B7280';
+}
+
+function tierLabel(tier) {
+  return tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : '';
+}
+
+function ltiGaugePct(ratio) { return Math.min(100, Math.max(0, (ratio / 6) * 100)); }
+function dtiGaugePct(ratio) { return Math.min(100, Math.max(0, (ratio / 60) * 100)); }
+function ltvGaugePct(ratio) { return Math.min(100, Math.max(0, ratio)); }
+
+function ltvDesc(ratio) {
+  if (ratio <= 75) return 'Access to the best rates from most lenders';
+  if (ratio <= 85) return 'Good range of competitive products available';
+  if (ratio <= 90) return 'Standard lending — some rate premiums may apply';
+  return 'Limited lender options — higher rates likely';
+}
+
 // ── Template Renderer ────────────────────────────────────────────────────────
 
 module.exports = function renderHTML(data) {
@@ -41,6 +63,12 @@ module.exports = function renderHTML(data) {
     : null;
 
   var pp = data.pillarPercentages || {};
+  var mm = data.mortgageMetrics || {};
+  var hasLTI = mm.lti && mm.lti.ratio !== null;
+  var hasDTI = mm.dti && mm.dti.ratio !== null;
+  var hasLTV = mm.ltv && mm.ltv.ratio < 100 && mm.loanAmount > 0;
+  var hasMortgagePage = hasLTI || hasDTI || hasLTV;
+  var totalPages = hasMortgagePage ? 5 : 4;
 
   // Pre-build score breakdown rows
   var breakdownRows = [
@@ -244,23 +272,18 @@ module.exports = function renderHTML(data) {
 
     /* ═══════ PILLAR SECTION ═══════ */
     .pillars {
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-      margin-bottom: 24px;
+      text-align: center;
+      margin-bottom: 20px;
     }
     .pillars__chart {
-      flex-shrink: 0;
-      width: 190px;
+      display: inline-block;
+      width: 260px;
+      margin: 0 auto 14px;
     }
     .pillars__cards {
-      flex: 1;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-    }
-    .pillars__cards .p-card {
-      min-width: 0;
     }
     .p-card {
       background: var(--white);
@@ -614,6 +637,103 @@ module.exports = function renderHTML(data) {
     }
     .info-box p:last-child { margin-bottom: 0; }
 
+    /* ═══════ METRIC GAUGE CARDS ═══════ */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .m-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 14px 14px;
+      text-align: center;
+    }
+    .m-card__title {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--slate);
+      margin-bottom: 6px;
+    }
+    .m-card__val {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .m-card__bar {
+      height: 6px;
+      background: var(--light);
+      border-radius: 3px;
+      margin: 8px 0 6px;
+      overflow: hidden;
+    }
+    .m-card__fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+    .m-card__tier {
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .m-card__desc {
+      font-size: 8.5px;
+      color: var(--slate);
+      line-height: 1.45;
+    }
+    .m-card__legend {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 7px;
+      color: var(--slate);
+    }
+    .m-card__legend span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .m-legend-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* ═══════ AFFORDABILITY TABLE ═══════ */
+    .aff-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 18px;
+    }
+    .aff-table td {
+      padding: 8px 12px;
+      font-size: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .aff-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+    }
+    .aff-table tr.aff-total td {
+      border-top: 2px solid var(--charcoal);
+      border-bottom: 2px solid var(--charcoal);
+      font-weight: 700;
+    }
+    .aff-table tr.aff-stress td {
+      color: var(--slate);
+      font-style: italic;
+      font-weight: 400;
+      border-bottom: none;
+    }
+
     /* ═══════ UTILITY ═══════ */
     .mb-0 { margin-bottom: 0 !important; }
     .mb-sm { margin-bottom: 8px; }
@@ -695,12 +815,105 @@ module.exports = function renderHTML(data) {
 
     <div class="ftr">
       <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
-      <span>Page 1 of 4 &middot; ${data.reportId}</span>
+      <span>Page 1 of ${totalPages} &middot; ${data.reportId}</span>
     </div>
   </div>
 
+  ${hasMortgagePage ? `
   <!-- ═══════════════════════════════════════════════════════════════════════
-       PAGE 2 — FINANCIAL HEALTH
+       PAGE 2 — MORTGAGE HEALTH
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="page page--alt">
+    <div class="wm-wrap">${charts.watermark()}</div>
+
+    <div class="hdr">
+      <div class="hdr__brand"><img class="hdr__logo" src="${logos.LOGO_REGULAR}" alt="B Mortgage Services"></div>
+      <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
+    </div>
+
+    <h2>Your Mortgage <span class="accent">Health</span></h2>
+    <p class="subtitle">These are the key ratios lenders use to assess your borrowing capacity. Green means you're well within typical limits; amber or red may need a specialist lender or larger deposit.</p>
+
+    ${mm.grossIncome && mm.grossIncome.isEstimated ? '<p class="text-sm text-slate text-italic mb-md">Note: Your gross income has been estimated from your take-home pay. For more accurate results, enter your gross annual salary.</p>' : ''}
+
+    <!-- LTI / DTI / LTV Metric Cards -->
+    <div class="metric-grid">
+      ${hasLTI ? '<div class="m-card">' +
+        '<div class="m-card__title">Loan-to-Income</div>' +
+        '<div class="m-card__val" style="color:' + tierColor(mm.lti.tier) + ';">' + mm.lti.ratioFormatted + '</div>' +
+        '<div class="m-card__bar"><div class="m-card__fill" style="width:' + ltiGaugePct(mm.lti.ratio) + '%;background:' + tierColor(mm.lti.tier) + ';"></div></div>' +
+        '<div class="m-card__tier" style="color:' + tierColor(mm.lti.tier) + ';">' + tierLabel(mm.lti.tier) + '</div>' +
+        '<p class="m-card__desc">' + escHtml(mm.lti.description) + '</p>' +
+        '<div class="m-card__legend"><span><span class="m-legend-dot" style="background:#22C55E;"></span>&lt; 3.5x</span><span><span class="m-legend-dot" style="background:#EAB308;"></span>3.5–4.5x</span><span><span class="m-legend-dot" style="background:#EF4444;"></span>&gt; 4.5x</span></div>' +
+        '</div>' : ''}
+      ${hasDTI ? '<div class="m-card">' +
+        '<div class="m-card__title">Debt-to-Income</div>' +
+        '<div class="m-card__val" style="color:' + tierColor(mm.dti.tier) + ';">' + mm.dti.ratioFormatted + '</div>' +
+        '<div class="m-card__bar"><div class="m-card__fill" style="width:' + dtiGaugePct(mm.dti.ratio) + '%;background:' + tierColor(mm.dti.tier) + ';"></div></div>' +
+        '<div class="m-card__tier" style="color:' + tierColor(mm.dti.tier) + ';">' + tierLabel(mm.dti.tier) + '</div>' +
+        '<p class="m-card__desc">' + escHtml(mm.dti.description) + '</p>' +
+        '<div class="m-card__legend"><span><span class="m-legend-dot" style="background:#22C55E;"></span>&lt; 25%</span><span><span class="m-legend-dot" style="background:#EAB308;"></span>25–35%</span><span><span class="m-legend-dot" style="background:#EF4444;"></span>&gt; 45%</span></div>' +
+        '</div>' : ''}
+      ${hasLTV ? '<div class="m-card">' +
+        '<div class="m-card__title">Loan-to-Value</div>' +
+        '<div class="m-card__val" style="color:' + tierColor(mm.ltv.tier) + ';">' + mm.ltv.formatted + '</div>' +
+        '<div class="m-card__bar"><div class="m-card__fill" style="width:' + ltvGaugePct(mm.ltv.ratio) + '%;background:' + tierColor(mm.ltv.tier) + ';"></div></div>' +
+        '<div class="m-card__tier" style="color:' + tierColor(mm.ltv.tier) + ';">' + tierLabel(mm.ltv.tier) + '</div>' +
+        '<p class="m-card__desc">' + escHtml(ltvDesc(mm.ltv.ratio)) + '</p>' +
+        '<div class="m-card__legend"><span><span class="m-legend-dot" style="background:#22C55E;"></span>&lt; 75%</span><span><span class="m-legend-dot" style="background:#EAB308;"></span>85–90%</span><span><span class="m-legend-dot" style="background:#EF4444;"></span>&gt; 90%</span></div>' +
+        '</div>' : ''}
+    </div>
+
+    ${(hasDTI && mm.dti.estimatedMortgagePayment > 0) ? `
+    <!-- Monthly Affordability Breakdown -->
+    <h3>Monthly Affordability Breakdown</h3>
+    <table class="aff-table">
+      <tr>
+        <td>Estimated mortgage payment (at ${mm.dti.rateUsed}%)</td>
+        <td>&pound;${fmt(mm.dti.estimatedMortgagePayment)}</td>
+      </tr>
+      ${mm.dti.monthlyCommitments > 0 ? '<tr><td>Other monthly commitments</td><td>&pound;' + fmt(mm.dti.monthlyCommitments) + '</td></tr>' : ''}
+      <tr class="aff-total">
+        <td>Total monthly debt</td>
+        <td>&pound;${fmt(mm.dti.totalMonthlyDebt)}</td>
+      </tr>
+      <tr>
+        <td>Gross monthly income</td>
+        <td>&pound;${fmt(Math.round((mm.grossIncome ? mm.grossIncome.total : 0) / 12))}</td>
+      </tr>
+      ${mm.dti.stressTestedPayment > 0 ? '<tr class="aff-stress"><td>Mortgage payment at stress test (' + mm.dti.stressRate + '%)</td><td>&pound;' + fmt(mm.dti.stressTestedPayment) + '</td></tr>' : ''}
+    </table>` : ''}
+
+    <!-- Property & Mortgage Summary -->
+    ${data.breakdown.deposit.propertyValue ? `
+    <h3>Property &amp; Mortgage Summary</h3>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.breakdown.deposit.propertyValue)}</div>
+        <div class="stat-box__label">Property Value</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(data.breakdown.deposit.value)}</div>
+        <div class="stat-box__label">Deposit</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__val">&pound;${fmt(mm.loanAmount || ((parseFloat(data.breakdown.deposit.propertyValue) || 0) - (parseFloat(data.breakdown.deposit.value) || 0)))}</div>
+        <div class="stat-box__label">Mortgage Amount</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__val">${fmtDec(data.breakdown.deposit.ltv, 1)}%</div>
+        <div class="stat-box__label">Loan to Value</div>
+      </div>
+    </div>` : ''}
+
+    <div class="ftr">
+      <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
+      <span>Page 2 of ${totalPages} &middot; ${data.reportId}</span>
+    </div>
+  </div>` : ''}
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PAGE ${hasMortgagePage ? '3' : '2'} — FINANCIAL HEALTH
        ═══════════════════════════════════════════════════════════════════════ -->
   <div class="page page--alt">
     <div class="wm-wrap">${charts.watermark()}</div>
@@ -756,28 +969,6 @@ module.exports = function renderHTML(data) {
       </tbody>
     </table>
 
-    ${data.breakdown.deposit.propertyValue ? `
-    <!-- Property & Mortgage -->
-    <h3>Property &amp; Mortgage</h3>
-    <div class="stat-grid">
-      <div class="stat-box">
-        <div class="stat-box__val">&pound;${fmt(data.breakdown.deposit.propertyValue)}</div>
-        <div class="stat-box__label">Property Value</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-box__val">&pound;${fmt(data.breakdown.deposit.value)}</div>
-        <div class="stat-box__label">Deposit</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-box__val">${fmtDec(data.breakdown.deposit.ltv, 1)}%</div>
-        <div class="stat-box__label">Loan to Value</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-box__val">&pound;${fmt((parseFloat(data.breakdown.deposit.propertyValue) || 0) - (parseFloat(data.breakdown.deposit.value) || 0))}</div>
-        <div class="stat-box__label">Mortgage Amount</div>
-      </div>
-    </div>` : ''}
-
     <!-- Financial Runway -->
     <h3>Financial Runway</h3>
     <div class="runway-hero">
@@ -793,7 +984,7 @@ module.exports = function renderHTML(data) {
 
     <div class="ftr">
       <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
-      <span>Page 2 of 4 &middot; ${data.reportId}</span>
+      <span>Page ${hasMortgagePage ? '3' : '2'} of ${totalPages} &middot; ${data.reportId}</span>
     </div>
   </div>
 
@@ -865,7 +1056,7 @@ module.exports = function renderHTML(data) {
 
     <div class="ftr">
       <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
-      <span>Page 3 of 4 &middot; ${data.reportId}</span>
+      <span>Page ${hasMortgagePage ? '4' : '3'} of ${totalPages} &middot; ${data.reportId}</span>
     </div>
   </div>
 
@@ -919,7 +1110,7 @@ module.exports = function renderHTML(data) {
 
     <div class="ftr">
       <span>B Mortgage Services &middot; bmortgageservices.co.uk</span>
-      <span>Page 4 of 4 &middot; ${data.reportId}</span>
+      <span>Page ${totalPages} of ${totalPages} &middot; ${data.reportId}</span>
     </div>
   </div>
 

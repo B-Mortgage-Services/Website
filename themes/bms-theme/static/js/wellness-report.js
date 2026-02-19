@@ -102,6 +102,31 @@
     return RED;
   }
 
+  // ── Metric gauge helpers ──────────────────────────────────────────────
+  function tierColor(tier) {
+    var map = { excellent: '#22C55E', good: '#84CC16', acceptable: '#EAB308', stretched: '#F97316', difficult: '#EF4444', high: '#EF4444' };
+    return map[tier] || '#6B7280';
+  }
+  function ltiGaugePct(r) { return Math.min(100, Math.max(0, (r / 6) * 100)); }
+  function dtiGaugePct(r) { return Math.min(100, Math.max(0, (r / 60) * 100)); }
+  function ltvGaugePct(r) { return Math.min(100, Math.max(0, r)); }
+
+  function buildMetricCard(title, value, tier, desc, pctVal, color, legend) {
+    var tierLbl = tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : '';
+    var h = '<div class="report-mcard">';
+    h += '<div class="report-mcard__title">' + esc(title) + '</div>';
+    h += '<div class="report-mcard__val" style="color:' + color + ';">' + esc(value) + '</div>';
+    h += '<div class="report-mcard__bar"><div class="report-mcard__fill" style="width:' + pctVal + '%;background:' + color + ';"></div></div>';
+    h += '<div class="report-mcard__tier" style="color:' + color + ';">' + tierLbl + '</div>';
+    h += '<p class="report-mcard__desc">' + esc(desc) + '</p>';
+    h += '<div class="report-mcard__legend">';
+    for (var li = 0; li < legend.length; li++) {
+      h += '<span><span class="report-mcard__dot" style="background:' + legend[li].color + ';"></span>' + legend[li].label + '</span>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+
   // ── SVG Chart Generators (client-side mirrors of report-charts.js) ─────
 
   function gaugeChart(score, max) {
@@ -449,6 +474,77 @@
 
     html += '</div></section>'; // section 1
 
+    // ── Section 1b: Mortgage Health (conditional) ──────────────────────
+    var mm = data.mortgageMetrics || {};
+    var hasLTI = mm.lti && mm.lti.ratio !== null;
+    var hasDTI = mm.dti && mm.dti.ratio !== null;
+    var hasLTV = mm.ltv && mm.ltv.ratio < 100 && mm.loanAmount > 0;
+
+    if (hasLTI || hasDTI || hasLTV) {
+      html += '<section class="report-section report-section--alt">';
+      html += '<div class="container">';
+      html += '<h2 class="report-section__heading">Your Mortgage <span class="report-section__heading-accent">Health</span></h2>';
+      html += '<p class="report-section__intro">Key ratios lenders use to assess your borrowing. Green means you\'re well within typical limits; amber or red may need a specialist lender or larger deposit.</p>';
+
+      if (mm.grossIncome && mm.grossIncome.isEstimated) {
+        html += '<p class="report-note">Note: Your gross income has been estimated from your take-home pay. For more accurate results, enter your gross annual salary.</p>';
+      }
+
+      // LTI / DTI / LTV cards
+      html += '<div class="report-metric-grid">';
+      if (hasLTI) {
+        html += buildMetricCard('Loan-to-Income', mm.lti.ratioFormatted, mm.lti.tier, mm.lti.description, ltiGaugePct(mm.lti.ratio), tierColor(mm.lti.tier),
+          [{ label: '< 3.5x', color: '#22C55E' }, { label: '3.5\u20134.5x', color: '#EAB308' }, { label: '> 4.5x', color: '#EF4444' }]);
+      }
+      if (hasDTI) {
+        html += buildMetricCard('Debt-to-Income', mm.dti.ratioFormatted, mm.dti.tier, mm.dti.description, dtiGaugePct(mm.dti.ratio), tierColor(mm.dti.tier),
+          [{ label: '< 25%', color: '#22C55E' }, { label: '25\u201335%', color: '#EAB308' }, { label: '> 45%', color: '#EF4444' }]);
+      }
+      if (hasLTV) {
+        var ltvD = mm.ltv.ratio <= 75 ? 'Best rates available' : mm.ltv.ratio <= 85 ? 'Good range of products' : mm.ltv.ratio <= 90 ? 'Standard lending' : 'Limited options';
+        html += buildMetricCard('Loan-to-Value', mm.ltv.formatted, mm.ltv.tier, ltvD, ltvGaugePct(mm.ltv.ratio), tierColor(mm.ltv.tier),
+          [{ label: '< 75%', color: '#22C55E' }, { label: '85\u201390%', color: '#EAB308' }, { label: '> 90%', color: '#EF4444' }]);
+      }
+      html += '</div>';
+
+      // Affordability breakdown
+      if (hasDTI && mm.dti.estimatedMortgagePayment > 0) {
+        html += '<h3 class="report-label-heading">Monthly Affordability Breakdown</h3>';
+        html += '<table class="report-aff-table">';
+        html += '<tr><td>Estimated mortgage payment (at ' + mm.dti.rateUsed + '%)</td><td>\u00a3' + fmt(mm.dti.estimatedMortgagePayment) + '</td></tr>';
+        if (mm.dti.monthlyCommitments > 0) {
+          html += '<tr><td>Other monthly commitments</td><td>\u00a3' + fmt(mm.dti.monthlyCommitments) + '</td></tr>';
+        }
+        html += '<tr class="report-aff-total"><td>Total monthly debt</td><td>\u00a3' + fmt(mm.dti.totalMonthlyDebt) + '</td></tr>';
+        html += '<tr><td>Gross monthly income</td><td>\u00a3' + fmt(Math.round((mm.grossIncome ? mm.grossIncome.total : 0) / 12)) + '</td></tr>';
+        if (mm.dti.stressTestedPayment > 0) {
+          html += '<tr class="report-aff-stress"><td>Mortgage payment at stress test (' + mm.dti.stressRate + '%)</td><td>\u00a3' + fmt(mm.dti.stressTestedPayment) + '</td></tr>';
+        }
+        html += '</table>';
+      }
+
+      // Property summary
+      if (data.breakdown.deposit.propertyValue) {
+        html += '<h3 class="report-label-heading">Property &amp; Mortgage Summary</h3>';
+        html += '<div class="report-stat-grid">';
+        var propStats2 = [
+          { val: '\u00a3' + fmt(data.breakdown.deposit.propertyValue), label: 'Property Value' },
+          { val: '\u00a3' + fmt(data.breakdown.deposit.value), label: 'Deposit' },
+          { val: '\u00a3' + fmt(mm.loanAmount || ((parseFloat(data.breakdown.deposit.propertyValue) || 0) - (parseFloat(data.breakdown.deposit.value) || 0))), label: 'Mortgage Amount' },
+          { val: fmtDec(data.breakdown.deposit.ltv, 1) + '%', label: 'Loan to Value' }
+        ];
+        for (var ps2 = 0; ps2 < propStats2.length; ps2++) {
+          html += '<div class="report-stat-box">';
+          html += '<div class="report-stat-box__val">' + propStats2[ps2].val + '</div>';
+          html += '<div class="report-stat-box__label">' + propStats2[ps2].label + '</div>';
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+
+      html += '</div></section>';
+    }
+
     // ── Section 2: Financial Health ──────────────────────────────────────
 
     html += '<section class="report-section report-section--alt">';
@@ -489,25 +585,6 @@
       html += '</tr>';
     }
     html += '</tbody></table>';
-
-    // Property & Mortgage (conditional)
-    if (data.breakdown.deposit.propertyValue) {
-      html += '<h3 class="report-label-heading">Property & Mortgage</h3>';
-      html += '<div class="report-stat-grid">';
-      var propStats = [
-        { val: '\u00a3' + fmt(data.breakdown.deposit.propertyValue), label: 'Property Value' },
-        { val: '\u00a3' + fmt(data.breakdown.deposit.value), label: 'Deposit' },
-        { val: fmtDec(data.breakdown.deposit.ltv, 1) + '%', label: 'Loan to Value' },
-        { val: '\u00a3' + fmt((parseFloat(data.breakdown.deposit.propertyValue) || 0) - (parseFloat(data.breakdown.deposit.value) || 0)), label: 'Mortgage Amount' }
-      ];
-      for (var ps = 0; ps < propStats.length; ps++) {
-        html += '<div class="report-stat-box">';
-        html += '<div class="report-stat-box__val">' + propStats[ps].val + '</div>';
-        html += '<div class="report-stat-box__label">' + propStats[ps].label + '</div>';
-        html += '</div>';
-      }
-      html += '</div>';
-    }
 
     // Financial runway
     html += '<h3 class="report-label-heading">Financial Runway</h3>';

@@ -5942,24 +5942,20 @@ video.wellness-cta-overlay__media {
 
 /* Pillars layout */
 .report-pillars {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
+  text-align: center;
   margin-bottom: 2.5rem;
 }
 
 .report-pillars__chart {
-  flex-shrink: 0;
-  width: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  width: 320px;
+  max-width: 100%;
+  margin: 0 auto 1.25rem;
 }
 
 .report-pillars__cards {
-  flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
 }
 
@@ -6379,6 +6375,127 @@ video.wellness-cta-overlay__media {
   flex-wrap: wrap;
 }
 
+/* ── Mortgage Metric Cards ── */
+
+.report-note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+.report-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.report-mcard {
+  background: var(--white);
+  border: 1px solid var(--light-grey);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.25rem 1.25rem;
+  text-align: center;
+}
+
+.report-mcard__title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.report-mcard__val {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.report-mcard__bar {
+  height: 6px;
+  background: var(--light-grey);
+  border-radius: 3px;
+  margin: 0.75rem 0 0.5rem;
+  overflow: hidden;
+}
+
+.report-mcard__fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.report-mcard__tier {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.report-mcard__desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.report-mcard__legend {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.report-mcard__legend span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.report-mcard__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* ── Affordability Table ── */
+
+.report-aff-table {
+  width: 100%;
+  max-width: 500px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.5rem;
+}
+
+.report-aff-table td {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--light-grey);
+}
+
+.report-aff-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+}
+
+.report-aff-total td {
+  border-top: 2px solid var(--brand-charcoal);
+  border-bottom: 2px solid var(--brand-charcoal);
+  font-weight: 700;
+}
+
+.report-aff-stress td {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-weight: 400 !important;
+  border-bottom: none;
+}
+
 /* ── Report Page Responsive ── */
 
 @media (max-width: 768px) {
@@ -6393,15 +6510,8 @@ video.wellness-cta-overlay__media {
     width: 140px;
   }
 
-  .report-pillars {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
   .report-pillars__chart {
-    width: 100%;
-    max-width: 260px;
-    margin: 0 auto;
+    width: 260px;
   }
 
   .report-pillars__cards {
@@ -6410,6 +6520,11 @@ video.wellness-cta-overlay__media {
 
   .report-stat-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .report-metric-grid {
+    grid-template-columns: 1fr;
+    max-width: 350px;
   }
 
   .report-risk-grid {
