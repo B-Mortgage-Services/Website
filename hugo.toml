@@ -27,6 +27,12 @@ theme = 'bms-theme'
     name = "Individuals"
     url = "/individuals/"
     weight = 2
+    identifier = "individuals"
+  [[menu.main]]
+    name = "Protection"
+    url = "/individuals/protection/"
+    weight = 1
+    parent = "individuals"
   [[menu.main]]
     name = "Employers"
     url = "/employers/"

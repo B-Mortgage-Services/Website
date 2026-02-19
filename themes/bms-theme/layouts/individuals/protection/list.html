@@ -1,0 +1,316 @@
+{{ define "head" }}
+<!-- Calendly widget -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+{{ end }}
+
+{{ define "main" }}
+
+<!-- Hero Section -->
+<section class="page-header page-header--ambient">
+  <div class="ambient-glow ambient-glow--protection">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--3"></div>
+  </div>
+  <div class="container">
+    <span class="page-header__eyebrow">Protection</span>
+    <h1>Your Mortgage is a Commitment.<br>Protection is the Guarantee.</h1>
+    <p class="page-header__subtitle">A mortgage is likely the biggest financial commitment of your life. We believe that an expert mortgage plan is incomplete without a strategy to keep your home safe &mdash; no matter what life throws at you.</p>
+    <div class="hero__actions" style="justify-content: center; margin-top: 2rem;">
+      <a href="/wellness/" class="btn btn--primary btn--large">Check Your Protection Score</a>
+      <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;" class="btn btn--secondary btn--large">Book a Protection Review</a>
+    </div>
+  </div>
+</section>
+
+<!-- Why Protection is Non-Negotiable -->
+<section class="section--white">
+  <div class="container">
+    <div class="wellness-grid">
+      <div class="wellness-content">
+        <h2>Why Protection is <span style="color: var(--brand-orange);">Non-Negotiable</span></h2>
+        <p>Most people believe &ldquo;it won&rsquo;t happen to me.&rdquo; But the data tells a different story.</p>
+        <p>In the UK, the average financial runway is just <strong>19 days</strong>. If your income stops today, how long until your home is at risk?</p>
+        <p>Without the right protection, a single life event &mdash; illness, injury, or worse &mdash; can turn a manageable mortgage into an impossible burden. Protection isn&rsquo;t a luxury. It&rsquo;s the foundation that keeps everything else standing.</p>
+      </div>
+      <div class="wellness-mockup">
+        <div class="protection-stat-hero">
+          <div class="protection-stat-hero__number">19</div>
+          <div class="protection-stat-hero__label">days</div>
+          <div class="protection-stat-hero__context">Average UK financial runway</div>
+          <p class="protection-stat-hero__subtext">If your income stopped today, how long could you keep your home?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The Three Pillars of Your Safety Net -->
+<section class="section--cream">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2>The Three Pillars of Your Safety Net</h2>
+      <p style="max-width: 700px; margin: 1rem auto 0; font-size: 1.1rem;">Each pillar protects a different aspect of your financial life. Together, they form a complete safety net around your mortgage.</p>
+    </div>
+
+    <div class="pillar-cards">
+      <!-- Life Insurance -->
+      <article class="pillar-card">
+        <div class="pillar-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <h3 class="pillar-card__title">Life Insurance</h3>
+        <p class="pillar-card__goal">Securing Their Future</p>
+        <div class="pillar-card__details">
+          <div class="pillar-card__detail">
+            <strong>The Goal:</strong> To ensure your family stays in their home, mortgage-free, if you are no longer there.
+          </div>
+          <div class="pillar-card__detail">
+            <strong>What It Is:</strong> A lump sum payment that clears your mortgage debt.
+          </div>
+          <div class="pillar-card__detail">
+            <strong>Why You Need It:</strong> To remove the burden of monthly payments for those you leave behind, providing total housing security during the most difficult of times.
+          </div>
+        </div>
+      </article>
+
+      <!-- Critical Illness Cover -->
+      <article class="pillar-card">
+        <div class="pillar-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <h3 class="pillar-card__title">Critical Illness Cover</h3>
+        <p class="pillar-card__goal">Your Recovery Fund</p>
+        <div class="pillar-card__details">
+          <div class="pillar-card__detail">
+            <strong>The Goal:</strong> To give you the financial space to focus on health, not bills.
+          </div>
+          <div class="pillar-card__detail">
+            <strong>What It Is:</strong> A tax-free lump sum paid upon the diagnosis of a specified serious illness (such as cancer, heart attack, or stroke).
+          </div>
+          <div class="pillar-card__detail">
+            <strong>Why You Need It:</strong> Recovery takes time. This cover can pay off the mortgage, fund private treatment, or adapt your home &mdash; ensuring a health crisis doesn&rsquo;t become a housing crisis.
+          </div>
+        </div>
+      </article>
+
+      <!-- Income Protection -->
+      <article class="pillar-card">
+        <div class="pillar-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="pillar-card__title">Income Protection</h3>
+        <p class="pillar-card__goal">Your Monthly Salary Substitute</p>
+        <div class="pillar-card__details">
+          <div class="pillar-card__detail">
+            <strong>The Goal:</strong> To keep the lights on and the mortgage paid if you can&rsquo;t work.
+          </div>
+          <div class="pillar-card__detail">
+            <strong>What It Is:</strong> A monthly payment that replaces a significant portion of your salary if you are unable to work due to illness or injury.
+          </div>
+          <div class="pillar-card__detail">
+            <strong>Why You Need It:</strong> Statutory Sick Pay (SSP) is just &pound;123.25 per week. For a typical household with &pound;3,200 in essentials, that leaves a monthly &ldquo;void&rdquo; of &pound;2,665. Income Protection fills that gap.
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Safety Net Graphic -->
+<section class="employer-insights-banner">
+  <div class="container container--narrow">
+    <div class="text-center">
+      <h2 style="color: var(--white);">Building Complete Resilience</h2>
+      <p style="max-width: 650px; margin: 1rem auto 2rem; font-size: 1.1rem; color: rgba(255,255,255,0.9);">Most people rely on state benefits and savings alone. A proper protection plan fills the gap entirely.</p>
+    </div>
+    <div class="safety-net">
+      <div class="safety-net__bar safety-net__bar--protection">
+        <span class="safety-net__label">BMS Protection Plan</span>
+        <span class="safety-net__desc">Income protection, critical illness &amp; life cover</span>
+      </div>
+      <div class="safety-net__bar safety-net__bar--savings">
+        <span class="safety-net__label">Personal Savings</span>
+        <span class="safety-net__desc">Average: covers 19 days</span>
+      </div>
+      <div class="safety-net__bar safety-net__bar--ssp">
+        <span class="safety-net__label">State Benefits / SSP</span>
+        <span class="safety-net__desc">&pound;123.25 per week</span>
+      </div>
+      <div class="safety-net__result">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-orange)" stroke-width="2.5" style="vertical-align: middle; margin-right: 0.5rem;">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <strong style="color: var(--brand-orange);">Complete Resilience</strong> &mdash; your mortgage is protected no matter what happens.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The Shortfall Calculator -->
+<section class="section--white">
+  <div class="container container--narrow">
+    <div class="text-center mb-5">
+      <h2>The Reality Check: Your &ldquo;Void&rdquo; Calculator</h2>
+      <p style="max-width: 650px; margin: 1rem auto 0; font-size: 1.1rem;">We don&rsquo;t guess your needs &mdash; we calculate them. Adjust the slider to see what happens if your income stops.</p>
+    </div>
+
+    <div class="shortfall-calc">
+      <div class="shortfall-calc__inputs">
+        <div class="shortfall-calc__input-group">
+          <label for="monthlyOutgoings" class="shortfall-calc__input-label">Your Monthly Essential Outgoings</label>
+          <div class="shortfall-calc__input-wrap">
+            <span class="shortfall-calc__input-prefix">&pound;</span>
+            <input type="text" id="monthlyOutgoings" class="shortfall-calc__input" value="2,500" inputmode="numeric" oninput="handleOutgoingsInput(this)">
+          </div>
+        </div>
+
+        <div class="shortfall-calc__slider-group">
+          <div class="shortfall-calc__slider-header">
+            <label for="recoveryPeriod" class="shortfall-calc__input-label">Time Off Work</label>
+            <span class="shortfall-calc__slider-value" id="recoveryValue">6 months</span>
+          </div>
+          <input type="range" id="recoveryPeriod" class="shortfall-calc__slider" min="1" max="24" value="6" step="1" oninput="handleRecoveryInput(this)">
+          <div class="shortfall-calc__slider-range">
+            <span>1 month</span>
+            <span>24 months</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shortfall-calc__results">
+        <div class="shortfall-calc__row">
+          <span class="shortfall-calc__label">Your monthly essentials</span>
+          <span class="shortfall-calc__value" id="calcEssentials">&pound;2,500</span>
+        </div>
+        <div class="shortfall-calc__row">
+          <span class="shortfall-calc__label">SSP income (per month)</span>
+          <span class="shortfall-calc__value" style="color: var(--text-secondary);">&pound;534</span>
+        </div>
+        <div class="shortfall-calc__divider"></div>
+        <div class="shortfall-calc__row shortfall-calc__row--highlight">
+          <span class="shortfall-calc__label">Monthly void</span>
+          <span class="shortfall-calc__value shortfall-calc__void-amount" id="calcVoid">&pound;1,966</span>
+        </div>
+
+        <div class="shortfall-calc__bar">
+          <div class="shortfall-calc__bar-essentials" id="barEssentials">
+            <div class="shortfall-calc__bar-ssp" id="barSSP"></div>
+          </div>
+          <div class="shortfall-calc__bar-labels">
+            <span style="color: var(--text-secondary); font-size: 0.8rem;">SSP covers <span id="barPercent">21</span>%</span>
+            <span style="color: #EF4444; font-size: 0.8rem; font-weight: 600;">Void: <span id="barVoidPercent">79</span>%</span>
+          </div>
+        </div>
+
+        <div class="shortfall-calc__total">
+          <span class="shortfall-calc__total-label" id="calcTotalLabel">6-month total risk</span>
+          <span class="shortfall-calc__total-value" id="calcTotal">&pound;11,796</span>
+        </div>
+      </div>
+
+      <div class="text-center" style="margin-top: 2rem;">
+        <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;" class="btn btn--primary btn--large">Secure Your Income Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Complex Lives Callout -->
+<section class="section--cream">
+  <div class="container container--narrow">
+    <div class="complex-callout">
+      <div class="complex-callout__icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="complex-callout__content">
+        <h3>Complex Circumstances? We Specialise.</h3>
+        <p>Standard policies often have &ldquo;fine print&rdquo; regarding residency and dividend-based income. If you&rsquo;re a <strong>foreign national</strong>, hold a <strong>visa</strong>, or are <strong>self-employed</strong>, we specialise in finding protection that actually pays out for people with complex circumstances.</p>
+        <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;" class="btn btn--primary btn--small" style="margin-top: 1rem;">Talk to a Specialist</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-banner" id="contact">
+  <div class="container">
+    <h2>Are You Truly Resilient?</h2>
+    <p>Don&rsquo;t wait for a life event to find out where your safety net has holes. Our Wellness Assessment provides a Protection Readiness Score out of 100, highlighting exactly where you are covered &mdash; and where you aren&rsquo;t.</p>
+    <div class="d-flex justify-center gap-2" style="flex-wrap: wrap;">
+      <a href="/wellness/" class="btn btn--white btn--large">Check Your Protection Score</a>
+      <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;" class="btn btn--secondary btn--large" style="border-color: white; color: white;">Book a Protection Review</a>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var SSP_MONTHLY = 534; // £123.25 × 4.33 weeks
+
+  function formatCurrency(val) {
+    return '£' + val.toLocaleString('en-GB');
+  }
+
+  function parseInput(str) {
+    return parseInt(str.replace(/[^0-9]/g, ''), 10) || 0;
+  }
+
+  function getMonths() {
+    return parseInt(document.getElementById('recoveryPeriod').value, 10) || 6;
+  }
+
+  function getOutgoings() {
+    return parseInput(document.getElementById('monthlyOutgoings').value) || 2500;
+  }
+
+  function updateResults() {
+    var outgoings = getOutgoings();
+    var months = getMonths();
+    if (outgoings < 1) return;
+
+    var voidAmount = Math.max(0, outgoings - SSP_MONTHLY);
+    var totalRisk = voidAmount * months;
+    var sspPercent = Math.min(100, Math.round((SSP_MONTHLY / outgoings) * 100));
+    var voidPercent = 100 - sspPercent;
+
+    document.getElementById('calcEssentials').textContent = formatCurrency(outgoings);
+    document.getElementById('calcVoid').textContent = formatCurrency(voidAmount);
+    document.getElementById('calcTotal').textContent = formatCurrency(totalRisk);
+    document.getElementById('calcTotalLabel').textContent = months + '-month total risk';
+    document.getElementById('barSSP').style.width = sspPercent + '%';
+    document.getElementById('barPercent').textContent = sspPercent;
+    document.getElementById('barVoidPercent').textContent = voidPercent;
+    document.getElementById('recoveryValue').textContent = months + (months === 1 ? ' month' : ' months');
+  }
+
+  window.handleOutgoingsInput = function(el) {
+    var raw = parseInput(el.value);
+    if (raw > 0) {
+      var cursorPos = el.selectionStart;
+      var oldLen = el.value.length;
+      el.value = raw.toLocaleString('en-GB');
+      var newLen = el.value.length;
+      var newPos = cursorPos + (newLen - oldLen);
+      el.setSelectionRange(newPos, newPos);
+      updateResults();
+    }
+  };
+
+  window.handleRecoveryInput = function() {
+    updateResults();
+  };
+})();
+</script>
+
+{{ end }}
