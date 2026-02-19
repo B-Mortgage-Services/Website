@@ -17,7 +17,9 @@
   "author": "B Mortgage Services",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.50.0"
+    "@cloudflare/puppeteer": "^0.0.15",
+    "@supabase/supabase-js": "^2.50.0",
+    "handlebars": "^4.7.8"
   },
   "devDependencies": {
     "wrangler": "^3.99.0"
