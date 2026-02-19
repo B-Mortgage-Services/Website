@@ -108,20 +108,59 @@
     var s = Math.max(0, Math.min(score || 0, max || 100));
     var m = max || 100;
     var fraction = s / m;
-    var radius = 80;
-    var cx = 100, cy = 100;
-    var strokeW = 12;
-    var circ = 2 * Math.PI * radius;
-    var arcLen = circ * 0.75;
-    var filled = arcLen * fraction;
-    var gap = circ - arcLen;
+    var cx = 150, cy = 140, outerR = 110, innerR = 72;
 
-    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="report-gauge">' +
-      '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="' + strokeW + '" stroke-dasharray="' + arcLen + ' ' + gap + '" stroke-linecap="round" transform="rotate(135 ' + cx + ' ' + cy + ')" />' +
-      '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" stroke="' + ORANGE + '" stroke-width="' + strokeW + '" stroke-dasharray="' + filled + ' ' + (circ - filled) + '" stroke-linecap="round" transform="rotate(135 ' + cx + ' ' + cy + ')" />' +
-      '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="42" font-weight="700" fill="' + CHARCOAL + '">' + Math.round(s) + '</text>' +
-      '<text x="' + cx + '" y="' + (cy + 14) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="14" fill="' + SLATE + '">/ ' + m + '</text>' +
-      '</svg>';
+    var segments = [
+      { color: '#E85D3A', start: 180, sweep: 36 },
+      { color: '#F0983E', start: 216, sweep: 36 },
+      { color: '#C5B944', start: 252, sweep: 36 },
+      { color: '#7BAA45', start: 288, sweep: 36 },
+      { color: '#4A6B5A', start: 324, sweep: 36 }
+    ];
+
+    function segPath(outer, inner, startDeg, sweepDeg) {
+      var a1 = (startDeg - 0.3) * Math.PI / 180;
+      var a2 = (startDeg + sweepDeg + 0.3) * Math.PI / 180;
+      var ox1 = cx + outer * Math.cos(a1), oy1 = cy + outer * Math.sin(a1);
+      var ox2 = cx + outer * Math.cos(a2), oy2 = cy + outer * Math.sin(a2);
+      var ix1 = cx + inner * Math.cos(a1), iy1 = cy + inner * Math.sin(a1);
+      var ix2 = cx + inner * Math.cos(a2), iy2 = cy + inner * Math.sin(a2);
+      var lg = sweepDeg > 180 ? 1 : 0;
+      return 'M ' + ox1 + ' ' + oy1 + ' A ' + outer + ' ' + outer + ' 0 ' + lg + ' 1 ' + ox2 + ' ' + oy2 +
+        ' L ' + ix2 + ' ' + iy2 + ' A ' + inner + ' ' + inner + ' 0 ' + lg + ' 0 ' + ix1 + ' ' + iy1 + ' Z';
+    }
+
+    var segs = '';
+    for (var i = 0; i < segments.length; i++) {
+      var sg = segments[i];
+      segs += '<path d="' + segPath(outerR, innerR, sg.start, sg.sweep) + '" fill="' + sg.color + '" />';
+    }
+
+    var needleAngle = 180 + (fraction * 180);
+    var needleLen = outerR - 8;
+    var nRad = needleAngle * Math.PI / 180;
+    var nx = cx + needleLen * Math.cos(nRad), ny = cy + needleLen * Math.sin(nRad);
+    var pRad = nRad + Math.PI / 2;
+    var bw = 4;
+    var bx1 = cx + bw * Math.cos(pRad), by1 = cy + bw * Math.sin(pRad);
+    var bx2 = cx - bw * Math.cos(pRad), by2 = cy - bw * Math.sin(pRad);
+
+    var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="' + CHARCOAL + '" />';
+    var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + CHARCOAL + '" /><circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + ORANGE + '" />';
+
+    var txt = '<text x="' + cx + '" y="' + (cy + 36) + '" text-anchor="middle" font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="' + CHARCOAL + '">' + Math.round(s) + '</text>' +
+      '<text x="' + cx + '" y="' + (cy + 52) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">out of ' + m + '</text>';
+
+    var scaleLbls = '';
+    var scaleVals = [0, 25, 50, 75, 100];
+    for (var si = 0; si < scaleVals.length; si++) {
+      var sA = (180 + scaleVals[si] / 100 * 180) * Math.PI / 180;
+      var sx = cx + (outerR + 14) * Math.cos(sA), sy = cy + (outerR + 14) * Math.sin(sA);
+      scaleLbls += '<text x="' + sx + '" y="' + (sy + 3) + '" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + SLATE + '">' + scaleVals[si] + '</text>';
+    }
+
+    return '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" class="report-gauge">' +
+      segs + needle + hub + txt + scaleLbls + '</svg>';
   }
 
   function radarChart(pillars) {
@@ -196,24 +235,28 @@
     var user = Math.max(0, userDays || 0);
     var avg = avgDays || 19;
     var target = targetDays || 90;
-    var maxVal = Math.max(user, target) * 1.15;
-    var barW = 400, barH = 28, gapV = 16, labelW = 100;
+    var maxVal = Math.max(user, target) * 1.2;
+    var w = 360, barH = 22, gapV = 12, labelW = 80;
+    var chartW = w - labelW - 60;
+    var totalH = barH * 3 + gapV * 4;
 
-    function bLen(val) { return Math.round((val / maxVal) * (barW - labelW)); }
+    function bLen(val) { return Math.max(4, Math.round((val / maxVal) * chartW)); }
 
     var userLen = bLen(user), avgLen = bLen(avg), targetLen = bLen(target);
     var userCol = user >= target ? GREEN : (user >= 60 ? ORANGE : RED);
 
-    return '<svg viewBox="0 0 ' + barW + ' ' + (barH * 3 + gapV * 4) + '" xmlns="http://www.w3.org/2000/svg" class="report-runway-bars">' +
-      '<text x="0" y="' + (gapV + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="600" fill="' + CHARCOAL + '">Your Runway</text>' +
-      '<rect x="' + labelW + '" y="' + gapV + '" width="' + userLen + '" height="' + barH + '" rx="4" fill="' + userCol + '" />' +
-      '<text x="' + (labelW + userLen + 8) + '" y="' + (gapV + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700" fill="' + CHARCOAL + '">' + user + ' days</text>' +
-      '<text x="0" y="' + (gapV * 2 + barH * 1.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" fill="' + SLATE + '">UK Average</text>' +
-      '<rect x="' + labelW + '" y="' + (gapV * 2 + barH) + '" width="' + avgLen + '" height="' + barH + '" rx="4" fill="' + LIGHT_GREY + '" />' +
-      '<text x="' + (labelW + avgLen + 8) + '" y="' + (gapV * 2 + barH * 1.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">' + avg + ' days</text>' +
-      '<text x="0" y="' + (gapV * 3 + barH * 2.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" fill="' + SLATE + '">Target</text>' +
-      '<rect x="' + labelW + '" y="' + (gapV * 3 + barH * 2) + '" width="' + targetLen + '" height="' + barH + '" rx="4" fill="none" stroke="' + SLATE + '" stroke-width="1.5" stroke-dasharray="6 3" />' +
-      '<text x="' + (labelW + targetLen + 8) + '" y="' + (gapV * 3 + barH * 2.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">' + target + '+ days</text>' +
+    function row(y, label, len, fill, stroke, dayLabel, labelFill, dayFill, bold) {
+      var barFill = stroke ? 'fill="none" stroke="' + stroke + '" stroke-width="1.5" stroke-dasharray="6 3"' : 'fill="' + fill + '"';
+      var fontW = bold ? ' font-weight="700"' : '';
+      return '<text x="0" y="' + (y + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="10"' + (bold ? ' font-weight="600"' : '') + ' fill="' + labelFill + '">' + label + '</text>' +
+        '<rect x="' + labelW + '" y="' + y + '" width="' + len + '" height="' + barH + '" rx="4" ' + barFill + ' />' +
+        '<text x="' + (labelW + len + 6) + '" y="' + (y + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="10"' + fontW + ' fill="' + dayFill + '">' + dayLabel + '</text>';
+    }
+
+    return '<svg viewBox="0 0 ' + w + ' ' + totalH + '" xmlns="http://www.w3.org/2000/svg" class="report-runway-bars">' +
+      row(gapV,               'Your Runway', userLen,   userCol,    null,  user + ' days',   CHARCOAL, CHARCOAL, true) +
+      row(gapV * 2 + barH,    'UK Average',  avgLen,    LIGHT_GREY, null,  avg + ' days',    SLATE,    SLATE,    false) +
+      row(gapV * 3 + barH * 2, 'Target',     targetLen, null,       SLATE, target + '+ days', SLATE,    SLATE,    false) +
       '</svg>';
   }
 
@@ -353,6 +396,7 @@
     html += '<section class="report-section report-section--hero">';
     html += '<div class="container">';
     html += '<div class="report-header">';
+    html += '<img src="/images/BMS_logoWhite.png" alt="B Mortgage Services" class="report-header__logo">';
     html += '<h1 class="report-title">Your Financial <span class="report-title__accent">Wellness</span> Report</h1>';
     html += '<p class="report-subtitle">A personalised snapshot of your mortgage readiness, financial resilience, and protection cover.</p>';
     html += '</div>';
@@ -373,10 +417,10 @@
     html += '<div class="report-pillars__cards">';
 
     var pillarData = [
-      { key: 'mortgageEligibility', label: 'Mortgage Eligibility', cls: 'elig' },
-      { key: 'affordabilityBudget', label: 'Affordability & Budget', cls: 'aff' },
-      { key: 'financialResilience', label: 'Financial Resilience', cls: 'res' },
-      { key: 'protectionReadiness', label: 'Protection Readiness', cls: 'prot' }
+      { key: 'mortgageEligibility', label: 'Eligibility', cls: 'elig' },
+      { key: 'affordabilityBudget', label: 'Affordability', cls: 'aff' },
+      { key: 'financialResilience', label: 'Resilience', cls: 'res' },
+      { key: 'protectionReadiness', label: 'Protection', cls: 'prot' }
     ];
 
     for (var pi = 0; pi < pillarData.length; pi++) {

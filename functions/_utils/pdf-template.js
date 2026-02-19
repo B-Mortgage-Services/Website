@@ -100,6 +100,38 @@ module.exports = function renderHTML(data) {
     }
     .page:last-child { page-break-after: avoid; }
     .page--alt { background: var(--off-white); }
+    .page--dark {
+      background: var(--charcoal);
+      color: var(--white);
+    }
+    .page--dark h1, .page--dark h2, .page--dark h3 { color: var(--white); }
+    .page--dark .subtitle { color: rgba(255,255,255,0.6); }
+    .page--dark .score-hero__category { color: var(--white); }
+    .page--dark .score-hero__interp { color: rgba(255,255,255,0.7); }
+    .page--dark .p-card {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .page--dark .p-card__label { color: rgba(255,255,255,0.55); }
+    .page--dark .p-card__pct { color: var(--white); }
+    .page--dark .si-card--green {
+      background: rgba(34,197,94,0.1);
+      border-color: rgba(34,197,94,0.25);
+    }
+    .page--dark .si-card--green .si-card__title { color: #4ADE80; }
+    .page--dark .si-card--green .si-card__list li { color: rgba(255,255,255,0.85); }
+    .page--dark .si-card--orange {
+      background: rgba(240,91,40,0.1);
+      border-color: rgba(240,91,40,0.25);
+    }
+    .page--dark .si-card--orange .si-card__title { color: #FB923C; }
+    .page--dark .si-card--orange .si-card__list li { color: rgba(255,255,255,0.85); }
+    .page--dark .hdr { border-bottom-color: rgba(240,91,40,0.4); }
+    .page--dark .hdr__meta { color: rgba(255,255,255,0.5); }
+    .page--dark .ftr {
+      color: rgba(255,255,255,0.4);
+      border-top-color: rgba(255,255,255,0.1);
+    }
 
     /* ═══════ HEADER BAR ═══════ */
     .hdr {
@@ -111,11 +143,13 @@ module.exports = function renderHTML(data) {
       border-bottom: 2px solid var(--orange);
     }
     .hdr__brand {
-      font-family: var(--serif);
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--orange);
-      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .hdr__logo {
+      height: 32px;
+      width: auto;
     }
     .hdr__meta {
       font-size: 8.5px;
@@ -216,13 +250,16 @@ module.exports = function renderHTML(data) {
     }
     .pillars__chart {
       flex-shrink: 0;
-      width: 240px;
+      width: 190px;
     }
     .pillars__cards {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+    }
+    .pillars__cards .p-card {
+      min-width: 0;
     }
     .p-card {
       background: var(--white);
@@ -591,11 +628,11 @@ module.exports = function renderHTML(data) {
   <!-- ═══════════════════════════════════════════════════════════════════════
        PAGE 1 — EXECUTIVE SUMMARY
        ═══════════════════════════════════════════════════════════════════════ -->
-  <div class="page">
+  <div class="page page--dark">
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logoWhite.png" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
@@ -621,19 +658,19 @@ module.exports = function renderHTML(data) {
       </div>
       <div class="pillars__cards">
         <div class="p-card p-card--elig">
-          <div class="p-card__label">Mortgage Eligibility</div>
+          <div class="p-card__label">Eligibility</div>
           <div class="p-card__pct">${pp.mortgageEligibility || 0}%</div>
         </div>
         <div class="p-card p-card--aff">
-          <div class="p-card__label">Affordability &amp; Budget</div>
+          <div class="p-card__label">Affordability</div>
           <div class="p-card__pct">${pp.affordabilityBudget || 0}%</div>
         </div>
         <div class="p-card p-card--res">
-          <div class="p-card__label">Financial Resilience</div>
+          <div class="p-card__label">Resilience</div>
           <div class="p-card__pct">${pp.financialResilience || 0}%</div>
         </div>
         <div class="p-card p-card--prot">
-          <div class="p-card__label">Protection Readiness</div>
+          <div class="p-card__label">Protection</div>
           <div class="p-card__pct">${pp.protectionReadiness || 0}%</div>
         </div>
       </div>
@@ -668,7 +705,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logo.jpg" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
@@ -766,7 +803,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logo.jpg" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 
@@ -811,19 +848,18 @@ module.exports = function renderHTML(data) {
       Statistics based on age bracket (${escHtml(data.riskAssessment.probabilities.ageBracket)}) and smoking status (${escHtml(data.riskAssessment.probabilities.smokingStatus)}). Individual risk varies — discuss with a qualified adviser.
     </p>
 
-    <!-- State Benefit Info -->
-    <div class="info-box info-box--blue">
-      <div class="info-box__title">Understanding Your State Benefit Entitlement</div>
-      ${data.stateBenefit.type === 'SSP'
-        ? `<p>As a PAYE employee, you are entitled to <strong>Statutory Sick Pay (SSP)</strong> of &pound;${data.benchmarks.sspWeekly}/week (&pound;${data.benchmarks.sspMonthly}/month) for up to ${data.benchmarks.sspMaxWeeks} weeks. SSP is payable from day 1 of sickness (from April 2026).</p>
-           <p>After SSP ends, you may be eligible for <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week and <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element).</p>`
-        : `<p>As self-employed, you are <strong>not eligible for SSP</strong>. You may claim <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week (&pound;${data.benchmarks.esaMonthlyAssessment}/month) during the 13-week assessment phase, rising to &pound;${data.benchmarks.esaWeeklySupportGroup}/week in the Support Group.</p>
-           <p>You may also qualify for <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element).</p>`}
-    </div>
-
-    <div class="info-box info-box--amber">
-      <div class="info-box__title">&#9888; State Benefits Are Not Guaranteed</div>
-      <p>To receive ESA or Universal Credit health element, you must pass the <strong>Work Capability Assessment</strong> — approximately <strong>1 in 5 claimants are found fit for work</strong> at initial assessment. The process takes around 4 months from claim to decision.</p>
+    <!-- State Benefit Info (compact) -->
+    <div style="display:flex; gap:10px; margin-top:4px;">
+      <div class="info-box info-box--blue" style="flex:1; margin-bottom:0;">
+        <div class="info-box__title">State Benefit Entitlement</div>
+        ${data.stateBenefit.type === 'SSP'
+          ? `<p><strong>SSP:</strong> &pound;${data.benchmarks.sspWeekly}/wk for up to ${data.benchmarks.sspMaxWeeks} weeks. Then <strong>ESA:</strong> &pound;${data.benchmarks.esaWeeklyAssessment}/wk + <strong>UC:</strong> up to &pound;${fmt((parseFloat(data.benchmarks.ucSingle) || 0) + (parseFloat(data.benchmarks.ucLCWRA) || 0))}/mo.</p>`
+          : `<p>No SSP (self-employed). <strong>ESA:</strong> &pound;${data.benchmarks.esaWeeklyAssessment}/wk assessment, &pound;${data.benchmarks.esaWeeklySupportGroup}/wk support. <strong>UC:</strong> up to &pound;${fmt((parseFloat(data.benchmarks.ucSingle) || 0) + (parseFloat(data.benchmarks.ucLCWRA) || 0))}/mo.</p>`}
+      </div>
+      <div class="info-box info-box--amber" style="flex:1; margin-bottom:0;">
+        <div class="info-box__title">&#9888; Not Guaranteed</div>
+        <p>~1 in 5 claimants found fit for work at initial assessment. Process takes ~4 months from claim to decision.</p>
+      </div>
     </div>
 
     <div class="ftr">
@@ -839,7 +875,7 @@ module.exports = function renderHTML(data) {
     <div class="wm-wrap">${charts.watermark()}</div>
 
     <div class="hdr">
-      <div class="hdr__brand">B Mortgage Services</div>
+      <div class="hdr__brand"><img class="hdr__logo" src="https://bmortgageservices.co.uk/images/BMS_logo.jpg" alt="B Mortgage Services"></div>
       <div class="hdr__meta">Financial Wellness Report<br>${data.generatedDate}</div>
     </div>
 

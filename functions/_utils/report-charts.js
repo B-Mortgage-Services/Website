@@ -22,55 +22,112 @@ function watermark() {
     '</svg>';
 }
 
-// ── Gauge Chart (Score Ring) ────────────────────────────────────────────────
+// ── Gauge Chart (Speedometer) ────────────────────────────────────────────────
 
 /**
- * Generate an arc-style gauge chart
+ * Generate a speedometer-style gauge with coloured segments and needle.
+ * Matches the wellness-dial.png visual: 180-degree arc with 5 colour bands
+ * (red → orange → yellow/olive → green → dark green) and a triangular needle.
+ *
  * @param {number} score - Current score (0-100)
  * @param {number} max - Maximum score (default 100)
- * @param {string} color - Fill color (default brand orange)
  * @returns {string} SVG markup
  */
-function gaugeChart(score, max, color) {
+function gaugeChart(score, max) {
   var s = Math.max(0, Math.min(score || 0, max || 100));
   var m = max || 100;
-  var c = color || ORANGE;
   var pct = s / m;
 
-  // Arc parameters: 270-degree sweep, starting at 135 degrees
-  var radius = 80;
-  var cx = 100;
-  var cy = 100;
-  var strokeWidth = 12;
-  var circumference = 2 * Math.PI * radius;
-  var arcLength = circumference * 0.75; // 270 degrees
-  var filledLength = arcLength * pct;
-  var gapLength = circumference - arcLength;
+  var cx = 150;
+  var cy = 140;
+  var outerR = 110;
+  var innerR = 72;
+  var midR = (outerR + innerR) / 2;
+  var bandW = outerR - innerR;
 
-  // Start angle: 135 degrees (bottom-left)
-  var startAngle = 135;
+  // 5 colour segments spanning 180 degrees (left to right)
+  var segments = [
+    { color: '#E85D3A', start: 180, sweep: 36 },   // red-orange
+    { color: '#F0983E', start: 216, sweep: 36 },   // orange
+    { color: '#C5B944', start: 252, sweep: 36 },   // yellow-olive
+    { color: '#7BAA45', start: 288, sweep: 36 },   // green
+    { color: '#4A6B5A', start: 324, sweep: 36 }    // dark green/teal
+  ];
 
-  return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;">' +
-    // Background arc (grey)
-    '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" ' +
-      'stroke="' + LIGHT_GREY + '" stroke-width="' + strokeWidth + '" ' +
-      'stroke-dasharray="' + arcLength + ' ' + gapLength + '" ' +
-      'stroke-dashoffset="0" ' +
-      'stroke-linecap="round" ' +
-      'transform="rotate(' + startAngle + ' ' + cx + ' ' + cy + ')" />' +
-    // Filled arc (colored)
-    '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" fill="none" ' +
-      'stroke="' + c + '" stroke-width="' + strokeWidth + '" ' +
-      'stroke-dasharray="' + filledLength + ' ' + (circumference - filledLength) + '" ' +
-      'stroke-dashoffset="0" ' +
-      'stroke-linecap="round" ' +
-      'transform="rotate(' + startAngle + ' ' + cx + ' ' + cy + ')" />' +
-    // Score text
-    '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" ' +
-      'font-family="Inter,system-ui,sans-serif" font-size="42" font-weight="700" fill="' + CHARCOAL + '">' +
-      Math.round(s) + '</text>' +
-    '<text x="' + cx + '" y="' + (cy + 14) + '" text-anchor="middle" ' +
-      'font-family="Inter,system-ui,sans-serif" font-size="14" fill="' + SLATE + '">/ ' + m + '</text>' +
+  function arcPath(cxp, cyp, r, startDeg, sweepDeg) {
+    var s1 = (startDeg - 0.5) * Math.PI / 180;
+    var s2 = (startDeg + sweepDeg + 0.5) * Math.PI / 180;
+    var x1 = cxp + r * Math.cos(s1);
+    var y1 = cyp + r * Math.sin(s1);
+    var x2 = cxp + r * Math.cos(s2);
+    var y2 = cyp + r * Math.sin(s2);
+    var large = sweepDeg > 180 ? 1 : 0;
+    return 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2;
+  }
+
+  function segmentPath(cxp, cyp, outer, inner, startDeg, sweepDeg) {
+    var a1 = (startDeg - 0.3) * Math.PI / 180;
+    var a2 = (startDeg + sweepDeg + 0.3) * Math.PI / 180;
+    var ox1 = cxp + outer * Math.cos(a1), oy1 = cyp + outer * Math.sin(a1);
+    var ox2 = cxp + outer * Math.cos(a2), oy2 = cyp + outer * Math.sin(a2);
+    var ix1 = cxp + inner * Math.cos(a1), iy1 = cyp + inner * Math.sin(a1);
+    var ix2 = cxp + inner * Math.cos(a2), iy2 = cyp + inner * Math.sin(a2);
+    var large = sweepDeg > 180 ? 1 : 0;
+    return 'M ' + ox1 + ' ' + oy1 +
+      ' A ' + outer + ' ' + outer + ' 0 ' + large + ' 1 ' + ox2 + ' ' + oy2 +
+      ' L ' + ix2 + ' ' + iy2 +
+      ' A ' + inner + ' ' + inner + ' 0 ' + large + ' 0 ' + ix1 + ' ' + iy1 +
+      ' Z';
+  }
+
+  // Build segments
+  var segPaths = '';
+  for (var i = 0; i < segments.length; i++) {
+    var seg = segments[i];
+    segPaths += '<path d="' + segmentPath(cx, cy, outerR, innerR, seg.start, seg.sweep) + '" fill="' + seg.color + '" />';
+  }
+
+  // Thin inner track (subtle background ring)
+  var trackPath = arcPath(cx, cy, innerR - 4, 180, 180);
+  var track = '<path d="' + trackPath + '" fill="none" stroke="' + LIGHT_GREY + '" stroke-width="2" opacity="0.4" />';
+
+  // Needle: rotates from 180deg (0%) to 360deg (100%)
+  var needleAngle = 180 + (pct * 180);
+  var needleLen = outerR - 8;
+  var needleRad = needleAngle * Math.PI / 180;
+  var nx = cx + needleLen * Math.cos(needleRad);
+  var ny = cy + needleLen * Math.sin(needleRad);
+  // Needle base (perpendicular to needle direction, width 6px)
+  var perpRad = needleRad + Math.PI / 2;
+  var bw = 4;
+  var bx1 = cx + bw * Math.cos(perpRad);
+  var by1 = cy + bw * Math.sin(perpRad);
+  var bx2 = cx - bw * Math.cos(perpRad);
+  var by2 = cy - bw * Math.sin(perpRad);
+  var needle = '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="' + CHARCOAL + '" />';
+  var hub = '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + CHARCOAL + '" />' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + ORANGE + '" />';
+
+  // Score text (centred below needle hub)
+  var scoreText = '<text x="' + cx + '" y="' + (cy + 36) + '" text-anchor="middle" ' +
+    'font-family="Playfair Display,Georgia,serif" font-size="36" font-weight="700" fill="' + CHARCOAL + '">' +
+    Math.round(s) + '</text>' +
+    '<text x="' + cx + '" y="' + (cy + 52) + '" text-anchor="middle" ' +
+    'font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">out of ' + m + '</text>';
+
+  // Scale labels at 0, 25, 50, 75, 100 positions
+  var scaleLbls = '';
+  var scaleVals = [0, 25, 50, 75, 100];
+  for (var si = 0; si < scaleVals.length; si++) {
+    var sAngle = (180 + scaleVals[si] / 100 * 180) * Math.PI / 180;
+    var sx = cx + (outerR + 14) * Math.cos(sAngle);
+    var sy = cy + (outerR + 14) * Math.sin(sAngle);
+    scaleLbls += '<text x="' + sx + '" y="' + (sy + 3) + '" text-anchor="middle" ' +
+      'font-family="Inter,system-ui,sans-serif" font-size="9" fill="' + SLATE + '">' + scaleVals[si] + '</text>';
+  }
+
+  return '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;">' +
+    segPaths + track + needle + hub + scoreText + scaleLbls +
     '</svg>';
 }
 
@@ -181,36 +238,37 @@ function runwayBars(userDays, avgDays, targetDays) {
   var user = Math.max(0, userDays || 0);
   var avg = avgDays || 19;
   var target = targetDays || 90;
-  var maxVal = Math.max(user, target) * 1.15; // 15% padding
+  var maxVal = Math.max(user, target) * 1.2; // padding for day labels
 
-  var barW = 400;
-  var barH = 28;
-  var gap = 16;
-  var labelW = 100;
+  var w = 360;
+  var barH = 22;
+  var gap = 12;
+  var labelW = 80;
+  var chartW = w - labelW - 60; // reserve 60px right for day labels
 
-  function barLength(val) {
-    return Math.round((val / maxVal) * (barW - labelW));
+  function bLen(val) {
+    return Math.max(4, Math.round((val / maxVal) * chartW));
   }
 
-  var userLen = barLength(user);
-  var avgLen = barLength(avg);
-  var targetLen = barLength(target);
+  var userLen = bLen(user);
+  var avgLen = bLen(avg);
+  var targetLen = bLen(target);
+  var totalH = barH * 3 + gap * 4;
 
   var userColor = user >= target ? GREEN : (user >= 60 ? ORANGE : RED);
 
-  return '<svg viewBox="0 0 ' + barW + ' ' + (barH * 3 + gap * 4) + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;">' +
-    // Your Runway
-    '<text x="0" y="' + (gap + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="600" fill="' + CHARCOAL + '">Your Runway</text>' +
-    '<rect x="' + labelW + '" y="' + gap + '" width="' + userLen + '" height="' + barH + '" rx="4" fill="' + userColor + '" />' +
-    '<text x="' + (labelW + userLen + 8) + '" y="' + (gap + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700" fill="' + CHARCOAL + '">' + user + ' days</text>' +
-    // UK Average
-    '<text x="0" y="' + (gap * 2 + barH * 1.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" fill="' + SLATE + '">UK Average</text>' +
-    '<rect x="' + labelW + '" y="' + (gap * 2 + barH) + '" width="' + avgLen + '" height="' + barH + '" rx="4" fill="' + LIGHT_GREY + '" />' +
-    '<text x="' + (labelW + avgLen + 8) + '" y="' + (gap * 2 + barH * 1.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">' + avg + ' days</text>' +
-    // Target
-    '<text x="0" y="' + (gap * 3 + barH * 2.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="11" fill="' + SLATE + '">Target</text>' +
-    '<rect x="' + labelW + '" y="' + (gap * 3 + barH * 2) + '" width="' + targetLen + '" height="' + barH + '" rx="4" fill="none" stroke="' + SLATE + '" stroke-width="1.5" stroke-dasharray="6 3" />' +
-    '<text x="' + (labelW + targetLen + 8) + '" y="' + (gap * 3 + barH * 2.5 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="12" fill="' + SLATE + '">' + target + '+ days</text>' +
+  function row(y, label, len, fill, stroke, dayLabel, labelFill, dayFill, bold) {
+    var barFill = stroke ? 'fill="none" stroke="' + stroke + '" stroke-width="1.5" stroke-dasharray="6 3"' : 'fill="' + fill + '"';
+    var fontW = bold ? ' font-weight="700"' : '';
+    return '<text x="0" y="' + (y + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="10"' + (bold ? ' font-weight="600"' : '') + ' fill="' + labelFill + '">' + label + '</text>' +
+      '<rect x="' + labelW + '" y="' + y + '" width="' + len + '" height="' + barH + '" rx="4" ' + barFill + ' />' +
+      '<text x="' + (labelW + len + 6) + '" y="' + (y + barH / 2 + 4) + '" font-family="Inter,system-ui,sans-serif" font-size="10"' + fontW + ' fill="' + dayFill + '">' + dayLabel + '</text>';
+  }
+
+  return '<svg viewBox="0 0 ' + w + ' ' + totalH + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;">' +
+    row(gap,             'Your Runway', userLen,   userColor, null,  user + ' days',    CHARCOAL, CHARCOAL, true) +
+    row(gap * 2 + barH,  'UK Average',  avgLen,    LIGHT_GREY, null, avg + ' days',     SLATE,    SLATE,    false) +
+    row(gap * 3 + barH * 2, 'Target',   targetLen, null,   SLATE, target + '+ days',    SLATE,    SLATE,    false) +
     '</svg>';
 }
 

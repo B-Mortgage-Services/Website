@@ -5821,7 +5821,9 @@ video.wellness-cta-overlay__media {
 }
 
 .report-section--hero {
+  background: var(--brand-charcoal);
   padding-top: var(--space-3xl);
+  padding-bottom: var(--space-4xl);
 }
 
 /* Report header */
@@ -5829,11 +5831,18 @@ video.wellness-cta-overlay__media {
   margin-bottom: 2rem;
 }
 
+.report-header__logo {
+  display: block;
+  width: auto;
+  height: 44px;
+  margin-bottom: 1.25rem;
+}
+
 .report-title {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(2rem, 4vw, 2.75rem);
   font-weight: 700;
-  color: var(--brand-charcoal);
+  color: var(--white);
   letter-spacing: -0.02em;
   line-height: 1.15;
   margin-bottom: 0.5rem;
@@ -5845,7 +5854,7 @@ video.wellness-cta-overlay__media {
 
 .report-subtitle {
   font-size: 1.05rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.65);
   line-height: 1.6;
   max-width: 600px;
 }
@@ -5891,16 +5900,15 @@ video.wellness-cta-overlay__media {
   align-items: center;
   gap: 2rem;
   margin-bottom: 2.5rem;
-  padding: 2rem;
-  background: var(--white);
-  border: 1px solid var(--medium-grey);
+  padding: 2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .report-score-hero__gauge {
   flex-shrink: 0;
-  width: 180px;
+  width: 240px;
 }
 
 .report-score-hero__text {
@@ -5911,38 +5919,38 @@ video.wellness-cta-overlay__media {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--brand-charcoal);
+  color: var(--white);
   margin-bottom: 0.25rem;
 }
 
 .report-score-hero__interp {
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.55;
 }
 
 /* Gauge/Radar SVGs */
 .report-gauge {
   width: 100%;
-  max-width: 180px;
+  max-width: 240px;
 }
 
 .report-radar {
   width: 100%;
-  max-width: 300px;
+  max-width: 220px;
 }
 
 /* Pillars layout */
 .report-pillars {
   display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+  gap: 1.5rem;
+  align-items: center;
   margin-bottom: 2.5rem;
 }
 
 .report-pillars__chart {
   flex-shrink: 0;
-  width: 280px;
+  width: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5957,8 +5965,8 @@ video.wellness-cta-overlay__media {
 
 /* Pillar cards */
 .report-pcard {
-  background: var(--white);
-  border: 1px solid var(--medium-grey);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
   position: relative;
@@ -5984,15 +5992,20 @@ video.wellness-cta-overlay__media {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.55);
   margin-bottom: 0.15rem;
 }
 
 .report-pcard__pct {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--brand-charcoal);
+  color: var(--white);
   line-height: 1.1;
+}
+
+/* Dark hero overrides */
+.report-section--hero .report-section__heading {
+  color: var(--white);
 }
 
 /* Strengths & Improvements */
@@ -6163,7 +6176,7 @@ video.wellness-cta-overlay__media {
 
 .report-runway-bars {
   width: 100%;
-  max-width: 500px;
+  max-width: 420px;
 }
 
 /* Waterfall chart */
