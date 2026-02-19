@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "description": "Risk probability data for death, critical illness, and long-term absence over a 25-year mortgage term, segmented by age and smoking status.",
+    "lastUpdated": "2026-02-19",
+    "updateFrequency": "Rarely — based on actuarial tables (CMI mortality data, ONS/CIPD employment statistics).",
+    "usedBy": [
+      "functions/_utils/risk-data.js"
+    ],
+    "sources": {
+      "mortality": "CMI (Continuous Mortality Investigation) mortality tables",
+      "criticalIllness": "Industry benchmarks / reinsurer incidence data",
+      "longTermAbsence": "ONS / CIPD employment statistics"
+    },
+    "disclaimer": "Statistical averages for illustrative purposes only. Actual individual risk varies based on health, occupation, lifestyle, and other factors."
+  },
+
+  "defaultAge": 35,
+  "defaultAgeBracket": "35-44",
+  "mortgageTermYears": 25,
+
+  "ageBrackets": [
+    {
+      "bracket": "18-34",
+      "minAge": 18,
+      "maxAge": 34,
+      "death": { "smoker": 1.5, "nonSmoker": 0.8 },
+      "criticalIllness": { "smoker": 3.5, "nonSmoker": 2.2 },
+      "longTermAbsence": 12
+    },
+    {
+      "bracket": "35-44",
+      "minAge": 35,
+      "maxAge": 44,
+      "death": { "smoker": 2.8, "nonSmoker": 1.6 },
+      "criticalIllness": { "smoker": 5.5, "nonSmoker": 3.8 },
+      "longTermAbsence": 15
+    },
+    {
+      "bracket": "45-54",
+      "minAge": 45,
+      "maxAge": 54,
+      "death": { "smoker": 6.5, "nonSmoker": 4.2 },
+      "criticalIllness": { "smoker": 9.5, "nonSmoker": 6.8 },
+      "longTermAbsence": 19
+    },
+    {
+      "bracket": "55-64",
+      "minAge": 55,
+      "maxAge": 64,
+      "death": { "smoker": 14.5, "nonSmoker": 9.5 },
+      "criticalIllness": { "smoker": 16.5, "nonSmoker": 12.5 },
+      "longTermAbsence": 23
+    }
+  ],
+
+  "riskCategoryThresholds": {
+    "description": "Thresholds for categorising risk as low / medium / high / very-high. Each risk type has different threshold values because baseline probabilities differ.",
+    "death": {
+      "low":      { "below": 2,  "colour": "#22C55E", "label": "Lower than average risk" },
+      "medium":   { "below": 5,  "colour": "#EAB308", "label": "Moderate risk" },
+      "high":     { "below": 10, "colour": "#F97316", "label": "Above average risk" },
+      "veryHigh": { "from": 10,  "colour": "#EF4444", "label": "Significantly elevated risk" }
+    },
+    "criticalIllness": {
+      "low":      { "below": 5,  "colour": "#22C55E", "label": "Lower than average risk" },
+      "medium":   { "below": 8,  "colour": "#EAB308", "label": "Moderate risk" },
+      "high":     { "below": 12, "colour": "#F97316", "label": "Above average risk" },
+      "veryHigh": { "from": 12,  "colour": "#EF4444", "label": "Significantly elevated risk" }
+    },
+    "longTermAbsence": {
+      "low":      { "below": 15, "colour": "#22C55E", "label": "Lower than average risk" },
+      "medium":   { "below": 20, "colour": "#EAB308", "label": "Moderate risk" },
+      "high":     { "below": 25, "colour": "#F97316", "label": "Above average risk" },
+      "veryHigh": { "from": 25,  "colour": "#EF4444", "label": "Significantly elevated risk" }
+    }
+  }
+}

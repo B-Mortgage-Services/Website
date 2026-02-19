@@ -1,0 +1,238 @@
+{
+  "_meta": {
+    "description": "Scoring engine configuration for the Financial Wellness Assessment",
+    "lastUpdated": "2026-02-19",
+    "usedBy": [
+      "functions/_utils/scoring-engine.js",
+      "themes/bms-theme/static/js/wellness-client.js",
+      "functions/_utils/pdf-generator.js"
+    ]
+  },
+
+  "grossIncomeEstimation": {
+    "multiplier": 1.3,
+    "description": "When gross annual income is unavailable, estimate from net monthly: monthlyNet x 12 x 1.3. The 1.3 multiplier is conservative — errs toward a worse LTI ratio (safer advice)."
+  },
+
+  "pillars": {
+    "mortgageEligibility": {
+      "label": "Mortgage Eligibility",
+      "maxPoints": 35,
+      "maxPointsWithoutLTI": 25,
+      "maxPointsWithoutDTI": 27,
+      "maxPointsWithoutBoth": 17,
+      "components": {
+        "employment": { "maxPoints": 10 },
+        "credit": { "maxPoints": 7 },
+        "lti": { "maxPoints": 10 },
+        "dti": { "maxPoints": 8 }
+      }
+    },
+    "affordabilityBudget": {
+      "label": "Affordability & Budget",
+      "maxPoints": 30,
+      "components": {
+        "deposit": { "maxPoints": 10 },
+        "surplus": { "maxPoints": 20 }
+      }
+    },
+    "financialResilience": {
+      "label": "Financial Resilience",
+      "maxPoints": 10,
+      "components": {
+        "emergencyFund": { "maxPoints": 10 }
+      }
+    },
+    "protectionReadiness": {
+      "label": "Protection Readiness",
+      "maxPoints": 15,
+      "components": {
+        "life": { "maxPoints": 5 },
+        "income": { "maxPoints": 5 },
+        "criticalIllness": { "maxPoints": 5 }
+      }
+    }
+  },
+
+  "totalMaxScore": 90,
+  "dynamicMaxRules": {
+    "description": "maxPossibleScore decreases when LTI/DTI data unavailable so users aren't penalised for missing data.",
+    "deductIfNoLTI": 10,
+    "deductIfNoDTI": 8,
+    "possibleRange": { "min": 72, "max": 90 }
+  },
+
+  "employmentScoring": {
+    "description": "Points awarded based on employment type. Max 10 points.",
+    "tiers": {
+      "paye-12":    { "points": 10, "label": "PAYE employed 12+ months" },
+      "paye-under": { "points": 8,  "label": "PAYE employed under 12 months" },
+      "self-2":     { "points": 8,  "label": "Self-employed 2+ years" },
+      "self-under": { "points": 4,  "label": "Self-employed under 2 years" },
+      "contractor":  { "points": 7,  "label": "Contractor" },
+      "irregular":   { "points": 3,  "label": "Irregular/variable income" }
+    },
+    "strengthThreshold": 8,
+    "strengthMessage": "Stable income",
+    "improvementMessage": "Employment stability"
+  },
+
+  "creditScoring": {
+    "description": "Points awarded based on credit history. Max 7 points.",
+    "tiers": {
+      "clean":  { "points": 7, "label": "Clean — no issues" },
+      "minor":  { "points": 5, "label": "Minor historic issues (3+ years ago)" },
+      "recent": { "points": 2, "label": "Some recent issues (last 3 years)" },
+      "severe": { "points": 1, "label": "Significant adverse credit" }
+    },
+    "strengthThreshold": 5,
+    "strengthMessage": "Good credit profile",
+    "improvementMessage": "Credit history"
+  },
+
+  "ltiScoring": {
+    "description": "Loan-to-Income ratio scoring. FCA/PRA cap: banks must limit >4.5x LTI lending to ~15% of new mortgages.",
+    "fcaCap": 4.5,
+    "maxPoints": 10,
+    "tiers": [
+      { "maxRatio": 3.5,  "points": 10, "tier": "excellent",   "description": "Well within standard lending limits" },
+      { "maxRatio": 4.0,  "points": 8,  "tier": "good",        "description": "Comfortable borrowing level for most lenders" },
+      { "maxRatio": 4.5,  "points": 6,  "tier": "acceptable",  "description": "Within FCA cap but approaching the limit" },
+      { "maxRatio": 5.0,  "points": 3,  "tier": "stretched",   "description": "Above standard FCA cap — specialist lender may be required" },
+      { "maxRatio": null,  "points": 1,  "tier": "difficult",   "description": "Significantly above standard lending multiples" }
+    ]
+  },
+
+  "dtiScoring": {
+    "description": "Debt-to-Income ratio scoring. Uses user's rate for primary DTI; BoE stress test rate for comparison.",
+    "stressTestRate": 6.5,
+    "defaultRate": 4.5,
+    "defaultTerm": 25,
+    "maxPoints": 8,
+    "tiers": [
+      { "maxRatio": 25,   "points": 8, "tier": "excellent",  "description": "Very comfortable debt servicing capacity" },
+      { "maxRatio": 35,   "points": 6, "tier": "good",       "description": "Within standard lender comfort zone" },
+      { "maxRatio": 45,   "points": 3, "tier": "stretched",  "description": "Approaching lender limits — some flexibility concerns" },
+      { "maxRatio": null,  "points": 1, "tier": "high",       "description": "Above typical lender thresholds — may restrict options" }
+    ]
+  },
+
+  "depositLtvScoring": {
+    "description": "Points awarded based on Loan-to-Value ratio from deposit size. Max 10 points.",
+    "tiers": [
+      { "maxLtv": 75,   "points": 10, "tier": "excellent",  "label": "Strong deposit" },
+      { "maxLtv": 85,   "points": 8,  "tier": "good",       "label": "Solid deposit" },
+      { "maxLtv": 90,   "points": 6,  "tier": "acceptable", "label": "Adequate deposit" },
+      { "maxLtv": null,  "points": 3,  "tier": "stretched",  "label": "Deposit needs improvement" }
+    ]
+  },
+
+  "surplusScoring": {
+    "description": "Points awarded based on monthly surplus status. Max 20 points.",
+    "tiers": {
+      "surplus":    { "points": 20, "label": "Yes, I regularly save" },
+      "breakeven":  { "points": 12, "label": "I roughly break even" },
+      "occasional": { "points": 6,  "label": "Occasionally use credit/savings" },
+      "reliant":    { "points": 0,  "label": "Reliant on credit" }
+    },
+    "strengthThreshold": 12,
+    "strengthMessage": "Good budget control",
+    "improvementMessage": "Monthly budget"
+  },
+
+  "emergencyFundScoring": {
+    "description": "Points awarded based on emergency fund coverage (months of essential outgoings). Max 10 points.",
+    "tiersByDropdown": {
+      "6plus":  { "points": 10, "label": "6+ months" },
+      "3-6":    { "points": 7,  "label": "3-6 months" },
+      "1-3":    { "points": 4,  "label": "1-3 months" },
+      "under1": { "points": 0,  "label": "Under 1 month" }
+    },
+    "tiersByRunway": [
+      { "minMonths": 6, "points": 10 },
+      { "minMonths": 3, "points": 7 },
+      { "minMonths": 1, "points": 4 },
+      { "minMonths": 0, "points": 0 }
+    ],
+    "strengthThreshold": 7,
+    "strengthMessage": "Emergency savings",
+    "improvementMessage": "Emergency fund"
+  },
+
+  "protectionScoring": {
+    "description": "Points per protection type (life, income, critical illness). Max 5 each, 15 total.",
+    "tiers": {
+      "full":    { "points": 5, "label": "Full coverage in place" },
+      "partial": { "points": 3, "label": "Partial or employer-only coverage" },
+      "none":    { "points": 0, "label": "No coverage" }
+    },
+    "strengthThreshold": 10,
+    "strengthMessage": "Good protection",
+    "improvementMessage": "Income protection"
+  },
+
+  "scoreCategories": {
+    "description": "Overall score interpretation based on final 0-100 score.",
+    "tiers": [
+      {
+        "minScore": 80,
+        "category": "Mortgage-Ready & Financially Resilient",
+        "interpretation": "You appear to be in a strong position for a mortgage application.",
+        "colour": "#22C55E"
+      },
+      {
+        "minScore": 65,
+        "category": "On Track with Minor Improvements",
+        "interpretation": "You're broadly on track, with a few areas to focus on.",
+        "colour": "#84CC16"
+      },
+      {
+        "minScore": 50,
+        "category": "Mortgage Possible with Planning",
+        "interpretation": "A mortgage may be achievable with some planning and improvements.",
+        "colour": "#EAB308"
+      },
+      {
+        "minScore": 0,
+        "category": "Preparation Recommended",
+        "interpretation": "Some focused steps could significantly improve your position.",
+        "colour": "#F97316"
+      }
+    ]
+  },
+
+  "perceptionGap": {
+    "toleranceDays": 30,
+    "defaultEstimateMonths": 3,
+    "messages": {
+      "betterThanThought": "You're actually in a better position than you thought — {gap} days more runway than estimated.",
+      "worseThanThought": "Your savings would cover less time than you estimated — {gap} days less than you thought.",
+      "closeEstimate": "Your estimate was quite close to reality."
+    }
+  },
+
+  "incomeWaterfall": {
+    "projectionMonths": 6,
+    "description": "6-month income projection showing employer sick pay -> state benefit -> income protection progression."
+  },
+
+  "pdfRecommendations": {
+    "maxRecommendations": 4,
+    "minBeforeFallback": 2,
+    "thresholds": {
+      "runwayDaysBelow": 90,
+      "protectionScoreBelow": 10,
+      "ltvAbove": 90,
+      "creditScoreBelow": 7,
+      "surplusScoreBelow": 12
+    },
+    "fallbackRecommendation": {
+      "title": "Book a Mortgage Review",
+      "text": "You're in a strong position. A professional mortgage review can help you find the best rates and products for your situation, potentially saving thousands over your mortgage term."
+    }
+  },
+
+  "defaultAge": 35,
+  "maxStrengths": 4,
+  "maxImprovements": 4
+}

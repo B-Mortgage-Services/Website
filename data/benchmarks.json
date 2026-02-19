@@ -1,0 +1,84 @@
+{
+  "_meta": {
+    "description": "UK financial benchmarks and financial runway configuration used in wellness assessment results.",
+    "lastUpdated": "2026-02-19",
+    "updateFrequency": "Every 6-12 months — when new benchmark data is published.",
+    "usedBy": [
+      "functions/_utils/scoring-engine.js (UK_BENCHMARKS, calculateRunway, calculatePerceptionGap)",
+      "themes/bms-theme/static/js/wellness-client.js (results display)",
+      "themes/bms-theme/layouts/partials/wellness-modal.html (results section)"
+    ],
+    "sources": {
+      "deadlineToBreadline": "Legal & General Deadline to Breadline Report 2022 — https://www.legalandgeneral.com/adviser/protection/knowledge-hub/research-insights/deadline-to-breadline/",
+      "averageSavings": "Money & Pensions Service / ONS Wealth and Assets Survey 2023",
+      "averageDebt": "ONS — excluding mortgages"
+    }
+  },
+
+  "ukAverages": {
+    "deadlineToBreadlineDays": 19,
+    "averageSavings": 2431,
+    "averageDebt": 610,
+    "description": "UK average 'Deadline to Breadline' is 19 days — the time before a household runs out of savings if income stops. Average accessible savings: £2,431. Average non-mortgage debt: £610."
+  },
+
+  "runwayTargets": {
+    "targetDays": 90,
+    "targetDescription": "3 months of essential outgoings — the recommended minimum emergency fund.",
+    "calculationCapMonths": 120,
+    "daysPerMonth": 30.44,
+    "infiniteRunwayDays": 999,
+    "infiniteRunwayMonths": 99.9,
+    "infiniteRunwayMessage": "Income covers essentials — savings not depleted"
+  },
+
+  "runwayStatus": {
+    "description": "Status thresholds for financial runway assessment (days of savings).",
+    "tiers": [
+      {
+        "minDays": 90,
+        "status": "strong",
+        "colour": "#22C55E",
+        "gradient": "linear-gradient(135deg, #22C55E 0%, #16A34A 100%)",
+        "label": "Strong — target met"
+      },
+      {
+        "minDays": 60,
+        "status": "good",
+        "colour": "#84CC16",
+        "gradient": "linear-gradient(135deg, #84CC16 0%, #65A30D 100%)",
+        "label": "Good — adequate cushion"
+      },
+      {
+        "minDays": 30,
+        "status": "moderate",
+        "colour": "#EAB308",
+        "gradient": "linear-gradient(135deg, #EAB308 0%, #CA8A04 100%)",
+        "label": "Moderate — at risk"
+      },
+      {
+        "minDays": 0,
+        "status": "critical",
+        "colour": "#EF4444",
+        "gradient": "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+        "label": "Critical — urgent action needed"
+      }
+    ]
+  },
+
+  "perceptionGap": {
+    "toleranceDays": 30,
+    "defaultEstimateMonths": 3,
+    "sliderMin": 0,
+    "sliderMax": 24,
+    "sliderDefault": 3
+  },
+
+  "stateEmploymentBenefitMapping": {
+    "description": "Which employment types qualify for which state benefit when unable to work.",
+    "sspEligible": ["paye-12", "paye-under", "contractor"],
+    "esaEligible": ["self-2", "self-under"],
+    "esaFallback": ["irregular"],
+    "note": "Contractors assumed PAYE-like. Irregular income uses ESA as conservative estimate."
+  }
+}

@@ -375,6 +375,40 @@
 
 {{ define "scripts" }}
 <script>
+// Configuration injected from Hugo data files (data/annual_rates.json, data/affordability.json)
+const TAX_CONFIG = {
+  personalAllowance: {{ .Site.Data.annual_rates.incomeTax.personalAllowance }},
+  basicRateLimit: {{ .Site.Data.annual_rates.incomeTax.basicRateLimit }},
+  higherRateLimit: {{ .Site.Data.annual_rates.incomeTax.higherRateLimit }},
+  basicRate: {{ (index .Site.Data.annual_rates.incomeTax.bands 0).rate }},
+  higherRate: {{ (index .Site.Data.annual_rates.incomeTax.bands 1).rate }},
+  additionalRate: {{ (index .Site.Data.annual_rates.incomeTax.bands 2).rate }},
+  taperStart: {{ .Site.Data.annual_rates.incomeTax.personalAllowanceTaperStart }},
+  taperRate: {{ .Site.Data.annual_rates.incomeTax.personalAllowanceTaperRate }},
+  niThreshold: {{ .Site.Data.annual_rates.nationalInsurance.threshold }},
+  niUpperLimit: {{ .Site.Data.annual_rates.nationalInsurance.upperLimit }},
+  niMainRate: {{ .Site.Data.annual_rates.nationalInsurance.mainRate }},
+  niAdditionalRate: {{ .Site.Data.annual_rates.nationalInsurance.additionalRate }}
+};
+const AFFORDABILITY_CONFIG = {
+  multipliers: {{ .Site.Data.affordability.incomeMultipliers.tiers | jsonify | safeJS }},
+  rates: {
+    repaymentLow: {{ .Site.Data.affordability.interestRates.repaymentLow }},
+    repaymentHigh: {{ .Site.Data.affordability.interestRates.repaymentHigh }},
+    movingCostDefault: {{ .Site.Data.affordability.interestRates.movingCostDefault }}
+  },
+  creditCardCommitmentRate: {{ .Site.Data.affordability.affordabilityTest.creditCardCommitmentRate }},
+  maxPaymentRatio: {{ .Site.Data.affordability.affordabilityTest.maxPaymentRatio }},
+  stampDuty: {{ .Site.Data.affordability.stampDuty | jsonify | safeJS }},
+  movingCosts: {
+    purchaseLegalFees: {{ .Site.Data.affordability.movingCosts.purchaseLegalFees }},
+    sellingLegalFees: {{ .Site.Data.affordability.movingCosts.sellingLegalFees }},
+    surveyCost: {{ .Site.Data.affordability.movingCosts.surveyCost }},
+    estateAgentFeePercent: {{ .Site.Data.affordability.movingCosts.estateAgentFeePercent }},
+    estateAgentVatMultiplier: {{ .Site.Data.affordability.movingCosts.estateAgentVatMultiplier }}
+  }
+};
+
 let applicationType = 'single';
 
 function setApplicationType(type) {
@@ -433,29 +467,24 @@ function formatCurrency(num) {
 function calculateNetPay(grossAnnual) {
   if (grossAnnual <= 0) return 0;
 
-  // 2025/26 Tax Year Thresholds
-  const personalAllowance = 12570;
-  const basicRateLimit = 50270;
-  const higherRateLimit = 125140;
-
-  // Tax Rates
-  const basicRate = 0.20;
-  const higherRate = 0.40;
-  const additionalRate = 0.45;
-
-  // NI Thresholds
-  const niThreshold = 12570;
-  const niUpperLimit = 50270;
-  const niMainRate = 0.08;
-  const niAdditionalRate = 0.02;
+  const personalAllowance = TAX_CONFIG.personalAllowance;
+  const basicRateLimit = TAX_CONFIG.basicRateLimit;
+  const higherRateLimit = TAX_CONFIG.higherRateLimit;
+  const basicRate = TAX_CONFIG.basicRate;
+  const higherRate = TAX_CONFIG.higherRate;
+  const additionalRate = TAX_CONFIG.additionalRate;
+  const niThreshold = TAX_CONFIG.niThreshold;
+  const niUpperLimit = TAX_CONFIG.niUpperLimit;
+  const niMainRate = TAX_CONFIG.niMainRate;
+  const niAdditionalRate = TAX_CONFIG.niAdditionalRate;
 
   // Calculate Income Tax
   let incomeTax = 0;
 
-  // Reduce personal allowance for high earners (£1 reduction for every £2 over £100k)
+  // Reduce personal allowance for high earners
   let adjustedAllowance = personalAllowance;
-  if (grossAnnual > 100000) {
-    adjustedAllowance = Math.max(0, personalAllowance - ((grossAnnual - 100000) / 2));
+  if (grossAnnual > TAX_CONFIG.taperStart) {
+    adjustedAllowance = Math.max(0, personalAllowance - ((grossAnnual - TAX_CONFIG.taperStart) * TAX_CONFIG.taperRate));
   }
 
   let taxableIncome = Math.max(0, grossAnnual - adjustedAllowance);
@@ -524,8 +553,8 @@ function calculateMaxMortgageFromPayment(monthlyPayment, annualRate, years) {
 }
 
 function updateRepaymentDisplay(elementId, principal, years) {
-  const lowRate = 3.75;
-  const highRate = 4.75;
+  const lowRate = AFFORDABILITY_CONFIG.rates.repaymentLow;
+  const highRate = AFFORDABILITY_CONFIG.rates.repaymentHigh;
   const lowPayment = calculateMonthlyRepayment(principal, lowRate, years);
   const highPayment = calculateMonthlyRepayment(principal, highRate, years);
 
@@ -575,23 +604,21 @@ function calculateAffordability() {
   const totalNetMonthly = (yourNetAnnual + partnerNetAnnual) / 12;
 
   // Calculate monthly commitments for affordability
-  // Credit cards: use 3% of balance as monthly commitment
-  const cardCommitment = creditCards * 0.03;
+  const cardCommitment = creditCards * AFFORDABILITY_CONFIG.creditCardCommitmentRate;
   const totalCommitments = loansHP + otherOutgoings + cardCommitment;
 
-  // Calculate the income multiplier tiers
-  const conservative = totalIncome * 3.5;
-  const standard = totalIncome * 4.5;
-  const incomeMultiplierMax = totalIncome * 6; // 6x income cap
+  // Calculate the income multiplier tiers from config
+  const conservative = totalIncome * AFFORDABILITY_CONFIG.multipliers[0].multiplier;
+  const standard = totalIncome * AFFORDABILITY_CONFIG.multipliers[1].multiplier;
+  const incomeMultiplierMax = totalIncome * AFFORDABILITY_CONFIG.multipliers[2].multiplier;
 
   // Calculate affordability-based maximum
-  // Max payment = 45% of (net income - commitments)
   const disposableIncome = totalNetMonthly - totalCommitments;
-  const maxAffordablePayment = disposableIncome * 0.45;
+  const maxAffordablePayment = disposableIncome * AFFORDABILITY_CONFIG.maxPaymentRatio;
 
   // Get mortgage term and calculate max mortgage from affordability
   const termYears = parseInt(document.getElementById('mortgageTerm').value) || 30;
-  const highRate = 4.75;
+  const highRate = AFFORDABILITY_CONFIG.rates.repaymentHigh;
   const affordabilityMax = calculateMaxMortgageFromPayment(maxAffordablePayment, highRate, termYears);
 
   // Maximum is the lower of affordability-based or 6x income
@@ -611,43 +638,33 @@ function calculateAffordability() {
   saveAffordabilityToSession();
 }
 
-// Stamp Duty Calculator (UK rates as of 2024/25)
+// Stamp Duty Calculator — rates from data/affordability.json
 function calculateStampDuty(price, isFirstTimeBuyer) {
   if (price <= 0) return 0;
 
+  var sdConfig = AFFORDABILITY_CONFIG.stampDuty;
   let stampDuty = 0;
 
   if (isFirstTimeBuyer) {
-    // First-time buyer relief: 0% up to £425k, 5% on £425k-£625k
-    // If property > £625k, no relief - use standard rates
-    if (price <= 625000) {
-      if (price > 425000) {
-        stampDuty = (price - 425000) * 0.05;
+    var ftb = sdConfig.firstTimeBuyer;
+    if (price <= ftb.reliefMaxPrice) {
+      if (price > ftb.nilRateThreshold) {
+        stampDuty = (price - ftb.nilRateThreshold) * ftb.rateAboveThreshold;
       }
       return Math.round(stampDuty);
     }
-    // Falls through to standard rates if > £625k
+    // Falls through to standard rates if above relief max
   }
 
-  // Standard rates (no relief)
-  // 0% up to £250k
-  // 5% on £250k - £925k
-  // 10% on £925k - £1.5m
-  // 12% above £1.5m
-
-  if (price > 250000) {
-    const band1 = Math.min(price, 925000) - 250000;
-    stampDuty += band1 * 0.05;
-  }
-
-  if (price > 925000) {
-    const band2 = Math.min(price, 1500000) - 925000;
-    stampDuty += band2 * 0.10;
-  }
-
-  if (price > 1500000) {
-    const band3 = price - 1500000;
-    stampDuty += band3 * 0.12;
+  // Standard rates from config bands
+  var bands = sdConfig.standard.bands;
+  for (var i = 1; i < bands.length; i++) {
+    var bandFrom = bands[i].from - 1; // bands[i].from is the start of this rate band
+    var bandTo = bands[i].to || Infinity;
+    if (price > bandFrom) {
+      var taxable = Math.min(price, bandTo) - bandFrom;
+      stampDuty += taxable * bands[i].rate;
+    }
   }
 
   return Math.round(stampDuty);
@@ -670,7 +687,7 @@ function calculateMovingCosts() {
   const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
   const salePrice = parseFormattedNumber(document.getElementById('salePrice').value);
   const deposit = parseFormattedNumber(document.getElementById('depositAmount').value);
-  const interestRate = parseFloat(document.getElementById('movingInterestRate').value) || 4;
+  const interestRate = parseFloat(document.getElementById('movingInterestRate').value) || AFFORDABILITY_CONFIG.rates.movingCostDefault;
   const termYears = parseInt(document.getElementById('movingMortgageTerm').value) || 30;
 
   // Calculate mortgage amount
@@ -691,16 +708,16 @@ function calculateMovingCosts() {
   // Calculate stamp duty
   const stampDuty = calculateStampDuty(housePrice, isFirstTimeBuyer);
 
-  // Calculate other costs
+  // Calculate other costs from config
+  var mc = AFFORDABILITY_CONFIG.movingCosts;
   let estateAgentFees = 0;
   let sellingLegalFees = 0;
-  const purchaseLegalFees = 2500;
-  const surveyCost = 500;
+  const purchaseLegalFees = mc.purchaseLegalFees;
+  const surveyCost = mc.surveyCost;
 
   if (isMover) {
-    // Estate agent: 1% + VAT (20%)
-    estateAgentFees = Math.round(salePrice * 0.01 * 1.2);
-    sellingLegalFees = 1500;
+    estateAgentFees = Math.round(salePrice * mc.estateAgentFeePercent * mc.estateAgentVatMultiplier);
+    sellingLegalFees = mc.sellingLegalFees;
   }
 
   // Calculate total costs

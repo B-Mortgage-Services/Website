@@ -25,6 +25,9 @@ Thumbs.db
 *.swo
 *~
 
+# Personal maintenance docs (local only)
+MAINTENANCE.md
+
 # Temporary files
 *.tmp
 *.temp

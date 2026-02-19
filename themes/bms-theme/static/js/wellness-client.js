@@ -424,11 +424,20 @@ function updateCategoryLabel(score, category, interpretation) {
   var labelEl = document.getElementById('score-label');
   if (!labelEl) return;
 
-  var color;
-  if (score >= 80) color = '#22C55E';
-  else if (score >= 65) color = '#84CC16';
-  else if (score >= 50) color = '#EAB308';
-  else color = '#F97316';
+  var color = '#F97316';
+  var categories = window.BMS_CONFIG && window.BMS_CONFIG.scoreCategories;
+  if (categories) {
+    for (var i = 0; i < categories.length; i++) {
+      if (score >= categories[i].minScore) {
+        color = categories[i].colour;
+        break;
+      }
+    }
+  } else {
+    if (score >= 80) color = '#22C55E';
+    else if (score >= 65) color = '#84CC16';
+    else if (score >= 50) color = '#EAB308';
+  }
 
   labelEl.innerHTML = '<h3 style="color: ' + color + ';">' + category + '</h3><p>' + interpretation + '</p>';
 }
@@ -474,16 +483,27 @@ function displayRunway(runway) {
   }
 
   if (messageEl) {
-    var months = Math.round(runway.days / 30.44 * 10) / 10;
+    var dpm = (window.BMS_CONFIG && window.BMS_CONFIG.daysPerMonth) || 30.44;
+    var months = Math.round(runway.days / dpm * 10) / 10;
     messageEl.textContent = 'If your income stopped tomorrow, your savings would cover essential expenses for approximately ' + runway.days + ' days (' + months + ' month' + (months !== 1 ? 's' : '') + ').';
   }
 
   if (calloutEl) {
     var gradient = 'linear-gradient(135deg, var(--brand-orange) 0%, #D94A1F 100%)';
-    if (runway.status === 'strong') gradient = 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)';
-    else if (runway.status === 'good') gradient = 'linear-gradient(135deg, #84CC16 0%, #65A30D 100%)';
-    else if (runway.status === 'moderate') gradient = 'linear-gradient(135deg, #EAB308 0%, #CA8A04 100%)';
-    else if (runway.status === 'critical') gradient = 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)';
+    var statusTiers = window.BMS_CONFIG && window.BMS_CONFIG.runwayStatus;
+    if (statusTiers) {
+      for (var k = 0; k < statusTiers.length; k++) {
+        if (runway.status === statusTiers[k].status) {
+          gradient = statusTiers[k].gradient;
+          break;
+        }
+      }
+    } else {
+      if (runway.status === 'strong') gradient = 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)';
+      else if (runway.status === 'good') gradient = 'linear-gradient(135deg, #84CC16 0%, #65A30D 100%)';
+      else if (runway.status === 'moderate') gradient = 'linear-gradient(135deg, #EAB308 0%, #CA8A04 100%)';
+      else if (runway.status === 'critical') gradient = 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)';
+    }
     calloutEl.style.background = gradient;
   }
 }
@@ -686,7 +706,7 @@ function displayMortgageMetrics(metrics) {
       metrics.lti.description,
       getLTIGaugePercent(metrics.lti.ratio),
       getGaugeColor(metrics.lti.tier),
-      'FCA cap: 4.5x',
+      'FCA cap: ' + ((window.BMS_CONFIG && window.BMS_CONFIG.ltiScoring) ? window.BMS_CONFIG.ltiScoring.fcaCap : 4.5) + 'x',
       [
         { label: '< 3.5x', color: '#22C55E' },
         { label: '3.5\u20134.5x', color: '#EAB308' },
@@ -802,6 +822,15 @@ function getGaugeColor(tier) {
 }
 
 function getLTVDescription(ltv) {
+  var cfg = window.BMS_CONFIG && window.BMS_CONFIG.depositLtvScoring;
+  if (cfg && cfg.tiers) {
+    for (var i = 0; i < cfg.tiers.length; i++) {
+      if (cfg.tiers[i].maxLtv === null || ltv <= cfg.tiers[i].maxLtv) {
+        return cfg.tiers[i].label;
+      }
+    }
+  }
+  // Fallback
   if (ltv <= 75) return 'Access to the best rates from most lenders';
   if (ltv <= 85) return 'Good range of competitive products available';
   if (ltv <= 90) return 'Standard lending \u2014 some rate premiums may apply';

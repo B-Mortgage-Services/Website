@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "description": "Mortgage affordability calculator parameters: multipliers, interest rates, stamp duty, and moving costs.",
+    "lastUpdated": "2026-02-19",
+    "usedBy": [
+      "themes/bms-theme/layouts/affordability-calculator/list.html"
+    ],
+    "notes": "Stamp duty bands may change at Budget. Interest rate assumptions should reflect current market."
+  },
+
+  "incomeMultipliers": {
+    "description": "Lending multiples applied to gross household income to estimate borrowing capacity.",
+    "tiers": [
+      {
+        "name": "Conservative",
+        "multiplier": 3.5,
+        "description": "Standard high street lending — most lenders will offer this comfortably."
+      },
+      {
+        "name": "Standard",
+        "multiplier": 4.5,
+        "description": "Most common lending criteria — within FCA cap for majority of lending."
+      },
+      {
+        "name": "Maximum",
+        "multiplier": 6.0,
+        "description": "Upper cap — subject to strict affordability assessment and eligibility criteria."
+      }
+    ]
+  },
+
+  "mortgageTerm": {
+    "minYears": 15,
+    "defaultYears": 30,
+    "maxYears": 40,
+    "description": "Range and default for mortgage term slider in affordability calculator."
+  },
+
+  "interestRates": {
+    "repaymentLow": 3.75,
+    "repaymentHigh": 4.75,
+    "movingCostDefault": 4.0,
+    "description": "Interest rates used for estimated monthly repayment calculations. Update when market rates shift significantly."
+  },
+
+  "affordabilityTest": {
+    "creditCardCommitmentRate": 0.03,
+    "maxPaymentRatio": 0.45,
+    "stressTestRate": 4.75,
+    "description": "Credit card balances are treated as 3% monthly commitment. Max affordable payment = 45% of disposable income (net - commitments). Stress test uses high rate."
+  },
+
+  "stampDuty": {
+    "effectiveDate": "2024/25",
+    "standard": {
+      "bands": [
+        { "from": 0,       "to": 250000,  "rate": 0.00 },
+        { "from": 250001,  "to": 925000,  "rate": 0.05 },
+        { "from": 925001,  "to": 1500000, "rate": 0.10 },
+        { "from": 1500001, "to": null,     "rate": 0.12 }
+      ],
+      "description": "Standard SDLT rates for residential property in England & Northern Ireland."
+    },
+    "firstTimeBuyer": {
+      "reliefMaxPrice": 625000,
+      "nilRateThreshold": 425000,
+      "rateAboveThreshold": 0.05,
+      "description": "First-time buyer relief: 0% up to £425k, 5% on £425k-£625k. If property exceeds £625k, standard rates apply."
+    }
+  },
+
+  "movingCosts": {
+    "purchaseLegalFees": 2500,
+    "sellingLegalFees": 1500,
+    "surveyCost": 500,
+    "estateAgentFeePercent": 0.01,
+    "estateAgentVatMultiplier": 1.2,
+    "description": "Fixed cost assumptions for the moving cost calculator. Estate agent: 1% of sale price + 20% VAT."
+  }
+}

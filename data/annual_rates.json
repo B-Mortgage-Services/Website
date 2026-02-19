@@ -1,0 +1,74 @@
+{
+  "_meta": {
+    "description": "UK tax rates, National Insurance, and state benefit rates. UPDATE EACH APRIL when new tax year rates are published.",
+    "taxYear": "2025/26",
+    "effectiveFrom": "April 2025",
+    "lastUpdated": "2026-02-19",
+    "updateFrequency": "Annual (April)",
+    "usedBy": [
+      "functions/_utils/scoring-engine.js (UK_BENCHMARKS — SSP, ESA, UC rates)",
+      "themes/bms-theme/layouts/affordability-calculator/list.html (tax calc)"
+    ],
+    "sources": {
+      "incomeTax": "https://www.gov.uk/income-tax-rates",
+      "nationalInsurance": "https://www.gov.uk/national-insurance-rates-letters",
+      "ssp": "https://www.gov.uk/statutory-sick-pay",
+      "esa": "https://www.gov.uk/employment-support-allowance/what-youll-get",
+      "universalCredit": "https://www.gov.uk/universal-credit/what-youll-get"
+    }
+  },
+
+  "incomeTax": {
+    "personalAllowance": 12570,
+    "personalAllowanceTaperStart": 100000,
+    "personalAllowanceTaperRate": 0.5,
+    "bands": [
+      { "name": "Basic rate",      "from": 12571, "to": 50270,  "rate": 0.20 },
+      { "name": "Higher rate",     "from": 50271, "to": 125140, "rate": 0.40 },
+      { "name": "Additional rate", "from": 125141, "to": null,  "rate": 0.45 }
+    ],
+    "basicRateLimit": 50270,
+    "higherRateLimit": 125140
+  },
+
+  "nationalInsurance": {
+    "threshold": 12570,
+    "upperLimit": 50270,
+    "mainRate": 0.08,
+    "additionalRate": 0.02,
+    "description": "Employee Class 1 NI contributions: 8% on earnings between threshold and upper limit, 2% above."
+  },
+
+  "statutorySickPay": {
+    "weeklyRate": 123.25,
+    "monthlyEquivalent": 535,
+    "maxWeeks": 28,
+    "description": "SSP paid by employer to PAYE employees. £123.25/week (or 80% of AWE, whichever is lower) for up to 28 weeks.",
+    "eligibility": "PAYE employees earning at least £123/week",
+    "note": "Self-employed are NOT eligible for SSP."
+  },
+
+  "employmentSupportAllowance": {
+    "assessmentPhase": {
+      "weeklyRate": 92.05,
+      "monthlyEquivalent": 399,
+      "durationWeeks": 13,
+      "description": "New Style ESA assessment phase (first 13 weeks), age 25+. Contribution-based, not means-tested."
+    },
+    "supportGroup": {
+      "weeklyRate": 140.55,
+      "monthlyEquivalent": 609,
+      "description": "New Style ESA support group rate (basic allowance + support component)."
+    },
+    "eligibility": "Available to employed and self-employed if sufficient Class 1 or Class 2 NI contributions paid.",
+    "note": "New Style ESA can be claimed alongside Universal Credit."
+  },
+
+  "universalCredit": {
+    "singleOver25": 400,
+    "coupleOneOver25": 628,
+    "lcwraElement": 423,
+    "description": "UC is means-tested. Standard allowance plus Limited Capability for Work-Related Activity (LCWRA) element if assessed as having limited capability for work.",
+    "note": "Actual UC amount depends on household income, savings (>£6k reduces), rent, children, and other factors."
+  }
+}

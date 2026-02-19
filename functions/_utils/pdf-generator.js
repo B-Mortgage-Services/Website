@@ -4,10 +4,15 @@
  * Uses @cloudflare/puppeteer + pure JS template literals to generate a branded
  * 4-page PDF. No Handlebars — avoids `new Function()` blocked by Workers.
  * The browser instance is provided via the BROWSER binding in wrangler.toml.
+ *
+ * Recommendation thresholds are loaded from data/scoring.json.
  */
 
 const puppeteer = require('@cloudflare/puppeteer');
 const renderHTML = require('./pdf-template');
+const scoringConfig = require('../../data/scoring.json');
+
+const recConfig = scoringConfig.pdfRecommendations;
 
 /**
  * Generate personalised recommendations based on scoring result
@@ -17,49 +22,49 @@ const renderHTML = require('./pdf-template');
 function generateRecommendations(data) {
   var recommendations = [];
 
-  if (data.runway && data.runway.days < 90) {
+  if (data.runway && data.runway.days < recConfig.thresholds.runwayDaysBelow) {
     recommendations.push({
       title: 'Build Your Emergency Fund',
       text: 'Your financial runway of ' + data.runway.days + ' days is below the recommended 3-month target. Aim to build accessible savings to cover at least 90 days of essential outgoings (\u00a3' + Math.round(data.household.monthlyEssentials * 3).toLocaleString('en-GB') + ').'
     });
   }
 
-  if (data.breakdown.protection.totalScore < 10) {
+  if (data.breakdown.protection.totalScore < recConfig.thresholds.protectionScoreBelow) {
     recommendations.push({
       title: 'Review Your Protection Cover',
       text: 'Your protection cover has room for improvement. Income protection, life insurance, and critical illness cover can safeguard your mortgage payments if the unexpected happens. A protection review could identify gaps in your cover.'
     });
   }
 
-  if (data.breakdown.deposit.ltv > 90) {
+  if (data.breakdown.deposit.ltv > recConfig.thresholds.ltvAbove) {
     recommendations.push({
       title: 'Boost Your Deposit',
       text: 'Your current LTV is ' + Math.round(data.breakdown.deposit.ltv) + '%. Increasing your deposit to reach 90% LTV or below could unlock better mortgage rates and reduce monthly payments. Consider ISAs or Lifetime ISAs for tax-efficient saving.'
     });
   }
 
-  if (data.breakdown.credit.score < 7) {
+  if (data.breakdown.credit.score < recConfig.thresholds.creditScoreBelow) {
     recommendations.push({
       title: 'Strengthen Your Credit Profile',
       text: 'Improving your credit history could significantly boost your mortgage options. Consider registering on the electoral roll, ensuring all bills are paid on time, and checking your credit report for errors.'
     });
   }
 
-  if (data.breakdown.surplus.score < 12) {
+  if (data.breakdown.surplus.score < recConfig.thresholds.surplusScoreBelow) {
     recommendations.push({
       title: 'Improve Your Monthly Budget',
       text: 'Lenders look for a comfortable surplus after mortgage payments. Review your monthly outgoings for potential savings and aim to demonstrate consistent saving habits over 3-6 months before applying.'
     });
   }
 
-  if (recommendations.length < 2) {
+  if (recommendations.length < recConfig.minBeforeFallback) {
     recommendations.push({
-      title: 'Book a Mortgage Review',
-      text: 'You\'re in a strong position. A professional mortgage review can help you find the best rates and products for your situation, potentially saving thousands over your mortgage term.'
+      title: recConfig.fallbackRecommendation.title,
+      text: recConfig.fallbackRecommendation.text
     });
   }
 
-  return recommendations.slice(0, 4);
+  return recommendations.slice(0, recConfig.maxRecommendations);
 }
 
 /**

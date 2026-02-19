@@ -490,5 +490,17 @@
   </div>
 </div>
 
+<!-- Wellness config injected from Hugo data files -->
+<script>
+window.BMS_CONFIG = {
+  scoreCategories: {{ .Site.Data.scoring.scoreCategories.tiers | jsonify | safeJS }},
+  runwayStatus: {{ .Site.Data.benchmarks.runwayStatus.tiers | jsonify | safeJS }},
+  ltiScoring: {{ .Site.Data.scoring.ltiScoring | jsonify | safeJS }},
+  dtiScoring: {{ .Site.Data.scoring.dtiScoring | jsonify | safeJS }},
+  depositLtvScoring: {{ .Site.Data.scoring.depositLtvScoring | jsonify | safeJS }},
+  perceptionGap: {{ .Site.Data.scoring.perceptionGap | jsonify | safeJS }},
+  daysPerMonth: {{ .Site.Data.benchmarks.runwayTargets.daysPerMonth }}
+};
+</script>
 <!-- Wellness Modal Scripts (deferred to avoid blocking) -->
 <script defer src="{{ "js/wellness-client.js" | relURL }}"></script>
