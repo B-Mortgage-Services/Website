@@ -1,61 +1,13 @@
 /**
  * PDF Generator for Financial Wellness Report (Cloudflare Browser Rendering)
  *
- * Uses @cloudflare/puppeteer + Handlebars to generate a branded 4-page PDF.
+ * Uses @cloudflare/puppeteer + pure JS template literals to generate a branded
+ * 4-page PDF. No Handlebars — avoids `new Function()` blocked by Workers.
  * The browser instance is provided via the BROWSER binding in wrangler.toml.
  */
 
 const puppeteer = require('@cloudflare/puppeteer');
-const handlebars = require('handlebars');
-const templateSource = require('./pdf-template');
-
-// Register Handlebars helpers
-handlebars.registerHelper('formatNumber', function (num) {
-  var val = parseFloat(num) || 0;
-  return val.toLocaleString('en-GB', { maximumFractionDigits: 0 });
-});
-
-handlebars.registerHelper('formatDecimal', function (num, decimals) {
-  var val = parseFloat(num) || 0;
-  return val.toFixed(typeof decimals === 'number' ? decimals : 1);
-});
-
-handlebars.registerHelper('round', function (num) {
-  return Math.round(parseFloat(num) || 0);
-});
-
-handlebars.registerHelper('scorePercent', function (score, maxScore) {
-  var s = parseFloat(score) || 0;
-  var m = parseFloat(maxScore) || 1;
-  return Math.round((s / m) * 100);
-});
-
-handlebars.registerHelper('subtract', function (a, b) {
-  return (parseFloat(a) || 0) - (parseFloat(b) || 0);
-});
-
-handlebars.registerHelper('isShortfall', function (income, essentials) {
-  return (parseFloat(income) || 0) < (parseFloat(essentials) || 0);
-});
-
-handlebars.registerHelper('shortfallAmount', function (income, essentials) {
-  return Math.round((parseFloat(essentials) || 0) - (parseFloat(income) || 0));
-});
-
-handlebars.registerHelper('surplusAmount', function (income, essentials) {
-  return Math.round((parseFloat(income) || 0) - (parseFloat(essentials) || 0));
-});
-
-handlebars.registerHelper('ifEquals', function (a, b, options) {
-  return a === b ? options.fn(this) : options.inverse(this);
-});
-
-handlebars.registerHelper('lastItem', function (arr) {
-  return arr && arr.length > 0 ? arr[arr.length - 1] : null;
-});
-
-// Compile template once at module level
-var template = handlebars.compile(templateSource);
+const renderHTML = require('./pdf-template');
 
 /**
  * Generate personalised recommendations based on scoring result
@@ -130,7 +82,7 @@ async function generatePDF(browserBinding, reportData, reportId) {
     recommendations: recommendations
   });
 
-  var html = template(templateData);
+  var html = renderHTML(templateData);
 
   var browser = await puppeteer.launch(browserBinding);
   try {

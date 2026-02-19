@@ -1,10 +1,57 @@
 /**
- * PDF Report Handlebars Template (inlined for Cloudflare Workers)
+ * PDF Report Template — pure JS template literals (no Handlebars)
  *
- * Cloudflare Workers cannot use fs.readFileSync, so the template
- * is exported as a string from this module.
+ * Cloudflare Workers block `new Function()` which Handlebars uses internally.
+ * This module exports a single `renderHTML(data)` function that builds the
+ * complete HTML string using JavaScript template literals and local helpers.
  */
-module.exports = `<!DOCTYPE html>
+
+// ── Helper functions ──────────────────────────────────────────────────────────
+
+function formatNumber(num) {
+  var val = parseFloat(num) || 0;
+  return val.toLocaleString('en-GB', { maximumFractionDigits: 0 });
+}
+
+function formatDecimal(num, decimals) {
+  var val = parseFloat(num) || 0;
+  return val.toFixed(typeof decimals === 'number' ? decimals : 1);
+}
+
+function round(num) {
+  return Math.round(parseFloat(num) || 0);
+}
+
+function scorePercent(score, maxScore) {
+  var s = parseFloat(score) || 0;
+  var m = parseFloat(maxScore) || 1;
+  return Math.round((s / m) * 100);
+}
+
+function subtract(a, b) {
+  return (parseFloat(a) || 0) - (parseFloat(b) || 0);
+}
+
+function isShortfall(income, essentials) {
+  return (parseFloat(income) || 0) < (parseFloat(essentials) || 0);
+}
+
+function shortfallAmount(income, essentials) {
+  return Math.round((parseFloat(essentials) || 0) - (parseFloat(income) || 0));
+}
+
+function surplusAmount(income, essentials) {
+  return Math.round((parseFloat(income) || 0) - (parseFloat(essentials) || 0));
+}
+
+// ── Template renderer ─────────────────────────────────────────────────────────
+
+module.exports = function renderHTML(data) {
+  var lastWaterfallItem = (data.waterfall && data.waterfall.length > 0)
+    ? data.waterfall[data.waterfall.length - 1]
+    : null;
+
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -274,12 +321,12 @@ module.exports = `<!DOCTYPE html>
     }
 
     .column-card__list li::before {
-      content: "\u2713 ";
+      content: "\\2713 ";
       font-weight: 700;
     }
 
     .column-card--green .column-card__list li::before { color: var(--green); }
-    .column-card--orange .column-card__list li::before { content: "\u2192 "; color: var(--brand-orange); }
+    .column-card--orange .column-card__list li::before { content: "\\2192 "; color: var(--brand-orange); }
 
     /* Chart placeholder */
     .chart-container {
@@ -550,7 +597,7 @@ module.exports = `<!DOCTYPE html>
   <div class="page">
     <div class="page-header">
       <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; {{generatedDate}}</div>
+      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
     </div>
 
     <h1>Your Financial Wellness Report</h1>
@@ -559,22 +606,22 @@ module.exports = `<!DOCTYPE html>
     <!-- Score Hero -->
     <div class="score-hero">
       <div>
-        <span class="score-hero__number">{{score}}</span><span class="score-hero__max">/100</span>
+        <span class="score-hero__number">${data.score}</span><span class="score-hero__max">/100</span>
       </div>
-      <div class="score-hero__category">{{category}}</div>
-      <div class="score-hero__interpretation">{{interpretation}}</div>
+      <div class="score-hero__category">${data.category}</div>
+      <div class="score-hero__interpretation">${data.interpretation}</div>
     </div>
 
     <!-- Runway Hero -->
     <div class="runway-hero">
       <div>
-        <div class="runway-hero__days">{{runway.days}}</div>
+        <div class="runway-hero__days">${data.runway.days}</div>
         <div class="runway-hero__label">days</div>
       </div>
       <div class="runway-hero__detail">
         <h3>Your Financial Runway</h3>
-        <p>If your income stopped, your savings would cover essential outgoings for approximately <strong>{{runway.days}} days ({{runway.months}} months)</strong>.</p>
-        <p>UK average: {{benchmarks.averageDeadlineDays}} days &middot; Target: {{benchmarks.targetDeadlineDays}}+ days</p>
+        <p>If your income stopped, your savings would cover essential outgoings for approximately <strong>${data.runway.days} days (${data.runway.months} months)</strong>.</p>
+        <p>UK average: ${data.benchmarks.averageDeadlineDays} days &middot; Target: ${data.benchmarks.targetDeadlineDays}+ days</p>
       </div>
     </div>
 
@@ -583,30 +630,30 @@ module.exports = `<!DOCTYPE html>
     <div class="pillar-grid">
       <div class="pillar-card pillar-card--eligibility">
         <div class="pillar-card__title">Mortgage Eligibility</div>
-        <div class="pillar-card__score">{{pillarPercentages.mortgageEligibility}}%</div>
+        <div class="pillar-card__score">${data.pillarPercentages.mortgageEligibility}%</div>
         <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: {{pillarPercentages.mortgageEligibility}}%; background: var(--green);"></div>
+          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.mortgageEligibility}%; background: var(--green);"></div>
         </div>
       </div>
       <div class="pillar-card pillar-card--affordability">
         <div class="pillar-card__title">Affordability & Budget</div>
-        <div class="pillar-card__score">{{pillarPercentages.affordabilityBudget}}%</div>
+        <div class="pillar-card__score">${data.pillarPercentages.affordabilityBudget}%</div>
         <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: {{pillarPercentages.affordabilityBudget}}%; background: var(--blue);"></div>
+          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.affordabilityBudget}%; background: var(--blue);"></div>
         </div>
       </div>
       <div class="pillar-card pillar-card--resilience">
         <div class="pillar-card__title">Financial Resilience</div>
-        <div class="pillar-card__score">{{pillarPercentages.financialResilience}}%</div>
+        <div class="pillar-card__score">${data.pillarPercentages.financialResilience}%</div>
         <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: {{pillarPercentages.financialResilience}}%; background: var(--yellow);"></div>
+          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.financialResilience}%; background: var(--yellow);"></div>
         </div>
       </div>
       <div class="pillar-card pillar-card--protection">
         <div class="pillar-card__title">Protection Readiness</div>
-        <div class="pillar-card__score">{{pillarPercentages.protectionReadiness}}%</div>
+        <div class="pillar-card__score">${data.pillarPercentages.protectionReadiness}%</div>
         <div class="pillar-card__bar">
-          <div class="pillar-card__fill" style="width: {{pillarPercentages.protectionReadiness}}%; background: var(--purple);"></div>
+          <div class="pillar-card__fill" style="width: ${data.pillarPercentages.protectionReadiness}%; background: var(--purple);"></div>
         </div>
       </div>
     </div>
@@ -616,23 +663,19 @@ module.exports = `<!DOCTYPE html>
       <div class="column-card column-card--green">
         <div class="column-card__title">Your Strengths</div>
         <ul class="column-card__list">
-          {{#each strengths}}
-          <li>{{this}}</li>
-          {{/each}}
+          ${(data.strengths || []).map(function (s) { return '<li>' + s + '</li>'; }).join('\n          ')}
         </ul>
       </div>
       <div class="column-card column-card--orange">
         <div class="column-card__title">Areas to Improve</div>
         <ul class="column-card__list">
-          {{#each improvements}}
-          <li>{{this}}</li>
-          {{/each}}
+          ${(data.improvements || []).map(function (s) { return '<li>' + s + '</li>'; }).join('\n          ')}
         </ul>
       </div>
     </div>
 
     <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 1 of 4 &middot; Report ID: {{reportId}}
+      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 1 of 4 &middot; Report ID: ${data.reportId}
     </div>
   </div>
 
@@ -640,7 +683,7 @@ module.exports = `<!DOCTYPE html>
   <div class="page">
     <div class="page-header">
       <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; {{generatedDate}}</div>
+      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
     </div>
 
     <h2>Detailed Score Analysis</h2>
@@ -649,19 +692,19 @@ module.exports = `<!DOCTYPE html>
     <h3>Your Household Finances</h3>
     <div class="household-grid">
       <div class="household-stat">
-        <div class="household-stat__value">&pound;{{formatNumber household.monthlyIncome}}</div>
+        <div class="household-stat__value">&pound;${formatNumber(data.household.monthlyIncome)}</div>
         <div class="household-stat__label">Monthly Income</div>
       </div>
       <div class="household-stat">
-        <div class="household-stat__value">&pound;{{formatNumber household.monthlyEssentials}}</div>
+        <div class="household-stat__value">&pound;${formatNumber(data.household.monthlyEssentials)}</div>
         <div class="household-stat__label">Monthly Essentials</div>
       </div>
       <div class="household-stat">
-        <div class="household-stat__value">&pound;{{formatNumber household.accessibleSavings}}</div>
+        <div class="household-stat__value">&pound;${formatNumber(data.household.accessibleSavings)}</div>
         <div class="household-stat__label">Accessible Savings</div>
       </div>
       <div class="household-stat">
-        <div class="household-stat__value">&pound;{{formatNumber household.monthlySurplus}}</div>
+        <div class="household-stat__value">&pound;${formatNumber(data.household.monthlySurplus)}</div>
         <div class="household-stat__label">Monthly Surplus</div>
       </div>
     </div>
@@ -680,79 +723,77 @@ module.exports = `<!DOCTYPE html>
       <tbody>
         <tr>
           <td><strong>Employment Status</strong></td>
-          <td>{{breakdown.employment.score}}</td>
-          <td>{{breakdown.employment.maxScore}}</td>
-          <td>{{scorePercent breakdown.employment.score breakdown.employment.maxScore}}%</td>
+          <td>${data.breakdown.employment.score}</td>
+          <td>${data.breakdown.employment.maxScore}</td>
+          <td>${scorePercent(data.breakdown.employment.score, data.breakdown.employment.maxScore)}%</td>
         </tr>
         <tr>
           <td><strong>Credit History</strong></td>
-          <td>{{breakdown.credit.score}}</td>
-          <td>{{breakdown.credit.maxScore}}</td>
-          <td>{{scorePercent breakdown.credit.score breakdown.credit.maxScore}}%</td>
+          <td>${data.breakdown.credit.score}</td>
+          <td>${data.breakdown.credit.maxScore}</td>
+          <td>${scorePercent(data.breakdown.credit.score, data.breakdown.credit.maxScore)}%</td>
         </tr>
         <tr>
           <td><strong>Deposit / LTV</strong></td>
-          <td>{{breakdown.deposit.score}}</td>
-          <td>{{breakdown.deposit.maxScore}}</td>
-          <td>{{scorePercent breakdown.deposit.score breakdown.deposit.maxScore}}%</td>
+          <td>${data.breakdown.deposit.score}</td>
+          <td>${data.breakdown.deposit.maxScore}</td>
+          <td>${scorePercent(data.breakdown.deposit.score, data.breakdown.deposit.maxScore)}%</td>
         </tr>
         <tr>
           <td><strong>Monthly Surplus</strong></td>
-          <td>{{breakdown.surplus.score}}</td>
-          <td>{{breakdown.surplus.maxScore}}</td>
-          <td>{{scorePercent breakdown.surplus.score breakdown.surplus.maxScore}}%</td>
+          <td>${data.breakdown.surplus.score}</td>
+          <td>${data.breakdown.surplus.maxScore}</td>
+          <td>${scorePercent(data.breakdown.surplus.score, data.breakdown.surplus.maxScore)}%</td>
         </tr>
         <tr>
           <td><strong>Emergency Savings</strong></td>
-          <td>{{breakdown.emergency.score}}</td>
-          <td>{{breakdown.emergency.maxScore}}</td>
-          <td>{{scorePercent breakdown.emergency.score breakdown.emergency.maxScore}}%</td>
+          <td>${data.breakdown.emergency.score}</td>
+          <td>${data.breakdown.emergency.maxScore}</td>
+          <td>${scorePercent(data.breakdown.emergency.score, data.breakdown.emergency.maxScore)}%</td>
         </tr>
         <tr>
           <td><strong>Protection Cover</strong></td>
-          <td>{{breakdown.protection.totalScore}}</td>
-          <td>{{breakdown.protection.maxScore}}</td>
-          <td>{{scorePercent breakdown.protection.totalScore breakdown.protection.maxScore}}%</td>
+          <td>${data.breakdown.protection.totalScore}</td>
+          <td>${data.breakdown.protection.maxScore}</td>
+          <td>${scorePercent(data.breakdown.protection.totalScore, data.breakdown.protection.maxScore)}%</td>
         </tr>
       </tbody>
     </table>
 
-    {{#if breakdown.deposit.propertyValue}}
-    <h3>Property & Deposit</h3>
+    ${data.breakdown.deposit.propertyValue ? `<h3>Property & Deposit</h3>
     <div class="benefits-grid">
       <div class="benefit-card">
         <div class="benefit-card__text">
           <div class="benefit-card__label">Property Value</div>
-          <div class="benefit-card__value">&pound;{{formatNumber breakdown.deposit.propertyValue}}</div>
+          <div class="benefit-card__value">&pound;${formatNumber(data.breakdown.deposit.propertyValue)}</div>
         </div>
       </div>
       <div class="benefit-card">
         <div class="benefit-card__text">
           <div class="benefit-card__label">Deposit</div>
-          <div class="benefit-card__value">&pound;{{formatNumber breakdown.deposit.value}}</div>
+          <div class="benefit-card__value">&pound;${formatNumber(data.breakdown.deposit.value)}</div>
         </div>
       </div>
       <div class="benefit-card">
         <div class="benefit-card__text">
           <div class="benefit-card__label">Loan to Value</div>
-          <div class="benefit-card__value">{{formatDecimal breakdown.deposit.ltv 1}}%</div>
+          <div class="benefit-card__value">${formatDecimal(data.breakdown.deposit.ltv, 1)}%</div>
         </div>
       </div>
       <div class="benefit-card">
         <div class="benefit-card__text">
           <div class="benefit-card__label">Mortgage Amount</div>
-          <div class="benefit-card__value">&pound;{{formatNumber (subtract breakdown.deposit.propertyValue breakdown.deposit.value)}}</div>
+          <div class="benefit-card__value">&pound;${formatNumber(subtract(data.breakdown.deposit.propertyValue, data.breakdown.deposit.value))}</div>
         </div>
       </div>
-    </div>
-    {{/if}}
+    </div>` : ''}
 
     <div class="disclaimer">
       Scores are calculated based on the information you provided. Actual mortgage eligibility depends on lender criteria, credit checks, and professional assessment.
     </div>
 
     <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 2 of 4 &middot; Report ID: {{reportId}}
+      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 2 of 4 &middot; Report ID: ${data.reportId}
     </div>
   </div>
 
@@ -760,7 +801,7 @@ module.exports = `<!DOCTYPE html>
   <div class="page">
     <div class="page-header">
       <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; {{generatedDate}}</div>
+      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
     </div>
 
     <h2>Financial Resilience</h2>
@@ -770,16 +811,16 @@ module.exports = `<!DOCTYPE html>
     <div class="perception-grid">
       <div class="perception-box">
         <div class="perception-box__label">You Estimated</div>
-        <div class="perception-box__value">{{round perceptionGap.estimatedDays}}</div>
+        <div class="perception-box__value">${round(data.perceptionGap.estimatedDays)}</div>
         <div class="perception-box__unit">days</div>
       </div>
       <div class="perception-box perception-box--actual">
         <div class="perception-box__label">The Reality</div>
-        <div class="perception-box__value">{{runway.days}}</div>
+        <div class="perception-box__value">${data.runway.days}</div>
         <div class="perception-box__unit">days</div>
       </div>
     </div>
-    <p style="text-align: center; font-size: 10px; color: var(--text-secondary); margin-bottom: 20px;">{{perceptionGap.message}}</p>
+    <p style="text-align: center; font-size: 10px; color: var(--text-secondary); margin-bottom: 20px;">${data.perceptionGap.message}</p>
 
     <!-- Income Waterfall -->
     <h3>What If You Couldn't Work?</h3>
@@ -797,61 +838,49 @@ module.exports = `<!DOCTYPE html>
         </tr>
       </thead>
       <tbody>
-        {{#each waterfall}}
-        <tr>
-          <td>Month {{this.month}}</td>
-          <td>{{this.source}}</td>
-          <td>&pound;{{formatNumber this.income}}</td>
-          <td>
-            {{#if (isShortfall this.income ../household.monthlyEssentials)}}
-            <span style="color: var(--red); font-weight: 600;">-&pound;{{formatNumber (shortfallAmount this.income ../household.monthlyEssentials)}}</span>
-            {{else}}
-            <span style="color: var(--green); font-weight: 600;">+&pound;{{formatNumber (surplusAmount this.income ../household.monthlyEssentials)}}</span>
-            {{/if}}
-          </td>
-          <td>
-            {{#if this.cumulativeShortfall}}
-            <span style="color: var(--red); font-weight: 600;">-&pound;{{formatNumber this.cumulativeShortfall}}</span>
-            {{else}}
-            <span style="color: var(--green);">&pound;0</span>
-            {{/if}}
-          </td>
-        </tr>
-        {{/each}}
+        ${(data.waterfall || []).map(function (item) {
+          var vsEssentials = isShortfall(item.income, data.household.monthlyEssentials)
+            ? '<span style="color: var(--red); font-weight: 600;">-&pound;' + formatNumber(shortfallAmount(item.income, data.household.monthlyEssentials)) + '</span>'
+            : '<span style="color: var(--green); font-weight: 600;">+&pound;' + formatNumber(surplusAmount(item.income, data.household.monthlyEssentials)) + '</span>';
+          var cumShortfall = item.cumulativeShortfall
+            ? '<span style="color: var(--red); font-weight: 600;">-&pound;' + formatNumber(item.cumulativeShortfall) + '</span>'
+            : '<span style="color: var(--green);">&pound;0</span>';
+          return '<tr>'
+            + '<td>Month ' + item.month + '</td>'
+            + '<td>' + item.source + '</td>'
+            + '<td>&pound;' + formatNumber(item.income) + '</td>'
+            + '<td>' + vsEssentials + '</td>'
+            + '<td>' + cumShortfall + '</td>'
+            + '</tr>';
+        }).join('\n        ')}
       </tbody>
     </table>
 
-    {{#with (lastItem waterfall)}}
-    {{#if this.cumulativeShortfall}}
-    <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; text-align: center;">
+    ${(lastWaterfallItem && lastWaterfallItem.cumulativeShortfall) ? `<div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; text-align: center;">
       <p style="font-size: 11px; font-weight: 700; color: #991B1B; margin: 0;">
-        Total 6-month shortfall: &pound;{{formatNumber this.cumulativeShortfall}}
+        Total 6-month shortfall: &pound;${formatNumber(lastWaterfallItem.cumulativeShortfall)}
       </p>
       <p style="font-size: 9px; color: #7F1D1D; margin: 4px 0 0 0;">
         This is the amount you would need to find from savings or other sources to cover your essential outgoings over 6 months without adequate income protection.
       </p>
-    </div>
-    {{/if}}
-    {{/with}}
+    </div>` : ''}
 
     <!-- State Benefit Explanation -->
     <div style="background: #F0F4FF; border-left: 3px solid #3B82F6; padding: 10px 14px; margin-bottom: 10px; border-radius: 0 4px 4px 0;">
       <p style="font-size: 10px; font-weight: 600; color: #1E3A5F; margin: 0 0 6px 0;">Understanding Your State Benefit Entitlement</p>
-      {{#ifEquals stateBenefit.type "SSP"}}
-      <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        As a PAYE employee, you are entitled to <strong>Statutory Sick Pay (SSP)</strong> of &pound;{{benchmarks.sspWeekly}}/week (&pound;{{benchmarks.sspMonthly}}/month) for up to {{benchmarks.sspMaxWeeks}} weeks. SSP is payable from day 1 of sickness (from April 2026). Your employer may also offer enhanced sick pay above this level.
+      ${data.stateBenefit.type === 'SSP'
+        ? `<p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
+        As a PAYE employee, you are entitled to <strong>Statutory Sick Pay (SSP)</strong> of &pound;${data.benchmarks.sspWeekly}/week (&pound;${data.benchmarks.sspMonthly}/month) for up to ${data.benchmarks.sspMaxWeeks} weeks. SSP is payable from day 1 of sickness (from April 2026). Your employer may also offer enhanced sick pay above this level.
       </p>
       <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        After SSP ends, you may be eligible for <strong>New Style ESA</strong> at &pound;{{benchmarks.esaWeeklyAssessment}}/week, subject to your NI contribution record, and <strong>Universal Credit</strong> (&pound;{{benchmarks.ucSingle}}/month plus up to &pound;{{benchmarks.ucLCWRA}}/month LCWRA element).
+        After SSP ends, you may be eligible for <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week, subject to your NI contribution record, and <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element).
+      </p>`
+        : `<p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
+        As a self-employed individual, you are <strong>not eligible for SSP</strong>. You may claim <strong>New Style ESA</strong> at &pound;${data.benchmarks.esaWeeklyAssessment}/week (&pound;${data.benchmarks.esaMonthlyAssessment}/month) during the 13-week assessment phase, rising to &pound;${data.benchmarks.esaWeeklySupportGroup}/week in the Support Group. Eligibility depends on Class 2 NI contributions.
       </p>
-      {{else}}
       <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        As a self-employed individual, you are <strong>not eligible for SSP</strong>. You may claim <strong>New Style ESA</strong> at &pound;{{benchmarks.esaWeeklyAssessment}}/week (&pound;{{benchmarks.esaMonthlyAssessment}}/month) during the 13-week assessment phase, rising to &pound;{{benchmarks.esaWeeklySupportGroup}}/week in the Support Group. Eligibility depends on Class 2 NI contributions.
-      </p>
-      <p style="font-size: 9px; color: #374151; margin: 0 0 4px 0;">
-        You may also qualify for <strong>Universal Credit</strong> (&pound;{{benchmarks.ucSingle}}/month plus up to &pound;{{benchmarks.ucLCWRA}}/month LCWRA element). The Minimum Income Floor does not apply if you have limited capability for work.
-      </p>
-      {{/ifEquals}}
+        You may also qualify for <strong>Universal Credit</strong> (&pound;${data.benchmarks.ucSingle}/month plus up to &pound;${data.benchmarks.ucLCWRA}/month LCWRA element). The Minimum Income Floor does not apply if you have limited capability for work.
+      </p>`}
     </div>
 
     <!-- WCA Warning -->
@@ -872,31 +901,31 @@ module.exports = `<!DOCTYPE html>
     <h3>Your Employer Safety Net</h3>
     <div class="benefits-grid">
       <div class="benefit-card">
-        <div class="benefit-card__icon {{#if employerBenefits.sickPay.exists}}benefit-card__icon--yes{{else}}benefit-card__icon--no{{/if}}">
-          {{#if employerBenefits.sickPay.exists}}&#10003;{{else}}&#10007;{{/if}}
+        <div class="benefit-card__icon ${data.employerBenefits.sickPay.exists ? 'benefit-card__icon--yes' : 'benefit-card__icon--no'}">
+          ${data.employerBenefits.sickPay.exists ? '&#10003;' : '&#10007;'}
         </div>
         <div class="benefit-card__text">
           <div class="benefit-card__label">Employer Sick Pay</div>
-          <div class="benefit-card__value">{{employerBenefits.sickPay.description}}</div>
+          <div class="benefit-card__value">${data.employerBenefits.sickPay.description}</div>
         </div>
       </div>
       <div class="benefit-card">
-        <div class="benefit-card__icon {{#if employerBenefits.deathInService.exists}}benefit-card__icon--yes{{else}}benefit-card__icon--no{{/if}}">
-          {{#if employerBenefits.deathInService.exists}}&#10003;{{else}}&#10007;{{/if}}
+        <div class="benefit-card__icon ${data.employerBenefits.deathInService.exists ? 'benefit-card__icon--yes' : 'benefit-card__icon--no'}">
+          ${data.employerBenefits.deathInService.exists ? '&#10003;' : '&#10007;'}
         </div>
         <div class="benefit-card__text">
           <div class="benefit-card__label">Death in Service</div>
-          <div class="benefit-card__value">{{employerBenefits.deathInService.description}}</div>
+          <div class="benefit-card__value">${data.employerBenefits.deathInService.description}</div>
         </div>
       </div>
     </div>
 
     <div class="disclaimer">
-      Financial runway calculation accounts for {{stateBenefit.label}} (&pound;{{stateBenefit.monthlyAmount}}/month) and any personal income protection cover declared. Actual benefit entitlement depends on individual circumstances and may vary.
+      Financial runway calculation accounts for ${data.stateBenefit.label} (&pound;${data.stateBenefit.monthlyAmount}/month) and any personal income protection cover declared. Actual benefit entitlement depends on individual circumstances and may vary.
     </div>
 
     <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 3 of 4 &middot; Report ID: {{reportId}}
+      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 3 of 4 &middot; Report ID: ${data.reportId}
     </div>
   </div>
 
@@ -904,45 +933,45 @@ module.exports = `<!DOCTYPE html>
   <div class="page">
     <div class="page-header">
       <div class="page-header__logo">B Mortgage Services</div>
-      <div class="page-header__date">Financial Wellness Report &middot; {{generatedDate}}</div>
+      <div class="page-header__date">Financial Wellness Report &middot; ${data.generatedDate}</div>
     </div>
 
     <h2>Mortgage Term Risk Statistics</h2>
     <p style="font-size: 10px; color: var(--text-secondary); margin-bottom: 14px;">
-      {{riskAssessment.summary}}
+      ${data.riskAssessment.summary}
     </p>
 
     <div class="risk-grid">
       <div class="risk-card risk-card--death">
-        <div class="risk-card__value">{{riskAssessment.formatted.death}}</div>
+        <div class="risk-card__value">${data.riskAssessment.formatted.death}</div>
         <div class="risk-card__label">Chance of Death</div>
         <div class="risk-card__context">During 25-year mortgage</div>
       </div>
       <div class="risk-card risk-card--ci">
-        <div class="risk-card__value">{{riskAssessment.formatted.criticalIllness}}</div>
+        <div class="risk-card__value">${data.riskAssessment.formatted.criticalIllness}</div>
         <div class="risk-card__label">Critical Illness</div>
         <div class="risk-card__context">Diagnosis probability</div>
       </div>
       <div class="risk-card risk-card--absence">
-        <div class="risk-card__value">{{riskAssessment.formatted.longTermAbsence}}</div>
+        <div class="risk-card__value">${data.riskAssessment.formatted.longTermAbsence}</div>
         <div class="risk-card__label">2+ Month Absence</div>
         <div class="risk-card__context">From work during term</div>
       </div>
     </div>
 
     <p style="font-size: 9px; color: var(--text-secondary); font-style: italic; margin-bottom: 20px;">
-      These are statistical averages based on age ({{riskAssessment.probabilities.ageBracket}}) and smoking status ({{riskAssessment.probabilities.smokingStatus}}). Individual risk varies. Discuss with a qualified adviser.
+      These are statistical averages based on age (${data.riskAssessment.probabilities.ageBracket}) and smoking status (${data.riskAssessment.probabilities.smokingStatus}). Individual risk varies. Discuss with a qualified adviser.
     </p>
 
     <!-- Recommendations -->
     <h2>Your Next Steps</h2>
 
-    {{#each recommendations}}
-    <div class="recommendation">
-      <div class="recommendation__title">{{this.title}}</div>
-      <div class="recommendation__text">{{this.text}}</div>
-    </div>
-    {{/each}}
+    ${(data.recommendations || []).map(function (rec) {
+      return '<div class="recommendation">'
+        + '<div class="recommendation__title">' + rec.title + '</div>'
+        + '<div class="recommendation__text">' + rec.text + '</div>'
+        + '</div>';
+    }).join('\n    ')}
 
     <!-- CTA -->
     <div class="cta-box">
@@ -954,13 +983,14 @@ module.exports = `<!DOCTYPE html>
     </div>
 
     <div class="disclaimer">
-      This report is for informational purposes only and does not constitute financial advice. B Mortgage Services is authorised and regulated by the Financial Conduct Authority. Your home may be repossessed if you do not keep up repayments on your mortgage. Report generated {{generatedDate}}. Data based on {{benchmarks.averageDeadlineDays}}-day UK average deadline (L&amp;G 2022), SSP rates from April 2026, and risk probabilities from CMI mortality tables.
+      This report is for informational purposes only and does not constitute financial advice. B Mortgage Services is authorised and regulated by the Financial Conduct Authority. Your home may be repossessed if you do not keep up repayments on your mortgage. Report generated ${data.generatedDate}. Data based on ${data.benchmarks.averageDeadlineDays}-day UK average deadline (L&amp;G 2022), SSP rates from April 2026, and risk probabilities from CMI mortality tables.
     </div>
 
     <div class="page-footer">
-      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 4 of 4 &middot; Report ID: {{reportId}}
+      B Mortgage Services &middot; bmortgageservices.co.uk &middot; Page 4 of 4 &middot; Report ID: ${data.reportId}
     </div>
   </div>
 
 </body>
 </html>`;
+};
