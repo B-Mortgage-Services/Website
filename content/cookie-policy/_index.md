@@ -54,8 +54,8 @@ You can change your cookie preferences at any time by clicking **Manage Cookies*
 If you decline cookies, our tools still work normally:
 
 - The Affordability Calculator, Budget Planner, Protection Shortfall Calculator, and Financial Wellness Assessment all function as usual
-- Your tool results will **not** be saved to our database
-- If you later submit a contact form, we will not be able to link your enquiry to any previous tool usage on the site
+- Your activity is still tracked for the duration of your browser session using a temporary session ID (stored in session storage, not a cookie). This helps us provide a better service if you submit a contact form during the same visit
+- No persistent identifier is stored — once you close your browser, the session ID is gone and your activity cannot be linked to future visits
 - You can change your mind at any time using the **Manage Cookies** link in the footer
 
 ## Data Retention

@@ -61,6 +61,7 @@
 
           <!-- Tracking fields (populated by bms-tracker.js) -->
           <input type="hidden" name="visitor_id" id="bms-visitor-id">
+          <input type="hidden" name="session_id" id="bms-session-id">
           <input type="hidden" name="utm_source" id="bms-utm-source">
           <input type="hidden" name="utm_medium" id="bms-utm-medium">
           <input type="hidden" name="utm_campaign" id="bms-utm-campaign">
@@ -164,8 +165,10 @@
     // Populate hidden tracking fields
     if (typeof BMSTracker !== 'undefined') {
       var vid = BMSTracker.getVisitorId();
+      var sid = BMSTracker.getSessionId();
       var utms = BMSTracker.getUTMs();
       if (vid) document.getElementById('bms-visitor-id').value = vid;
+      if (sid) document.getElementById('bms-session-id').value = sid;
       if (utms.utm_source) document.getElementById('bms-utm-source').value = utms.utm_source;
       if (utms.utm_medium) document.getElementById('bms-utm-medium').value = utms.utm_medium;
       if (utms.utm_campaign) document.getElementById('bms-utm-campaign').value = utms.utm_campaign;
@@ -193,6 +196,7 @@
         enquiry_type: document.getElementById('enquiry-type').value || null,
         message: document.getElementById('message').value || null,
         visitor_id: document.getElementById('bms-visitor-id').value || null,
+        session_id: document.getElementById('bms-session-id').value || null,
         utm_source: document.getElementById('bms-utm-source').value || null,
         utm_medium: document.getElementById('bms-utm-medium').value || null,
         utm_campaign: document.getElementById('bms-utm-campaign').value || null

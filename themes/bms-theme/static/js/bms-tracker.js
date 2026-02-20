@@ -2,12 +2,21 @@
  * BMS Visitor Tracking Module
  *
  * Lightweight visitor tracking with:
- * - Cookie-based visitor ID (bms_vid, 180 days)
- * - Session management (bms_sid in sessionStorage)
+ * - Session-scoped ID (sessionStorage, always active — no consent needed)
+ * - Persistent visitor ID cookie (bms_vid, 180 days — requires consent)
  * - UTM capture from URL params
  * - Email link token detection (bms_ref from CRM emails)
  * - Event tracking to Supabase REST API
- * - Cookie consent integration (GDPR)
+ *
+ * Tracking behaviour:
+ *   - ALL visitors get a session ID and have activity tracked (page views,
+ *     tool usage, CTA clicks). This uses sessionStorage only — no cookies,
+ *     no persistent identifiers. Data is linked by session_id.
+ *   - When cookies are ACCEPTED, a persistent bms_vid cookie is also set.
+ *     This links activity across multiple sessions/visits.
+ *   - When cookies are DECLINED, tracking still works for the current session
+ *     using the session ID as the visitor_id. The ID is lost when the browser
+ *     closes — no persistent tracking occurs.
  *
  * Employer UTM convention:
  *   https://bmortgageservices.co.uk/financial-wellness?utm_source=employer&utm_campaign=acme_corp
@@ -29,8 +38,8 @@ var BMSTracker = (function() {
   'use strict';
 
   var _consent = null;
-  var _visitorId = null;
-  var _sessionId = null;
+  var _visitorId = null;   // Persistent cookie ID (only when consented)
+  var _sessionId = null;   // Session-scoped ID (always available)
   var _utmParams = {};
   var _initialized = false;
 
@@ -116,6 +125,14 @@ var BMSTracker = (function() {
     }
   }
 
+  /**
+   * Returns the best available ID for linking records.
+   * Persistent visitor ID (cookie) when consented, otherwise session ID.
+   */
+  function getEffectiveVisitorId() {
+    return _visitorId || _sessionId;
+  }
+
   // ─── UTM Capture ─────────────────────────────────────────
 
   function captureUTMs() {
@@ -161,7 +178,7 @@ var BMSTracker = (function() {
           fetch(BMS_CONFIG.crmApiUrl + '/api/track/link', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ visitor_id: _visitorId, token: token })
+            body: JSON.stringify({ visitor_id: getEffectiveVisitorId(), token: token })
           }).catch(function() { log('CRM link tracking failed (expected if CRM not deployed)'); });
         } catch (e) { /* silently fail */ }
       }
@@ -181,11 +198,11 @@ var BMSTracker = (function() {
   // ─── Data Sending ───────────────────────────────────────
 
   function sendEvent(eventData) {
-    if (!_consent) { log('No consent — event dropped:', eventData.event_type); return; }
-    if (!_visitorId) return;
+    var vid = getEffectiveVisitorId();
+    if (!vid) return;
 
     var payload = {
-      visitor_id: _visitorId,
+      visitor_id: vid,
       session_id: _sessionId || '',
       utm_source: _utmParams.utm_source || null,
       utm_medium: _utmParams.utm_medium || null,
@@ -221,10 +238,11 @@ var BMSTracker = (function() {
   }
 
   function sendToolResult(toolType, resultData, resultSummary) {
-    if (!_consent || !_visitorId) return;
+    var vid = getEffectiveVisitorId();
+    if (!vid) return;
 
     var payload = {
-      visitor_id: _visitorId,
+      visitor_id: vid,
       session_id: _sessionId || '',
       tool_type: toolType,
       result_data: typeof resultData === 'string' ? JSON.parse(resultData) : resultData,
@@ -261,31 +279,37 @@ var BMSTracker = (function() {
       _initialized = true;
 
       _consent = checkConsent();
+
+      // Always init session ID and UTMs (sessionStorage, no cookies needed)
+      initSessionId();
       captureUTMs();
 
+      // Persistent visitor ID + email token only when consented
       if (_consent) {
         initVisitorId();
-        initSessionId();
         checkEmailToken();
-        this.trackPageView();
       }
 
-      log('Initialized. Consent:', _consent, 'Visitor:', _visitorId);
+      // Always track page view (uses session ID if no cookie consent)
+      this.trackPageView();
+
+      log('Initialized. Consent:', _consent, 'Visitor:', getEffectiveVisitorId(), 'Session:', _sessionId);
     },
 
     setConsent: function(granted) {
       _consent = granted;
       if (granted) {
         initVisitorId();
-        initSessionId();
         checkEmailToken();
+        // Re-track page view with persistent visitor ID
         this.trackPageView();
       } else {
         deleteCookie('bms_vid');
         deleteCookie('bms_ref');
         _visitorId = null;
+        // Session-scoped tracking continues via _sessionId
       }
-      log('Consent updated:', granted);
+      log('Consent updated:', granted, 'Visitor:', getEffectiveVisitorId());
     },
 
     trackPageView: function() {
@@ -323,7 +347,7 @@ var BMSTracker = (function() {
     },
 
     getVisitorId: function() {
-      return _visitorId;
+      return getEffectiveVisitorId();
     },
 
     getSessionId: function() {

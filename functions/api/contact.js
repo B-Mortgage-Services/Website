@@ -65,6 +65,7 @@ export async function onRequestPost(context) {
         enquiry_type: data.enquiry_type || null,
         message: data.message ? data.message.trim() : null,
         visitor_id: data.visitor_id || null,
+        session_id: data.session_id || null,
         utm_source: data.utm_source || null,
         utm_medium: data.utm_medium || null,
         utm_campaign: data.utm_campaign || null
