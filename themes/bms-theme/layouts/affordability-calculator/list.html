@@ -1108,72 +1108,110 @@ function resetModal() {
 function submitQuoteForm(event) {
   event.preventDefault();
 
-  // Visitor tracking — CTA
-  if (typeof BMSTracker !== 'undefined') {
-    try { BMSTracker.trackCTA('affordability_get_quote'); } catch(e) {}
-  }
+  var btn = event.target.querySelector('button[type="submit"]');
+  var originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
 
-  const name = document.getElementById('quoteName').value;
-  const phone = document.getElementById('quotePhone').value;
-  const email = document.getElementById('quoteEmail').value;
-  const includeResults = document.getElementById('quoteIncludeResults').checked;
+  var name = document.getElementById('quoteName').value;
+  var phone = document.getElementById('quotePhone').value;
+  var email = document.getElementById('quoteEmail').value;
+  var includeResults = document.getElementById('quoteIncludeResults').checked;
 
-  // Build email body
-  let emailBody = `New Quote Request\n\n`;
-  emailBody += `Name: ${name}\n`;
-  emailBody += `Phone: ${phone}\n`;
-  emailBody += `Email: ${email}\n\n`;
-
+  // Build message with calculator results
+  var message = '';
   if (includeResults) {
-    const mortgagePurpose = document.getElementById('mortgagePurpose').value;
-    const yourIncome = document.getElementById('yourIncome').value || '0';
-    const partnerIncome = document.getElementById('partnerIncome').value || '0';
-    const conservative = document.getElementById('result-conservative').textContent;
-    const standard = document.getElementById('result-standard').textContent;
-    const maximum = document.getElementById('result-maximum').textContent;
-    const termYears = document.getElementById('termValue').textContent;
+    var mortgagePurpose = document.getElementById('mortgagePurpose').value;
+    var yourIncome = document.getElementById('yourIncome').value || '0';
+    var partnerIncome = document.getElementById('partnerIncome').value || '0';
+    var conservative = document.getElementById('result-conservative').textContent;
+    var standard = document.getElementById('result-standard').textContent;
+    var maximum = document.getElementById('result-maximum').textContent;
+    var termYears = document.getElementById('termValue').textContent;
 
-    emailBody += `--- Calculator Results ---\n`;
-    emailBody += `Mortgage Purpose: ${mortgagePurpose}\n`;
-    emailBody += `Application Type: ${applicationType}\n`;
-    emailBody += `Your Income: £${yourIncome}\n`;
+    message += 'Calculator Results:\n';
+    message += 'Mortgage Purpose: ' + mortgagePurpose + '\n';
+    message += 'Application Type: ' + applicationType + '\n';
+    message += 'Your Income: £' + yourIncome + '\n';
     if (applicationType === 'joint') {
-      emailBody += `Partner Income: £${partnerIncome}\n`;
+      message += 'Partner Income: £' + partnerIncome + '\n';
     }
-    emailBody += `Term: ${termYears} years\n\n`;
-    emailBody += `Borrowing Estimates:\n`;
-    emailBody += `- Conservative (3.5x): ${conservative}\n`;
-    emailBody += `- Standard (4.5x): ${standard}\n`;
-    emailBody += `- Maximum: ${maximum}\n`;
+    message += 'Term: ' + termYears + ' years\n\n';
+    message += 'Borrowing Estimates:\n';
+    message += '- Conservative (3.5x): ' + conservative + '\n';
+    message += '- Standard (4.5x): ' + standard + '\n';
+    message += '- Maximum: ' + maximum + '\n';
 
     if (mortgagePurpose === 'first-time' || mortgagePurpose === 'moving') {
-      const housePrice = document.getElementById('housePrice').value || '0';
-      const deposit = document.getElementById('depositAmount').value || '0';
-      const mortgageAmount = document.getElementById('mortgageAmount').textContent;
-      const monthlyPayment = document.getElementById('monthlyMortgagePayment').textContent;
-      const stampDuty = document.getElementById('stampDuty').textContent;
-      const totalCosts = document.getElementById('totalMovingCosts').textContent;
+      var housePrice = document.getElementById('housePrice').value || '0';
+      var deposit = document.getElementById('depositAmount').value || '0';
+      var mortgageAmountEl = document.getElementById('mortgageAmount').textContent;
+      var monthlyPayment = document.getElementById('monthlyMortgagePayment').textContent;
+      var stampDuty = document.getElementById('stampDuty').textContent;
+      var totalCosts = document.getElementById('totalMovingCosts').textContent;
 
-      emailBody += `\n--- Moving Costs ---\n`;
-      emailBody += `Purchase Price: £${housePrice}\n`;
-      emailBody += `Deposit: £${deposit}\n`;
-      emailBody += `Mortgage Amount: ${mortgageAmount}\n`;
-      emailBody += `Monthly Payment: ${monthlyPayment}\n`;
-      emailBody += `Stamp Duty: ${stampDuty}\n`;
-      emailBody += `Total Costs: ${totalCosts}\n`;
+      message += '\nMoving Costs:\n';
+      message += 'Purchase Price: £' + housePrice + '\n';
+      message += 'Deposit: £' + deposit + '\n';
+      message += 'Mortgage Amount: ' + mortgageAmountEl + '\n';
+      message += 'Monthly Payment: ' + monthlyPayment + '\n';
+      message += 'Stamp Duty: ' + stampDuty + '\n';
+      message += 'Total Costs: ' + totalCosts + '\n';
     }
   }
 
-  // Open email client with pre-filled content
-  const mailtoLink = `mailto:bev@bmortgageservices.co.uk?subject=${encodeURIComponent('Quote Request from ' + name)}&body=${encodeURIComponent(emailBody)}`;
-  window.location.href = mailtoLink;
+  // Build payload matching contact form structure
+  var payload = {
+    name: name,
+    email: email,
+    phone: phone || null,
+    enquiry_type: 'affordability_quote',
+    message: message || null,
+    visitor_id: null,
+    session_id: null,
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null
+  };
 
-  // Show success message
-  showSuccess();
+  // Attach tracking data
+  if (typeof BMSTracker !== 'undefined') {
+    try {
+      var vid = BMSTracker.getVisitorId();
+      var sid = BMSTracker.getSessionId();
+      var utms = BMSTracker.getUTMs();
+      if (vid) payload.visitor_id = vid;
+      if (sid) payload.session_id = sid;
+      if (utms.utm_source) payload.utm_source = utms.utm_source;
+      if (utms.utm_medium) payload.utm_medium = utms.utm_medium;
+      if (utms.utm_campaign) payload.utm_campaign = utms.utm_campaign;
+    } catch(e) {}
+  }
 
-  // Reset form
-  document.getElementById('quoteEmailForm').reset();
-  document.getElementById('quoteIncludeResults').checked = true;
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      showSuccess();
+      document.getElementById('quoteEmailForm').reset();
+      document.getElementById('quoteIncludeResults').checked = true;
+      // Track CTA
+      if (typeof BMSTracker !== 'undefined') {
+        try { BMSTracker.trackCTA('affordability_get_quote'); } catch(e) {}
+      }
+    } else {
+      throw new Error(data.error || 'Something went wrong');
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    alert('Sorry, there was a problem sending your request. Please try calling us on 01452 925209.');
+  });
 }
 
 // Close modal on Escape key
