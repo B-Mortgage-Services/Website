@@ -286,6 +286,8 @@
 <script>
 (function() {
   var SSP_MONTHLY = 534; // £123.25 × 4.33 weeks
+  var _protectionStarted = false;
+  var _protectionTrackTimeout = null;
 
   function formatCurrency(val) {
     return '£' + val.toLocaleString('en-GB');
@@ -321,6 +323,26 @@
     document.getElementById('barPercent').textContent = sspPercent;
     document.getElementById('barVoidPercent').textContent = voidPercent;
     document.getElementById('recoveryValue').textContent = months + (months === 1 ? ' month' : ' months');
+
+    // Visitor tracking (debounced)
+    if (typeof BMSTracker !== 'undefined') {
+      if (!_protectionStarted) {
+        try { BMSTracker.trackToolStart('protection_shortfall'); } catch(e) {}
+        _protectionStarted = true;
+      }
+      clearTimeout(_protectionTrackTimeout);
+      _protectionTrackTimeout = setTimeout(function() {
+        try {
+          var summary = 'Monthly shortfall: ' + formatCurrency(voidAmount) + ', ' + months + '-month risk: ' + formatCurrency(totalRisk);
+          BMSTracker.trackToolComplete('protection_shortfall', {
+            monthlyOutgoings: outgoings,
+            monthlyVoid: voidAmount,
+            totalRisk: totalRisk,
+            months: months
+          }, summary);
+        } catch(e) {}
+      }, 2000);
+    }
   }
 
   window.handleOutgoingsInput = function(el) {

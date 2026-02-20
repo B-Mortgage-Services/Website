@@ -44,6 +44,16 @@
   
   <!-- Scripts -->
   <script src="{{ "js/main.js" | relURL }}"></script>
+
+  <!-- Cookie Consent & Visitor Tracking -->
+  <script src="{{ "js/bms-cookie-consent.js" | relURL }}" defer></script>
+  <script src="{{ "js/bms-tracker.js" | relURL }}" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof BMSTracker !== 'undefined') BMSTracker.init();
+    });
+  </script>
+
   {{ block "scripts" . }}{{ end }}
 
   <!-- Site-wide Wellness Modal -->

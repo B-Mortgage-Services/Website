@@ -45,6 +45,11 @@ function openWellnessModal(options) {
   if (options.source) {
     modal.dataset.source = options.source;
   }
+
+  // Visitor tracking
+  if (typeof BMSTracker !== 'undefined') {
+    try { BMSTracker.trackToolStart('financial_wellness'); } catch(e) {}
+  }
 }
 
 /**
@@ -367,6 +372,18 @@ function displayResults(data) {
   var dots = document.querySelectorAll('.step-dot');
   for (var j = 0; j < dots.length; j++) {
     dots[j].classList.add('step-dot--active');
+  }
+
+  // Visitor tracking — tool complete
+  if (typeof BMSTracker !== 'undefined') {
+    try {
+      var trackSummary = 'Score: ' + data.score + '/100 (' + data.category + ')';
+      BMSTracker.trackToolComplete('financial_wellness', {
+        score: data.score,
+        category: data.category,
+        reportId: data.reportId
+      }, trackSummary);
+    } catch(e) {}
   }
 
   // Animate score
@@ -1043,6 +1060,11 @@ function shareReport(reportUrl) {
  * Download PDF report
  */
 function downloadPDF(reportId) {
+  // Visitor tracking — CTA
+  if (typeof BMSTracker !== 'undefined') {
+    try { BMSTracker.trackCTA('download_wellness_pdf'); } catch(e) {}
+  }
+
   var downloadBtn = document.getElementById('download-pdf-btn');
   var originalText = downloadBtn ? downloadBtn.textContent : '';
 

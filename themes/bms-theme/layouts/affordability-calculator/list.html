@@ -411,6 +411,10 @@ const AFFORDABILITY_CONFIG = {
 
 let applicationType = 'single';
 
+// Visitor tracking state
+var _affordCalcStarted = false;
+var _affordCalcTrackTimeout = null;
+
 function setApplicationType(type) {
   applicationType = type;
 
@@ -636,6 +640,26 @@ function calculateAffordability() {
 
   // Save to sessionStorage for wellness assessment pre-fill
   saveAffordabilityToSession();
+
+  // Visitor tracking (debounced to avoid flooding on every keystroke)
+  if (typeof BMSTracker !== 'undefined') {
+    if (!_affordCalcStarted) {
+      try { BMSTracker.trackToolStart('affordability_calculator'); } catch(e) {}
+      _affordCalcStarted = true;
+    }
+    clearTimeout(_affordCalcTrackTimeout);
+    _affordCalcTrackTimeout = setTimeout(function() {
+      try {
+        var trackSummary = 'Conservative: ' + formatCurrency(conservative) + ', Standard: ' + formatCurrency(standard) + ', Maximum: ' + formatCurrency(Math.max(0, maximum));
+        BMSTracker.trackToolComplete('affordability_calculator', {
+          conservative: conservative,
+          standard: standard,
+          maximum: Math.max(0, maximum),
+          totalIncome: totalIncome
+        }, trackSummary);
+      } catch(e) {}
+    }, 2000);
+  }
 }
 
 // Stamp Duty Calculator — rates from data/affordability.json
@@ -1042,6 +1066,11 @@ function resetModal() {
 
 function submitQuoteForm(event) {
   event.preventDefault();
+
+  // Visitor tracking — CTA
+  if (typeof BMSTracker !== 'undefined') {
+    try { BMSTracker.trackCTA('affordability_get_quote'); } catch(e) {}
+  }
 
   const name = document.getElementById('quoteName').value;
   const phone = document.getElementById('quotePhone').value;

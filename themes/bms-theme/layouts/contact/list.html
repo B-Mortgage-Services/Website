@@ -15,22 +15,22 @@
       <!-- Contact Form -->
       <div>
         <h2 style="margin-bottom: 1.5rem;">Send Us a Message</h2>
-        <form class="contact-form" action="#" method="POST">
+        <form class="contact-form" id="contact-form">
           <div class="form-group">
             <label for="name">Your Name *</label>
             <input type="text" id="name" name="name" required>
           </div>
-          
+
           <div class="form-group">
             <label for="email">Email Address *</label>
             <input type="email" id="email" name="email" required>
           </div>
-          
+
           <div class="form-group">
             <label for="phone">Phone Number</label>
             <input type="tel" id="phone" name="phone">
           </div>
-          
+
           <div class="form-group">
             <label for="enquiry-type">I'm interested in...</label>
             <select id="enquiry-type" name="enquiry-type">
@@ -44,19 +44,29 @@
               <option value="other">Other</option>
             </select>
           </div>
-          
+
           <div class="form-group">
             <label for="message">Your Message</label>
             <textarea id="message" name="message" rows="5" placeholder="Tell us a bit about your situation..."></textarea>
           </div>
-          
+
           <div class="form-group" style="margin-top: 1rem;">
             <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-weight: normal;">
               <input type="checkbox" name="consent" required style="margin-top: 4px;">
               <span style="font-size: 0.9rem;">I consent to B Mortgage Services contacting me about my enquiry. View our <a href="/images/privacy-policy.pdf" target="_blank">privacy policy</a>.</span>
             </label>
           </div>
-          
+
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">By submitting this form, you agree to our <a href="/images/privacy-policy.pdf" target="_blank">Privacy Policy</a>. We may link your enquiry to your activity on this site to provide a better service.</p>
+
+          <!-- Tracking fields (populated by bms-tracker.js) -->
+          <input type="hidden" name="visitor_id" id="bms-visitor-id">
+          <input type="hidden" name="utm_source" id="bms-utm-source">
+          <input type="hidden" name="utm_medium" id="bms-utm-medium">
+          <input type="hidden" name="utm_campaign" id="bms-utm-campaign">
+
+          <div id="contact-form-error" style="display: none; color: #c53030; background: #fff5f5; padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-top: 1rem; font-size: 0.9rem;"></div>
+
           <button type="submit" class="btn btn--primary btn--large" style="width: 100%; margin-top: 1rem;">
             Send Message
             <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -143,4 +153,82 @@
 }
 </style>
 
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function() {
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Populate hidden tracking fields
+    if (typeof BMSTracker !== 'undefined') {
+      var vid = BMSTracker.getVisitorId();
+      var utms = BMSTracker.getUTMs();
+      if (vid) document.getElementById('bms-visitor-id').value = vid;
+      if (utms.utm_source) document.getElementById('bms-utm-source').value = utms.utm_source;
+      if (utms.utm_medium) document.getElementById('bms-utm-medium').value = utms.utm_medium;
+      if (utms.utm_campaign) document.getElementById('bms-utm-campaign').value = utms.utm_campaign;
+    }
+
+    // Form submission handler
+    var form = document.getElementById('contact-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var errorBox = document.getElementById('contact-form-error');
+      errorBox.style.display = 'none';
+
+      var btn = form.querySelector('button[type="submit"]');
+      var originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      var payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value || null,
+        enquiry_type: document.getElementById('enquiry-type').value || null,
+        message: document.getElementById('message').value || null,
+        visitor_id: document.getElementById('bms-visitor-id').value || null,
+        utm_source: document.getElementById('bms-utm-source').value || null,
+        utm_medium: document.getElementById('bms-utm-medium').value || null,
+        utm_campaign: document.getElementById('bms-utm-campaign').value || null
+      };
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success) {
+          form.innerHTML = '<div style="text-align: center; padding: 2rem 0;">' +
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--brand-orange)" stroke-width="2" style="margin-bottom: 1rem;">' +
+            '<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>' +
+            '<polyline points="22 4 12 14.01 9 11.01"/>' +
+            '</svg>' +
+            '<h3 style="margin-bottom: 0.5rem;">Message Sent</h3>' +
+            '<p style="color: var(--text-secondary);">Thank you for your enquiry. We\'ll be in touch shortly.</p>' +
+            '</div>';
+          if (typeof BMSTracker !== 'undefined') {
+            try { BMSTracker.trackCTA('contact_form_submit'); } catch(err) {}
+          }
+        } else {
+          throw new Error(data.error || 'Something went wrong');
+        }
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        errorBox.textContent = 'Sorry, there was a problem sending your message. Please try calling us on 01452 925209.';
+        errorBox.style.display = 'block';
+      });
+    });
+  });
+})();
+</script>
 {{ end }}

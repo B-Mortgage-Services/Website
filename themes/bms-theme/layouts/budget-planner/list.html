@@ -989,6 +989,27 @@ function changeStep(direction) {
   if (currentStep === totalSteps) {
     document.getElementById('nextBtn').style.display = 'none';
     calculateTotals();
+
+    // Visitor tracking — budget planner completed (reached results step)
+    if (typeof BMSTracker !== 'undefined') {
+      try {
+        BMSTracker.trackToolStart('budget_planner');
+        var surplus = parseFloat(document.getElementById('surplusIncome').textContent.replace(/[^0-9.-]/g, '')) || 0;
+        var totalInc = parseFloat(document.getElementById('totalIncome').textContent.replace(/[^0-9.-]/g, '')) || 0;
+        var totalOut = parseFloat(document.getElementById('summaryOutgoings').textContent.replace(/[^0-9.-]/g, '')) || 0;
+        var mortBudget = parseFloat(document.getElementById('mortgageBudget').textContent.replace(/[^0-9.-]/g, '')) || 0;
+        var regionEl = document.getElementById('region');
+        var regionName = regionEl ? regionEl.options[regionEl.selectedIndex].text : '';
+        var summary = 'Income: £' + totalInc.toLocaleString('en-GB') + ', Outgoings: £' + totalOut.toLocaleString('en-GB') + ', Surplus: £' + surplus.toLocaleString('en-GB');
+        BMSTracker.trackToolComplete('budget_planner', {
+          totalIncome: totalInc,
+          totalOutgoings: totalOut,
+          surplus: surplus,
+          mortgageBudget: mortBudget,
+          region: regionName
+        }, summary);
+      } catch(e) {}
+    }
   } else {
     document.getElementById('nextBtn').style.display = 'inline-flex';
   }
@@ -998,6 +1019,11 @@ function changeStep(direction) {
 }
 
 function printResults() {
+  // Visitor tracking — CTA
+  if (typeof BMSTracker !== 'undefined') {
+    try { BMSTracker.trackCTA('budget_planner_print'); } catch(e) {}
+  }
+
   const region = document.getElementById('region');
   const regionName = region.options[region.selectedIndex].text;
 
@@ -1153,6 +1179,11 @@ function printResults() {
 }
 
 function downloadExcel() {
+  // Visitor tracking — CTA
+  if (typeof BMSTracker !== 'undefined') {
+    try { BMSTracker.trackCTA('budget_planner_excel'); } catch(e) {}
+  }
+
   const region = document.getElementById('region');
   const regionName = region.options[region.selectedIndex].text;
 
