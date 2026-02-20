@@ -201,6 +201,7 @@ var BMSTracker = (function() {
     var url = BMS_CONFIG.supabaseUrl + '/rest/v1/visitor_activity';
     var headers = {
       'apikey': BMS_CONFIG.supabaseAnonKey,
+      'Authorization': 'Bearer ' + BMS_CONFIG.supabaseAnonKey,
       'Content-Type': 'application/json',
       'Prefer': 'return=minimal'
     };
@@ -211,6 +212,8 @@ var BMSTracker = (function() {
         headers: headers,
         body: JSON.stringify(payload),
         keepalive: true
+      }).then(function(r) {
+        if (!r.ok) r.text().then(function(t) { log('Event error (' + r.status + '):', t); });
       }).catch(function() {});
     } catch (e) { /* silently fail */ }
 
@@ -236,10 +239,14 @@ var BMSTracker = (function() {
         method: 'POST',
         headers: {
           'apikey': BMS_CONFIG.supabaseAnonKey,
+          'Authorization': 'Bearer ' + BMS_CONFIG.supabaseAnonKey,
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
         body: JSON.stringify(payload)
+      }).then(function(r) {
+        if (!r.ok) r.text().then(function(t) { log('Tool result error (' + r.status + '):', t); });
+        else log('Tool result saved OK');
       }).catch(function() {});
     } catch (e) { /* silently fail */ }
 
