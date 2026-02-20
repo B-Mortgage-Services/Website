@@ -52,7 +52,7 @@ export async function onRequestPost(context) {
     console.log(`Calculated score: ${scoringResult.score}/100`);
 
     // Save report to Supabase
-    const reportId = await supabaseClient.saveReport(env, scoringResult, data.email || null);
+    const reportId = await supabaseClient.saveReport(env, scoringResult, data.email || null, data.visitor_id || null);
 
     // Build report URL (query-param format matches web report page)
     const baseUrl = env.REPORT_BASE_URL || 'https://bmortgageservices.co.uk/wellness/report/';

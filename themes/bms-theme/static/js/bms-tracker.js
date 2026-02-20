@@ -152,7 +152,7 @@ var BMSTracker = (function() {
       sendEvent({
         event_type: 'email_link_click',
         page_url: window.location.pathname,
-        metadata: JSON.stringify({ bms_ref: token })
+        metadata: { bms_ref: token }
       });
 
       // Optionally notify external CRM
@@ -224,7 +224,7 @@ var BMSTracker = (function() {
       visitor_id: _visitorId,
       session_id: _sessionId || '',
       tool_type: toolType,
-      result_data: typeof resultData === 'string' ? resultData : JSON.stringify(resultData),
+      result_data: typeof resultData === 'string' ? JSON.parse(resultData) : resultData,
       result_summary: resultSummary || '',
       completed: true
     };

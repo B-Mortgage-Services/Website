@@ -1201,6 +1201,12 @@ async function calculateScore() {
       return;
     }
 
+    // Attach visitor ID for tracking linkage
+    if (typeof BMSTracker !== 'undefined') {
+      var vid = BMSTracker.getVisitorId();
+      if (vid) formData.visitor_id = vid;
+    }
+
     // Chart.js no longer needed in modal — charts live on full report page
     // await ensureChartJs();
 

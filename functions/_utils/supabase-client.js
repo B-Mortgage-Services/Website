@@ -55,19 +55,23 @@ function generateReportId() {
  * @param {Object} env - Cloudflare env bindings
  * @param {Object} reportData - The scoring result and user data
  * @param {string|null} email - Optional user email
+ * @param {string|null} visitorId - Optional visitor tracking ID
  * @returns {Promise<string>} The generated report ID
  */
-async function saveReport(env, reportData, email = null) {
+async function saveReport(env, reportData, email = null, visitorId = null) {
   const supabase = getClient(env);
   const reportId = generateReportId();
 
+  const row = {
+    report_id: reportId,
+    data: reportData,
+    email: email
+  };
+  if (visitorId) row.visitor_id = visitorId;
+
   const { data, error } = await supabase
     .from('wellness_reports')
-    .insert({
-      report_id: reportId,
-      data: reportData,
-      email: email
-    })
+    .insert(row)
     .select()
     .single();
 
