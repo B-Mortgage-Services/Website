@@ -63,6 +63,7 @@ export async function onRequestPost(context) {
         email: data.email.trim(),
         phone: data.phone ? data.phone.trim() : null,
         enquiry_type: data.enquiry_type || null,
+        employer_id: data.employer_id || null,
         message: data.message ? data.message.trim() : null,
         visitor_id: data.visitor_id || null,
         session_id: data.session_id || null,

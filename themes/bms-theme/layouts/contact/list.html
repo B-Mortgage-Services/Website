@@ -46,6 +46,13 @@
           </div>
 
           <div class="form-group">
+            <label for="employer-id">Workplace Partner <span style="font-weight: normal; color: var(--text-secondary);">(optional)</span></label>
+            <select id="employer-id" name="employer-id">
+              <option value="">— Select your employer —</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="message">Your Message</label>
             <textarea id="message" name="message" rows="5" placeholder="Tell us a bit about your situation..."></textarea>
           </div>
@@ -174,6 +181,22 @@
       if (utms.utm_campaign) document.getElementById('bms-utm-campaign').value = utms.utm_campaign;
     }
 
+    // Load workplace partners
+    fetch('/api/employers')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success && data.employers) {
+          var select = document.getElementById('employer-id');
+          data.employers.forEach(function(emp) {
+            var opt = document.createElement('option');
+            opt.value = emp.id;
+            opt.textContent = emp.company_name;
+            select.appendChild(opt);
+          });
+        }
+      })
+      .catch(function() {});
+
     // Form submission handler
     var form = document.getElementById('contact-form');
     if (!form) return;
@@ -194,6 +217,7 @@
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value || null,
         enquiry_type: document.getElementById('enquiry-type').value || null,
+        employer_id: document.getElementById('employer-id').value || null,
         message: document.getElementById('message').value || null,
         visitor_id: document.getElementById('bms-visitor-id').value || null,
         session_id: document.getElementById('bms-session-id').value || null,

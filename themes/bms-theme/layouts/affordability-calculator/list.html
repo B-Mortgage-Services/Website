@@ -342,6 +342,13 @@
         </div>
 
         <div class="form-group">
+          <label for="quoteEmployerId" class="form-label">Workplace Partner <span style="font-weight: normal; color: var(--text-secondary);">(optional)</span></label>
+          <select id="quoteEmployerId" class="form-select">
+            <option value="">— Select your employer —</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label class="form-checkbox">
             <input type="checkbox" id="quoteIncludeResults" checked>
             <span>Include my calculator results with this request</span>
@@ -1161,11 +1168,13 @@ function submitQuoteForm(event) {
   }
 
   // Build payload matching contact form structure
+  var employerId = document.getElementById('quoteEmployerId').value;
   var payload = {
     name: name,
     email: email,
     phone: phone || null,
     enquiry_type: 'affordability_quote',
+    employer_id: employerId || null,
     message: message || null,
     visitor_id: null,
     session_id: null,
@@ -1230,6 +1239,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Trigger initial check in case a value is already selected
   handleMortgagePurposeChange();
+
+  // Load workplace partners for quote modal
+  fetch('/api/employers')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success && data.employers) {
+        var select = document.getElementById('quoteEmployerId');
+        data.employers.forEach(function(emp) {
+          var opt = document.createElement('option');
+          opt.value = emp.id;
+          opt.textContent = emp.company_name;
+          select.appendChild(opt);
+        });
+      }
+    })
+    .catch(function() {});
 });
 </script>
 {{ end }}
