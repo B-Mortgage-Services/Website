@@ -355,6 +355,7 @@ section {
     transition: var(--transition-base);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    text-align: left;
   }
   
   .nav__list--open {
