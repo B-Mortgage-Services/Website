@@ -1,0 +1,1337 @@
+{{ define "head" }}
+<!-- Calendly widget -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+{{ end }}
+
+{{ define "main" }}
+
+<!-- Hero Section -->
+<section class="page-header page-header--ambient">
+  <div class="ambient-glow ambient-glow--wellness">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--3"></div>
+  </div>
+  <div class="container">
+    <span class="page-header__eyebrow">Financial Planning Tool</span>
+    <h1>Mortgage Overpayment Calculator</h1>
+    <p class="page-header__subtitle">See exactly how overpaying your mortgage could save you thousands in interest and cut years off your term.</p>
+  </div>
+</section>
+
+<!-- Calculator Section -->
+<section class="calculator-section" id="calculator">
+  <div class="container">
+    <div class="overpayment-calc">
+
+      <!-- ===== BASE MORTGAGE INPUTS ===== -->
+      <div class="overpayment-calc__inputs">
+        <h2 class="overpayment-calc__section-title">Your Mortgage Details</h2>
+
+        <!-- Loan Amount -->
+        <div class="form-group">
+          <label for="opLoanAmount" class="form-label">Outstanding Balance
+            <span class="form-label__hint">The amount you currently owe on your mortgage</span>
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">&pound;</span>
+            <input type="text" id="opLoanAmount" class="form-input" placeholder="e.g. 200,000" oninput="formatCurrencyInput(this); recalculate()">
+          </div>
+        </div>
+
+        <!-- Mortgage Term -->
+        <div class="form-group">
+          <div class="term-slider__header">
+            <label for="opTermSlider" class="term-slider__label">Remaining Term</label>
+            <span class="term-slider__value"><input type="number" id="opTermInput" class="overpayment-calc__inline-input" value="25" min="1" max="40" oninput="syncTermFromInput(); recalculate()"> years</span>
+          </div>
+          <input type="range" id="opTermSlider" class="term-slider__input" min="1" max="40" value="25" oninput="syncTermFromSlider(); recalculate()">
+          <div class="term-slider__range"><span>1 year</span><span>40 years</span></div>
+        </div>
+
+        <!-- Interest Rate -->
+        <div class="form-group">
+          <div class="term-slider__header">
+            <label for="opRateSlider" class="term-slider__label">Interest Rate</label>
+            <span class="term-slider__value"><input type="number" id="opRateInput" class="overpayment-calc__inline-input overpayment-calc__inline-input--rate" value="4.50" min="0.50" max="10.00" step="0.01" oninput="syncRateFromInput(); recalculate()">%</span>
+          </div>
+          <input type="range" id="opRateSlider" class="term-slider__input" min="50" max="1000" value="450" oninput="syncRateFromSlider(); recalculate()">
+          <div class="term-slider__range"><span>0.50%</span><span>10.00%</span></div>
+        </div>
+      </div>
+
+      <!-- ===== BASE SUMMARY STRIP ===== -->
+      <div class="overpayment-calc__summary" id="baseSummary">
+        <div class="overpayment-calc__summary-item">
+          <span class="overpayment-calc__summary-label">Monthly Payment</span>
+          <span class="overpayment-calc__summary-value" id="baseMonthly">&pound;0</span>
+        </div>
+        <div class="overpayment-calc__summary-item">
+          <span class="overpayment-calc__summary-label">Total Repayable</span>
+          <span class="overpayment-calc__summary-value" id="baseTotal">&pound;0</span>
+        </div>
+        <div class="overpayment-calc__summary-item">
+          <span class="overpayment-calc__summary-label">Total Interest</span>
+          <span class="overpayment-calc__summary-value" id="baseInterest">&pound;0</span>
+        </div>
+      </div>
+
+      <!-- ===== OVERPAYMENTS PANEL ===== -->
+      <div class="overpayment-calc__overpayments">
+        <div class="overpayment-calc__overpayments-header">
+          <h2 class="overpayment-calc__section-title">Your Overpayments</h2>
+          <button type="button" class="btn btn--primary" onclick="openOverpaymentModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Overpayment
+          </button>
+        </div>
+
+        <!-- Empty state -->
+        <div class="overpayment-calc__empty" id="overpaymentEmpty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.35"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-0.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2"></path><path d="M2 9v1c0 1.1.9 2 2 2h1"></path></svg>
+          <p>Add your first overpayment to see how much you could save</p>
+        </div>
+
+        <!-- Overpayment cards -->
+        <div class="overpayment-cards" id="overpaymentCards"></div>
+      </div>
+
+      <!-- ===== COMPARISON STRIP ===== -->
+      <div class="overpayment-compare" id="overpaymentCompare" style="display: none;">
+        <h2 class="overpayment-calc__section-title" style="text-align:center;">Impact of Your Overpayments</h2>
+        <div class="overpayment-compare__grid">
+          <div class="overpayment-compare__col overpayment-compare__col--without">
+            <span class="overpayment-compare__heading">Without Overpayments</span>
+            <div class="overpayment-compare__row">
+              <span>Monthly Payment</span><strong id="cmpWithoutMonthly">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row">
+              <span>Total Interest</span><strong id="cmpWithoutInterest">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row">
+              <span>Total Cost</span><strong id="cmpWithoutTotal">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row">
+              <span>Mortgage Term</span><strong id="cmpWithoutTerm">0 yrs</strong>
+            </div>
+          </div>
+          <div class="overpayment-compare__col overpayment-compare__col--with">
+            <span class="overpayment-compare__heading">With Overpayments</span>
+            <div class="overpayment-compare__row">
+              <span>Monthly Payment</span><strong id="cmpWithMonthly">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row">
+              <span>Total Interest</span><strong id="cmpWithInterest">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row">
+              <span>Total Cost</span><strong id="cmpWithTotal">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row">
+              <span>Mortgage Term</span><strong id="cmpWithTerm">0 yrs</strong>
+            </div>
+          </div>
+          <div class="overpayment-compare__col overpayment-compare__col--savings">
+            <span class="overpayment-compare__heading">Your Savings</span>
+            <div class="overpayment-compare__row overpayment-compare__row--highlight">
+              <span>Interest Saved</span><strong id="cmpSavedInterest">&pound;0</strong>
+            </div>
+            <div class="overpayment-compare__row overpayment-compare__row--highlight">
+              <span>Time Saved</span><strong id="cmpSavedTime">0 yrs 0 mths</strong>
+            </div>
+          </div>
+        </div>
+        <!-- Escalation tip -->
+        <div class="overpayment-compare__tip" id="escalationTip" style="display:none;">
+          <div class="overpayment-compare__tip-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+          <div class="overpayment-compare__tip-content">
+            <p id="escalationTipText"></p>
+            <button type="button" class="btn btn--primary btn--small" id="escalationTipBtn" onclick="applyEscalationTip()">Apply 5% Annual Increase</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CHART ===== -->
+      <div class="overpayment-chart" id="overpaymentChart" style="display: none;">
+        <h2 class="overpayment-calc__section-title" style="text-align:center;">Balance Over Time</h2>
+        <div class="overpayment-chart__canvas-wrap">
+          <canvas id="balanceCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- ===== AMORTISATION TABLE ===== -->
+      <div class="overpayment-table" id="overpaymentTable" style="display: none;">
+        <div class="overpayment-table__header">
+          <h3>Amortisation Schedule</h3>
+          <button type="button" class="btn btn--outline btn--small" onclick="toggleAmortisation()">
+            <span id="amortToggleText">Show Full Schedule</span>
+          </button>
+        </div>
+        <div class="overpayment-table__wrapper" id="amortWrapper" style="display: none;">
+          <table class="overpayment-table__table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Payment</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Overpayment</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody id="amortBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== ACTION BUTTONS ===== -->
+      <div class="overpayment-calc__actions" id="overpaymentActions" style="display: none;">
+        <button type="button" class="btn btn--outline btn--large" onclick="printOverpaymentResults()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          Print Results
+        </button>
+        <button type="button" class="btn btn--primary btn--large" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/bev-shaw/mortgage-advice'});return false;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Book a Call
+        </button>
+      </div>
+
+      <!-- ===== DISCLAIMER ===== -->
+      <div class="calculator-disclaimers">
+        <div class="repossession-warning">
+          <strong>YOUR HOME MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE</strong>
+        </div>
+        <p class="results-disclaimer">This calculator is for illustration purposes only and does not constitute financial advice. Actual mortgage payments may vary based on your lender&rsquo;s terms, fees, and interest rate changes. Overpayment allowances vary by lender &mdash; most lenders allow overpayments of up to 10% of the outstanding balance per year without early repayment charges. Always check with your lender or mortgage adviser before making overpayments. B Mortgage Services is a trading style of Brunsdon Financial Services Limited.</p>
+      </div>
+
+    </div><!-- /.overpayment-calc -->
+  </div><!-- /.container -->
+</section>
+
+<!-- Wellness Assessment CTA -->
+<section class="section--white" style="padding-top: 0;">
+  <div class="container" style="max-width: 900px;">
+    <div class="wellness-banner">
+      <div class="wellness-banner__icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+        </svg>
+      </div>
+      <div class="wellness-banner__content">
+        <h3 class="wellness-banner__title">Get Your Full Financial Picture</h3>
+        <p class="wellness-banner__text">Our free Financial Wellness Assessment scores your mortgage readiness across 4 key areas and gives you a personalised action plan.</p>
+      </div>
+      <button class="btn btn--primary" onclick="if(typeof openWellnessModal==='function'){openWellnessModal({source:'overpayment-calc'})}else{window.location='/wellness/'}">
+        Start Assessment
+        <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OVERPAYMENT MODAL ===== -->
+<div class="op-modal" id="opModal">
+  <div class="op-modal__overlay" onclick="closeOverpaymentModal()"></div>
+  <div class="op-modal__container">
+    <button type="button" class="op-modal__close" onclick="closeOverpaymentModal()" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <!-- Progress dots -->
+    <div class="op-modal__progress" id="opModalProgress">
+      <span class="op-modal__dot op-modal__dot--active" data-step="1">1</span>
+      <span class="op-modal__dot" data-step="2">2</span>
+      <span class="op-modal__dot" data-step="3">3</span>
+    </div>
+
+    <!-- Step 1: Type Selection -->
+    <div class="op-modal__step" id="opStep1">
+      <h3 class="op-modal__title">What type of overpayment?</h3>
+      <div class="op-modal__type-cards">
+        <button type="button" class="op-modal__type-card op-modal__type-card--active" data-type="one-off" onclick="setOverpaymentType('one-off')">
+          <span style="font-size:28px;font-weight:700;line-height:1;">&pound;</span>
+          <strong>One-Off Lump Sum</strong>
+          <span>A single extra payment at a specific point</span>
+        </button>
+        <button type="button" class="op-modal__type-card" data-type="regular" onclick="setOverpaymentType('regular')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          <strong>Regular Extra Payment</strong>
+          <span>An ongoing monthly or annual overpayment</span>
+        </button>
+      </div>
+      <div class="op-modal__actions">
+        <button type="button" class="btn btn--primary btn--full" onclick="opModalNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: One-Off Details -->
+    <div class="op-modal__step" id="opStep2OneOff" style="display:none;">
+      <button type="button" class="op-modal__back" onclick="opModalBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back
+      </button>
+      <h3 class="op-modal__title">Lump Sum Details</h3>
+      <div class="form-group">
+        <label for="opOneOffAmount" class="form-label">Amount</label>
+        <div class="input-with-prefix">
+          <span class="input-prefix">&pound;</span>
+          <input type="text" id="opOneOffAmount" class="form-input" placeholder="e.g. 5,000" oninput="formatCurrencyInput(this)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">When?</label>
+        <div class="op-modal__when-grid">
+          <div>
+            <label for="opOneOffYear" class="form-label form-label--small">Year of mortgage</label>
+            <input type="number" id="opOneOffYear" class="form-input" value="1" min="1" max="40">
+          </div>
+          <div>
+            <label for="opOneOffMonth" class="form-label form-label--small">Month</label>
+            <select id="opOneOffMonth" class="form-select"></select>
+          </div>
+        </div>
+      </div>
+      <div class="op-modal__actions">
+        <button type="button" class="btn btn--primary btn--full" onclick="opModalNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Regular Details -->
+    <div class="op-modal__step" id="opStep2Regular" style="display:none;">
+      <button type="button" class="op-modal__back" onclick="opModalBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back
+      </button>
+      <h3 class="op-modal__title">Regular Payment Details</h3>
+      <div class="form-group">
+        <label for="opRegularAmount" class="form-label">Extra Amount</label>
+        <div class="input-with-prefix">
+          <span class="input-prefix">&pound;</span>
+          <input type="text" id="opRegularAmount" class="form-input" placeholder="e.g. 200" oninput="formatCurrencyInput(this)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Frequency</label>
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn toggle-btn--active" data-freq="monthly" onclick="setOverpaymentFreq('monthly')">Monthly</button>
+          <button type="button" class="toggle-btn" data-freq="annually" onclick="setOverpaymentFreq('annually')">Annually</button>
+        </div>
+      </div>
+      <div class="op-modal__when-grid">
+        <div class="form-group">
+          <label for="opRegularStart" class="form-label form-label--small">Start (year of mortgage)</label>
+          <input type="number" id="opRegularStart" class="form-input" value="1" min="1" max="40">
+        </div>
+        <div class="form-group">
+          <label for="opRegularEnd" class="form-label form-label--small">End (year of mortgage)</label>
+          <input type="number" id="opRegularEnd" class="form-input" value="25" min="1" max="40">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="opRegularEscalation" class="form-label">Annual Increase <span class="form-label__optional">optional</span></label>
+        <div class="input-with-prefix">
+          <span class="input-prefix">%</span>
+          <input type="number" id="opRegularEscalation" class="form-input" value="0" min="0" max="20" step="0.5" placeholder="e.g. 2">
+        </div>
+        <span class="form-label__hint">Increase the overpayment each year, e.g. to match salary growth</span>
+      </div>
+      <div class="op-modal__actions">
+        <button type="button" class="btn btn--primary btn--full" onclick="opModalNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Label & Confirm -->
+    <div class="op-modal__step" id="opStep3" style="display:none;">
+      <button type="button" class="op-modal__back" onclick="opModalBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back
+      </button>
+      <h3 class="op-modal__title">Label &amp; Confirm</h3>
+      <div class="op-modal__preview" id="opPreview"></div>
+      <div class="form-group">
+        <label for="opLabel" class="form-label">Give it a name <span class="form-label__optional">optional</span></label>
+        <input type="text" id="opLabel" class="form-input" placeholder="e.g. Annual bonus, Savings redirect">
+      </div>
+      <div class="op-modal__actions">
+        <button type="button" class="btn btn--primary btn--full btn--large" id="opConfirmBtn" onclick="confirmOverpayment()">Add Overpayment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function() {
+  'use strict';
+
+  // ========================================
+  // STATE
+  // ========================================
+  var overpayments = [];
+  var nextId = 1;
+  var editingId = null;
+  var modalStep = 1;
+  var selectedType = 'one-off';
+  var selectedFreq = 'monthly';
+  var chartInstance = null;
+  var chartJsLoaded = false;
+  var chartJsLoadPromise = null;
+  var _trackerStarted = false;
+  var amortVisible = false;
+
+  // ========================================
+  // FORMATTERS
+  // ========================================
+  var currencyFmt = new Intl.NumberFormat('en-GB', {
+    style: 'currency', currency: 'GBP',
+    minimumFractionDigits: 0, maximumFractionDigits: 0
+  });
+  var currencyFmtPence = new Intl.NumberFormat('en-GB', {
+    style: 'currency', currency: 'GBP',
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+
+  function formatCurrency(n) { return currencyFmt.format(n); }
+  function formatCurrencyPence(n) { return currencyFmtPence.format(n); }
+
+  function parseFormattedNumber(str) {
+    if (!str) return 0;
+    return parseInt(String(str).replace(/[^0-9]/g, ''), 10) || 0;
+  }
+
+  function formatCurrencyInput(el) {
+    var raw = el.value.replace(/[^0-9]/g, '');
+    if (raw) {
+      var num = parseInt(raw, 10);
+      var cursorPos = el.selectionStart;
+      var oldLen = el.value.length;
+      el.value = num.toLocaleString('en-GB');
+      var newLen = el.value.length;
+      var newPos = cursorPos + (newLen - oldLen);
+      if (newPos < 0) newPos = 0;
+      el.setSelectionRange(newPos, newPos);
+    }
+  }
+
+  function formatTerm(totalMonths) {
+    var yrs = Math.floor(totalMonths / 12);
+    var mths = totalMonths % 12;
+    if (yrs === 0) return mths + ' mths';
+    if (mths === 0) return yrs + ' yrs';
+    return yrs + ' yrs ' + mths + ' mths';
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ========================================
+  // SLIDER SYNC
+  // ========================================
+  function syncTermFromSlider() {
+    document.getElementById('opTermInput').value = document.getElementById('opTermSlider').value;
+  }
+  function syncTermFromInput() {
+    var val = parseInt(document.getElementById('opTermInput').value) || 25;
+    val = Math.min(40, Math.max(1, val));
+    document.getElementById('opTermSlider').value = val;
+  }
+  function syncRateFromSlider() {
+    var val = parseInt(document.getElementById('opRateSlider').value, 10);
+    document.getElementById('opRateInput').value = (val / 100).toFixed(2);
+  }
+  function syncRateFromInput() {
+    var val = Math.round(parseFloat(document.getElementById('opRateInput').value) * 100) || 450;
+    val = Math.min(1000, Math.max(50, val));
+    document.getElementById('opRateSlider').value = val;
+  }
+
+  // ========================================
+  // MORTGAGE CALCULATIONS
+  // ========================================
+  function getInputs() {
+    var loanAmount = parseFormattedNumber(document.getElementById('opLoanAmount').value);
+    var term = parseInt(document.getElementById('opTermInput').value, 10) || 25;
+    var rate = parseFloat(document.getElementById('opRateInput').value) || 4.5;
+    return {
+      loanAmount: loanAmount,
+      term: term,
+      rate: rate,
+      monthlyRate: rate / 100 / 12,
+      totalMonths: term * 12
+    };
+  }
+
+  function calcMonthlyPayment(principal, monthlyRate, totalMonths) {
+    if (principal <= 0 || monthlyRate <= 0 || totalMonths <= 0) return 0;
+    var pow = Math.pow(1 + monthlyRate, totalMonths);
+    return principal * (monthlyRate * pow) / (pow - 1);
+  }
+
+  function getOverpaymentsForMonth(list, month, inputs) {
+    var total = 0;
+    for (var i = 0; i < list.length; i++) {
+      var op = list[i];
+      if (!op.enabled) continue;
+
+      if (op.type === 'one-off') {
+        var targetMonth = ((op.year - 1) * 12) + op.month;
+        if (month === targetMonth) {
+          total += op.amount;
+        }
+      } else if (op.type === 'regular') {
+        var startMonth = ((op.startYear - 1) * 12) + 1;
+        var endMonth = op.endYear * 12;
+        if (month >= startMonth && month <= endMonth) {
+          var yearsElapsed = Math.floor((month - startMonth) / 12);
+          var escalatedAmount = op.amount * Math.pow(1 + (op.escalation / 100), yearsElapsed);
+          if (op.frequency === 'monthly') {
+            total += escalatedAmount;
+          } else if (op.frequency === 'annually') {
+            if ((month - startMonth) % 12 === 0) {
+              total += escalatedAmount;
+            }
+          }
+        }
+      }
+    }
+    return total;
+  }
+
+  function buildSchedule(inputs, overpaymentList) {
+    var balance = inputs.loanAmount;
+    var monthlyRate = inputs.monthlyRate;
+    var basePayment = calcMonthlyPayment(balance, monthlyRate, inputs.totalMonths);
+    var schedule = [];
+    var totalInterest = 0;
+    var totalOverpaid = 0;
+
+    for (var month = 1; month <= inputs.totalMonths; month++) {
+      if (balance <= 0.01) break;
+
+      var interest = balance * monthlyRate;
+      var principal = basePayment - interest;
+
+      // Final month: don't overshoot
+      if (principal > balance) {
+        principal = balance;
+      }
+
+      var overpaymentAmount = getOverpaymentsForMonth(overpaymentList, month, inputs);
+      var remainingAfterPrincipal = balance - principal;
+      if (overpaymentAmount > remainingAfterPrincipal) {
+        overpaymentAmount = remainingAfterPrincipal;
+      }
+
+      balance = balance - principal - overpaymentAmount;
+      totalInterest += interest;
+      totalOverpaid += overpaymentAmount;
+
+      if (balance < 0) balance = 0;
+
+      schedule.push({
+        month: month,
+        payment: principal + interest,
+        principal: principal,
+        interest: interest,
+        overpayment: overpaymentAmount,
+        balance: balance
+      });
+
+      if (balance <= 0.01) break;
+    }
+
+    return {
+      schedule: schedule,
+      basePayment: basePayment,
+      totalInterest: totalInterest,
+      totalOverpaid: totalOverpaid,
+      totalPaid: inputs.loanAmount + totalInterest,
+      finalMonth: schedule.length,
+      termYears: Math.floor(schedule.length / 12),
+      termMonths: schedule.length % 12
+    };
+  }
+
+  // ========================================
+  // RECALCULATE & DISPLAY
+  // ========================================
+  function recalculate() {
+    var inputs = getInputs();
+
+    // Base summary
+    var basePayment = calcMonthlyPayment(inputs.loanAmount, inputs.monthlyRate, inputs.totalMonths);
+    var baseTotalPaid = basePayment * inputs.totalMonths;
+    var baseTotalInterest = baseTotalPaid - inputs.loanAmount;
+
+    document.getElementById('baseMonthly').textContent = formatCurrency(Math.round(basePayment));
+    document.getElementById('baseTotal').textContent = formatCurrency(Math.round(baseTotalPaid));
+    document.getElementById('baseInterest').textContent = formatCurrency(Math.round(baseTotalInterest));
+
+    // Check for active overpayments
+    var hasActive = false;
+    for (var i = 0; i < overpayments.length; i++) {
+      if (overpayments[i].enabled) { hasActive = true; break; }
+    }
+
+    var resultIds = ['overpaymentCompare', 'overpaymentChart', 'overpaymentTable', 'overpaymentActions'];
+    for (var j = 0; j < resultIds.length; j++) {
+      document.getElementById(resultIds[j]).style.display = hasActive ? '' : 'none';
+    }
+
+    if (hasActive && inputs.loanAmount > 0) {
+      var baseResult = buildSchedule(inputs, []);
+      var opResult = buildSchedule(inputs, overpayments);
+      updateComparison(baseResult, opResult);
+      updateChart(baseResult, opResult);
+      updateAmortTable(opResult);
+      updateCardImpacts(inputs);
+    }
+
+    // Tracker
+    if (typeof BMSTracker !== 'undefined' && inputs.loanAmount > 0 && !_trackerStarted) {
+      try { BMSTracker.trackToolStart('overpayment_calculator'); } catch(e) {}
+      _trackerStarted = true;
+    }
+  }
+
+  function updateComparison(baseResult, opResult) {
+    document.getElementById('cmpWithoutMonthly').textContent = formatCurrency(Math.round(baseResult.basePayment));
+    document.getElementById('cmpWithoutInterest').textContent = formatCurrency(Math.round(baseResult.totalInterest));
+    document.getElementById('cmpWithoutTotal').textContent = formatCurrency(Math.round(baseResult.totalPaid));
+    document.getElementById('cmpWithoutTerm').textContent = formatTerm(baseResult.finalMonth);
+
+    // "With" column shows base monthly payment (unchanged) plus note about overpayments
+    document.getElementById('cmpWithMonthly').textContent = formatCurrency(Math.round(opResult.basePayment));
+    document.getElementById('cmpWithInterest').textContent = formatCurrency(Math.round(opResult.totalInterest));
+    document.getElementById('cmpWithTotal').textContent = formatCurrency(Math.round(opResult.totalPaid + opResult.totalOverpaid));
+    document.getElementById('cmpWithTerm').textContent = formatTerm(opResult.finalMonth);
+
+    var interestSaved = baseResult.totalInterest - opResult.totalInterest;
+    var monthsSaved = baseResult.finalMonth - opResult.finalMonth;
+    document.getElementById('cmpSavedInterest').textContent = formatCurrency(Math.round(interestSaved));
+    document.getElementById('cmpSavedTime').textContent = formatTerm(monthsSaved);
+
+    // Escalation tip: show when any regular overpayment has 0% escalation
+    updateEscalationTip(baseResult, opResult);
+  }
+
+  function updateEscalationTip(baseResult, opResult) {
+    var tip = document.getElementById('escalationTip');
+    var tipText = document.getElementById('escalationTipText');
+    if (!tip || !tipText) return;
+
+    // Find regular overpayments with 0% escalation
+    var candidates = [];
+    for (var i = 0; i < overpayments.length; i++) {
+      var op = overpayments[i];
+      if (op.enabled && op.type === 'regular' && (!op.escalation || op.escalation === 0)) {
+        candidates.push(op);
+      }
+    }
+
+    if (candidates.length === 0) {
+      tip.style.display = 'none';
+      return;
+    }
+
+    // Build a hypothetical scenario with 5% escalation on those overpayments
+    var inputs = getInputs();
+    var hypothetical = [];
+    for (var j = 0; j < overpayments.length; j++) {
+      var copy = {};
+      for (var key in overpayments[j]) { copy[key] = overpayments[j][key]; }
+      if (copy.enabled && copy.type === 'regular' && (!copy.escalation || copy.escalation === 0)) {
+        copy.escalation = 5;
+      }
+      hypothetical.push(copy);
+    }
+
+    var hypotheticalResult = buildSchedule(inputs, hypothetical);
+    var currentSaving = baseResult.totalInterest - opResult.totalInterest;
+    var hypotheticalSaving = baseResult.totalInterest - hypotheticalResult.totalInterest;
+    var additionalSaving = hypotheticalSaving - currentSaving;
+
+    if (additionalSaving < 100) {
+      tip.style.display = 'none';
+      return;
+    }
+
+    tipText.innerHTML = 'Increasing your overpayments by just <strong>5% each year</strong> could save you a further <strong>' + formatCurrency(Math.round(additionalSaving)) + '</strong> in interest.';
+    tip.style.display = 'flex';
+  }
+
+  function applyEscalationTip() {
+    for (var i = 0; i < overpayments.length; i++) {
+      if (overpayments[i].enabled && overpayments[i].type === 'regular' && (!overpayments[i].escalation || overpayments[i].escalation === 0)) {
+        overpayments[i].escalation = 5;
+      }
+    }
+    document.getElementById('escalationTip').style.display = 'none';
+    renderCards();
+    recalculate();
+  }
+
+  // ========================================
+  // CHART.JS
+  // ========================================
+  function ensureChartJs() {
+    if (chartJsLoaded || typeof Chart !== 'undefined') {
+      chartJsLoaded = true;
+      return Promise.resolve();
+    }
+    if (chartJsLoadPromise) return chartJsLoadPromise;
+    chartJsLoadPromise = new Promise(function(resolve, reject) {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.7';
+      script.onload = function() { chartJsLoaded = true; resolve(); };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    return chartJsLoadPromise;
+  }
+
+  function updateChart(baseResult, opResult) {
+    ensureChartJs().then(function() {
+      var canvas = document.getElementById('balanceCanvas');
+      var ctx = canvas.getContext('2d');
+      if (chartInstance) { chartInstance.destroy(); }
+
+      // Build yearly data points
+      var labels = [];
+      var baseData = [];
+      var opData = [];
+      var maxLen = Math.max(baseResult.schedule.length, opResult.schedule.length);
+
+      // Add starting point
+      labels.push('Start');
+      baseData.push(baseResult.schedule.length > 0 ? Math.round(baseResult.schedule[0].balance + baseResult.schedule[0].principal + baseResult.schedule[0].overpayment) : 0);
+      opData.push(baseData[0]);
+
+      for (var i = 11; i < maxLen; i += 12) {
+        var yr = Math.floor(i / 12) + 1;
+        labels.push('Year ' + yr);
+        baseData.push(i < baseResult.schedule.length ? Math.round(baseResult.schedule[i].balance) : 0);
+        opData.push(i < opResult.schedule.length ? Math.round(opResult.schedule[i].balance) : 0);
+      }
+
+      // Ensure we end at zero
+      if (baseData[baseData.length - 1] !== 0) {
+        labels.push('End');
+        baseData.push(0);
+        opData.push(0);
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Without Overpayments',
+              data: baseData,
+              borderColor: 'rgba(45,45,45,0.3)',
+              backgroundColor: 'rgba(45,45,45,0.05)',
+              borderWidth: 2,
+              borderDash: [6, 4],
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              fill: true,
+              tension: 0.3
+            },
+            {
+              label: 'With Overpayments',
+              data: opData,
+              borderColor: '#F05B28',
+              backgroundColor: 'rgba(240,91,40,0.1)',
+              borderWidth: 3,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              fill: true,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { usePointStyle: true, padding: 20 }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(45,45,45,0.95)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              cornerRadius: 8,
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.06)' },
+              ticks: {
+                callback: function(value) { return formatCurrency(value); },
+                maxTicksLimit: 6
+              }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    });
+  }
+
+  // ========================================
+  // AMORTISATION TABLE
+  // ========================================
+  function updateAmortTable(result) {
+    var tbody = document.getElementById('amortBody');
+    var html = '';
+    for (var i = 0; i < result.schedule.length; i++) {
+      var row = result.schedule[i];
+      var cls = '';
+      if (row.overpayment > 0.01) cls = ' class="amort-row--overpaid"';
+      if (i === result.schedule.length - 1) cls = ' class="amort-row--final"';
+
+      html += '<tr' + cls + '>'
+        + '<td>' + row.month + '</td>'
+        + '<td>' + formatCurrencyPence(row.payment) + '</td>'
+        + '<td>' + formatCurrencyPence(row.principal) + '</td>'
+        + '<td>' + formatCurrencyPence(row.interest) + '</td>'
+        + '<td>' + (row.overpayment > 0.01 ? formatCurrencyPence(row.overpayment) : '&mdash;') + '</td>'
+        + '<td>' + formatCurrencyPence(row.balance) + '</td>'
+        + '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  function toggleAmortisation() {
+    amortVisible = !amortVisible;
+    document.getElementById('amortWrapper').style.display = amortVisible ? '' : 'none';
+    document.getElementById('amortToggleText').textContent = amortVisible ? 'Hide Schedule' : 'Show Full Schedule';
+  }
+
+  // ========================================
+  // CARD IMPACT CALCULATION
+  // ========================================
+  function updateCardImpacts(inputs) {
+    var baseResult = buildSchedule(inputs, []);
+    for (var i = 0; i < overpayments.length; i++) {
+      var op = overpayments[i];
+      if (!op.enabled) continue;
+      var el = document.getElementById('cardImpact' + op.id);
+      if (!el) continue;
+
+      // Calculate schedule with only this overpayment
+      var singleResult = buildSchedule(inputs, [op]);
+      var savedInterest = baseResult.totalInterest - singleResult.totalInterest;
+      var savedMonths = baseResult.finalMonth - singleResult.finalMonth;
+
+      el.innerHTML = '<div class="overpayment-card__impact-value">Saves ' + formatCurrency(Math.round(savedInterest)) + '</div>'
+        + '<div class="overpayment-card__impact-label">' + formatTerm(savedMonths) + ' off term</div>';
+    }
+  }
+
+  // ========================================
+  // MODAL MANAGEMENT
+  // ========================================
+  function openOverpaymentModal(editId) {
+    editingId = editId || null;
+    modalStep = 1;
+    selectedType = 'one-off';
+    selectedFreq = 'monthly';
+
+    // Reset fields
+    document.getElementById('opOneOffAmount').value = '';
+    document.getElementById('opOneOffYear').value = '1';
+    document.getElementById('opOneOffMonth').value = '1';
+    document.getElementById('opRegularAmount').value = '';
+    document.getElementById('opRegularStart').value = '1';
+    var inputs = getInputs();
+    document.getElementById('opRegularEnd').value = inputs.term;
+    document.getElementById('opRegularEscalation').value = '0';
+    document.getElementById('opLabel').value = '';
+
+    // Pre-fill if editing
+    if (editingId) {
+      var op = null;
+      for (var i = 0; i < overpayments.length; i++) {
+        if (overpayments[i].id === editingId) { op = overpayments[i]; break; }
+      }
+      if (op) {
+        selectedType = op.type;
+        document.getElementById('opLabel').value = op.label || '';
+        if (op.type === 'one-off') {
+          document.getElementById('opOneOffAmount').value = op.amount.toLocaleString('en-GB');
+          document.getElementById('opOneOffYear').value = op.year;
+          document.getElementById('opOneOffMonth').value = op.month;
+        } else {
+          document.getElementById('opRegularAmount').value = op.amount.toLocaleString('en-GB');
+          document.getElementById('opRegularStart').value = op.startYear;
+          document.getElementById('opRegularEnd').value = op.endYear;
+          document.getElementById('opRegularEscalation').value = op.escalation;
+          selectedFreq = op.frequency;
+        }
+      }
+      document.getElementById('opConfirmBtn').textContent = 'Update Overpayment';
+    } else {
+      document.getElementById('opConfirmBtn').textContent = 'Add Overpayment';
+    }
+
+    updateTypeToggle();
+    updateFreqToggle();
+    updateModalStep();
+    document.getElementById('opModal').classList.add('op-modal--open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeOverpaymentModal() {
+    document.getElementById('opModal').classList.remove('op-modal--open');
+    document.body.style.overflow = '';
+    editingId = null;
+  }
+
+  function opModalNext() {
+    if (modalStep === 2) {
+      // Validate step 2
+      if (selectedType === 'one-off') {
+        var amt = parseFormattedNumber(document.getElementById('opOneOffAmount').value);
+        if (amt <= 0) { document.getElementById('opOneOffAmount').focus(); return; }
+      } else {
+        var rAmt = parseFormattedNumber(document.getElementById('opRegularAmount').value);
+        if (rAmt <= 0) { document.getElementById('opRegularAmount').focus(); return; }
+      }
+    }
+    if (modalStep < 3) {
+      modalStep++;
+      updateModalStep();
+    }
+  }
+
+  function opModalBack() {
+    if (modalStep > 1) {
+      modalStep--;
+      updateModalStep();
+    }
+  }
+
+  function updateModalStep() {
+    // Hide all steps
+    var steps = ['opStep1', 'opStep2OneOff', 'opStep2Regular', 'opStep3'];
+    for (var i = 0; i < steps.length; i++) {
+      document.getElementById(steps[i]).style.display = 'none';
+    }
+
+    if (modalStep === 1) {
+      document.getElementById('opStep1').style.display = '';
+    } else if (modalStep === 2) {
+      if (selectedType === 'one-off') {
+        document.getElementById('opStep2OneOff').style.display = '';
+      } else {
+        document.getElementById('opStep2Regular').style.display = '';
+      }
+    } else if (modalStep === 3) {
+      document.getElementById('opStep3').style.display = '';
+      updatePreview();
+    }
+
+    // Update dots
+    var dots = document.querySelectorAll('#opModalProgress .op-modal__dot');
+    for (var j = 0; j < dots.length; j++) {
+      if (j < modalStep) {
+        dots[j].classList.add('op-modal__dot--active');
+      } else {
+        dots[j].classList.remove('op-modal__dot--active');
+      }
+    }
+  }
+
+  function setOverpaymentType(type) {
+    selectedType = type;
+    updateTypeToggle();
+  }
+
+  function updateTypeToggle() {
+    var cards = document.querySelectorAll('.op-modal__type-card');
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].getAttribute('data-type') === selectedType) {
+        cards[i].classList.add('op-modal__type-card--active');
+      } else {
+        cards[i].classList.remove('op-modal__type-card--active');
+      }
+    }
+  }
+
+  function setOverpaymentFreq(freq) {
+    selectedFreq = freq;
+    updateFreqToggle();
+  }
+
+  function updateFreqToggle() {
+    var btns = document.querySelectorAll('#opStep2Regular .toggle-btn');
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute('data-freq') === selectedFreq) {
+        btns[i].classList.add('toggle-btn--active');
+      } else {
+        btns[i].classList.remove('toggle-btn--active');
+      }
+    }
+  }
+
+  function updatePreview() {
+    var html = '';
+    if (selectedType === 'one-off') {
+      var amount = parseFormattedNumber(document.getElementById('opOneOffAmount').value);
+      var year = parseInt(document.getElementById('opOneOffYear').value, 10) || 1;
+      var month = parseInt(document.getElementById('opOneOffMonth').value, 10) || 1;
+      var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      html = '<div class="op-modal__preview-label">One-off lump sum</div>'
+        + '<div class="op-modal__preview-detail">' + formatCurrency(amount) + ' in ' + monthNames[month - 1] + ' of Year ' + year + '</div>';
+
+      // Auto-suggest label
+      if (!document.getElementById('opLabel').value) {
+        document.getElementById('opLabel').value = formatCurrency(amount) + ' lump sum in Year ' + year;
+      }
+    } else {
+      var rAmount = parseFormattedNumber(document.getElementById('opRegularAmount').value);
+      var start = parseInt(document.getElementById('opRegularStart').value, 10) || 1;
+      var end = parseInt(document.getElementById('opRegularEnd').value, 10) || 25;
+      var escalation = parseFloat(document.getElementById('opRegularEscalation').value) || 0;
+      var freqLabel = selectedFreq === 'monthly' ? '/month' : '/year';
+      html = '<div class="op-modal__preview-label">Regular overpayment</div>'
+        + '<div class="op-modal__preview-detail">' + formatCurrency(rAmount) + freqLabel + ' from Year ' + start + ' to Year ' + end + '</div>';
+      if (escalation > 0) {
+        html += '<div class="op-modal__preview-detail">Increasing by ' + escalation + '% each year</div>';
+      }
+
+      if (!document.getElementById('opLabel').value) {
+        document.getElementById('opLabel').value = formatCurrency(rAmount) + freqLabel + ' from Year ' + start;
+      }
+    }
+    document.getElementById('opPreview').innerHTML = html;
+  }
+
+  // ========================================
+  // OVERPAYMENT CRUD
+  // ========================================
+  function confirmOverpayment() {
+    var op;
+    if (selectedType === 'one-off') {
+      var amount = parseFormattedNumber(document.getElementById('opOneOffAmount').value);
+      if (amount <= 0) return;
+      op = {
+        id: editingId || nextId++,
+        type: 'one-off',
+        label: document.getElementById('opLabel').value || formatCurrency(amount) + ' lump sum',
+        amount: amount,
+        year: parseInt(document.getElementById('opOneOffYear').value, 10) || 1,
+        month: parseInt(document.getElementById('opOneOffMonth').value, 10) || 1,
+        enabled: true
+      };
+    } else {
+      var rAmount = parseFormattedNumber(document.getElementById('opRegularAmount').value);
+      if (rAmount <= 0) return;
+      op = {
+        id: editingId || nextId++,
+        type: 'regular',
+        label: document.getElementById('opLabel').value || formatCurrency(rAmount) + '/' + (selectedFreq === 'monthly' ? 'month' : 'year'),
+        amount: rAmount,
+        frequency: selectedFreq,
+        startYear: parseInt(document.getElementById('opRegularStart').value, 10) || 1,
+        endYear: parseInt(document.getElementById('opRegularEnd').value, 10) || 25,
+        escalation: parseFloat(document.getElementById('opRegularEscalation').value) || 0,
+        enabled: true
+      };
+    }
+
+    if (editingId) {
+      for (var i = 0; i < overpayments.length; i++) {
+        if (overpayments[i].id === editingId) {
+          op.enabled = overpayments[i].enabled;
+          overpayments[i] = op;
+          break;
+        }
+      }
+    } else {
+      overpayments.push(op);
+    }
+
+    closeOverpaymentModal();
+    renderCards();
+    recalculate();
+
+    // Track
+    if (typeof BMSTracker !== 'undefined') {
+      try {
+        BMSTracker.trackToolComplete('overpayment_calculator', {
+          overpaymentCount: overpayments.length,
+          type: op.type
+        }, 'Added ' + op.type + ' overpayment');
+      } catch(e) {}
+    }
+  }
+
+  function removeOverpayment(id) {
+    overpayments = overpayments.filter(function(o) { return o.id !== id; });
+    renderCards();
+    recalculate();
+  }
+
+  function toggleOverpayment(id) {
+    for (var i = 0; i < overpayments.length; i++) {
+      if (overpayments[i].id === id) {
+        overpayments[i].enabled = !overpayments[i].enabled;
+        break;
+      }
+    }
+    renderCards();
+    recalculate();
+  }
+
+  function renderCards() {
+    var container = document.getElementById('overpaymentCards');
+    var empty = document.getElementById('overpaymentEmpty');
+
+    if (overpayments.length === 0) {
+      empty.style.display = '';
+      container.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+
+    var html = '';
+    for (var i = 0; i < overpayments.length; i++) {
+      var op = overpayments[i];
+      var detail = '';
+      if (op.type === 'one-off') {
+        var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        detail = formatCurrency(op.amount) + ' &middot; ' + monthNames[op.month - 1] + ', Year ' + op.year;
+      } else {
+        detail = formatCurrency(op.amount) + '/' + (op.frequency === 'monthly' ? 'month' : 'year');
+        detail += ' &middot; Year ' + op.startYear + ' to ' + op.endYear;
+        if (op.escalation > 0) detail += ' &middot; +' + op.escalation + '% p.a.';
+      }
+
+      var toggleIcon = op.enabled
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+
+      html += '<div class="overpayment-card' + (op.enabled ? '' : ' overpayment-card--disabled') + '">'
+        + '<div class="overpayment-card__info">'
+        + '<div class="overpayment-card__label">' + escapeHtml(op.label) + '</div>'
+        + '<div class="overpayment-card__detail">' + detail + '</div>'
+        + '</div>'
+        + '<div class="overpayment-card__impact" id="cardImpact' + op.id + '"></div>'
+        + '<div class="overpayment-card__actions">'
+        + '<button class="overpayment-card__btn" onclick="toggleOverpayment(' + op.id + ')" title="' + (op.enabled ? 'Disable' : 'Enable') + '">' + toggleIcon + '</button>'
+        + '<button class="overpayment-card__btn" onclick="openOverpaymentModal(' + op.id + ')" title="Edit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>'
+        + '<button class="overpayment-card__btn overpayment-card__btn--delete" onclick="removeOverpayment(' + op.id + ')" title="Remove"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>'
+        + '</div>'
+        + '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  // ========================================
+  // CSV EXPORT
+  // ========================================
+  // ========================================
+  // PRINT
+  // ========================================
+  function printOverpaymentResults() {
+    var inputs = getInputs();
+    var baseResult = buildSchedule(inputs, []);
+    var opResult = buildSchedule(inputs, overpayments);
+    var interestSaved = baseResult.totalInterest - opResult.totalInterest;
+    var monthsSaved = baseResult.finalMonth - opResult.finalMonth;
+
+    // Capture chart as image
+    var chartImgHtml = '';
+    var canvas = document.getElementById('balanceCanvas');
+    if (canvas && chartInstance) {
+      try {
+        var chartDataUrl = canvas.toDataURL('image/png');
+        chartImgHtml = '<h2>Balance Over Time</h2>'
+          + '<img src="' + chartDataUrl + '" style="width:100%;max-width:660px;height:auto;border-radius:8px;margin:8px 0 16px;" alt="Balance over time chart">';
+      } catch(e) {}
+    }
+
+    var opListHtml = '';
+    for (var i = 0; i < overpayments.length; i++) {
+      var op = overpayments[i];
+      if (!op.enabled) continue;
+      var detail = '';
+      if (op.type === 'one-off') {
+        detail = formatCurrency(op.amount) + ' in Year ' + op.year + ', Month ' + op.month;
+      } else {
+        detail = formatCurrency(op.amount) + '/' + (op.frequency === 'monthly' ? 'month' : 'year');
+        detail += ' from Year ' + op.startYear + ' to ' + op.endYear;
+        if (op.escalation > 0) detail += ' (+' + op.escalation + '% p.a.)';
+      }
+      opListHtml += '<li><strong>' + escapeHtml(op.label) + '</strong> &mdash; ' + detail + '</li>';
+    }
+
+    var printContent = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Overpayment Report - B Mortgage Services</title>'
+      + '<style>'
+      + 'body{font-family:"Segoe UI",Arial,sans-serif;max-width:700px;margin:0 auto;padding:20px;color:#2D2D2D;font-size:14px;}'
+      + 'h1{font-size:22px;color:#F05B28;margin-bottom:4px;}'
+      + 'h2{font-size:16px;margin-top:24px;padding-bottom:6px;border-bottom:2px solid #F05B28;}'
+      + '.subtitle{color:#666;font-size:13px;margin-bottom:20px;}'
+      + '.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:16px 0;}'
+      + '.box{background:#f8f8f8;border-radius:8px;padding:14px;}'
+      + '.box--highlight{background:#FEF6F0;border:2px solid #F05B28;}'
+      + '.box-label{font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#666;margin-bottom:6px;}'
+      + '.box-value{font-size:18px;font-weight:700;}'
+      + '.box--highlight .box-value{color:#F05B28;}'
+      + '.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:13px;}'
+      + '.row:last-child{border:none;}'
+      + 'ul{padding-left:20px;}'
+      + 'li{margin-bottom:6px;font-size:13px;}'
+      + '.disclaimer{margin-top:24px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#888;}'
+      + '@media print{body{margin:0;padding:10px;}img{max-width:100%!important;}}'
+      + '</style></head><body>'
+      + '<h1>Mortgage Overpayment Report</h1>'
+      + '<p class="subtitle">B Mortgage Services | ' + new Date().toLocaleDateString('en-GB') + '</p>'
+      + '<h2>Mortgage Details</h2>'
+      + '<div class="row"><span>Outstanding Balance</span><strong>' + formatCurrency(inputs.loanAmount) + '</strong></div>'
+      + '<div class="row"><span>Remaining Term</span><strong>' + inputs.term + ' years</strong></div>'
+      + '<div class="row"><span>Interest Rate</span><strong>' + inputs.rate.toFixed(2) + '%</strong></div>'
+      + '<div class="row"><span>Monthly Payment</span><strong>' + formatCurrency(Math.round(baseResult.basePayment)) + '</strong></div>'
+      + '<h2>Your Overpayments</h2>'
+      + '<ul>' + opListHtml + '</ul>'
+      + '<h2>Impact Summary</h2>'
+      + '<div class="grid">'
+      + '<div class="box"><div class="box-label">Without Overpayments</div>'
+      + '<div class="row"><span>Total Interest</span><strong>' + formatCurrency(Math.round(baseResult.totalInterest)) + '</strong></div>'
+      + '<div class="row"><span>Term</span><strong>' + formatTerm(baseResult.finalMonth) + '</strong></div>'
+      + '</div>'
+      + '<div class="box"><div class="box-label">With Overpayments</div>'
+      + '<div class="row"><span>Total Interest</span><strong>' + formatCurrency(Math.round(opResult.totalInterest)) + '</strong></div>'
+      + '<div class="row"><span>Term</span><strong>' + formatTerm(opResult.finalMonth) + '</strong></div>'
+      + '</div>'
+      + '<div class="box box--highlight"><div class="box-label">Your Savings</div>'
+      + '<div class="box-value">' + formatCurrency(Math.round(interestSaved)) + '</div>'
+      + '<div style="font-size:12px;color:#666;margin-top:4px;">' + formatTerm(monthsSaved) + ' off your mortgage</div>'
+      + '</div>'
+      + '</div>'
+      + chartImgHtml
+      + '<div class="disclaimer">'
+      + '<strong>YOUR HOME MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE</strong><br><br>'
+      + 'This calculator is for illustration purposes only and does not constitute financial advice. Overpayment allowances vary by lender &mdash; most allow up to 10% per year without early repayment charges. Always check with your lender or mortgage adviser. B Mortgage Services is a trading style of Brunsdon Financial Services Limited.'
+      + '</div>'
+      + '</body></html>';
+
+    var printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    setTimeout(function() { printWindow.print(); }, 300);
+
+    // Track print activity
+    if (typeof BMSTracker !== 'undefined') {
+      try {
+        BMSTracker.trackCTA('overpayment_print', {
+          loanAmount: inputs.loanAmount,
+          term: inputs.term,
+          rate: inputs.rate,
+          overpaymentCount: overpayments.filter(function(o) { return o.enabled; }).length,
+          interestSaved: Math.round(interestSaved),
+          monthsSaved: monthsSaved
+        });
+      } catch(e) {}
+    }
+  }
+
+  // ========================================
+  // SESSION STORAGE PRE-FILL
+  // ========================================
+  function prefillFromSession() {
+    try {
+      var raw = sessionStorage.getItem('bms_affordability_data');
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (data.timestamp && (Date.now() - data.timestamp > 30 * 60 * 1000)) return;
+
+      if (data.mortgageAmount && data.mortgageAmount > 0) {
+        document.getElementById('opLoanAmount').value = Math.round(data.mortgageAmount).toLocaleString('en-GB');
+      }
+      if (data.mortgageTerm && data.mortgageTerm > 0) {
+        document.getElementById('opTermInput').value = data.mortgageTerm;
+        document.getElementById('opTermSlider').value = data.mortgageTerm;
+      }
+      if (data.interestRate && data.interestRate > 0) {
+        document.getElementById('opRateInput').value = parseFloat(data.interestRate).toFixed(2);
+        document.getElementById('opRateSlider').value = Math.round(data.interestRate * 100);
+      }
+    } catch(e) {}
+  }
+
+  // ========================================
+  // EXPOSE TO GLOBAL SCOPE
+  // ========================================
+  window.formatCurrencyInput = formatCurrencyInput;
+  window.recalculate = recalculate;
+  window.syncTermFromSlider = syncTermFromSlider;
+  window.syncTermFromInput = syncTermFromInput;
+  window.syncRateFromSlider = syncRateFromSlider;
+  window.syncRateFromInput = syncRateFromInput;
+  window.openOverpaymentModal = openOverpaymentModal;
+  window.closeOverpaymentModal = closeOverpaymentModal;
+  window.opModalNext = opModalNext;
+  window.opModalBack = opModalBack;
+  window.setOverpaymentType = setOverpaymentType;
+  window.setOverpaymentFreq = setOverpaymentFreq;
+  window.confirmOverpayment = confirmOverpayment;
+  window.removeOverpayment = removeOverpayment;
+  window.toggleOverpayment = toggleOverpayment;
+  window.applyEscalationTip = applyEscalationTip;
+  window.toggleAmortisation = toggleAmortisation;
+  window.printOverpaymentResults = printOverpaymentResults;
+
+  // ========================================
+  // INIT
+  // ========================================
+  document.addEventListener('DOMContentLoaded', function() {
+    // Populate month dropdown
+    var monthSelect = document.getElementById('opOneOffMonth');
+    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    for (var m = 0; m < 12; m++) {
+      var opt = document.createElement('option');
+      opt.value = m + 1;
+      opt.textContent = monthNames[m];
+      monthSelect.appendChild(opt);
+    }
+
+    prefillFromSession();
+    recalculate();
+
+    // Escape to close modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var modal = document.getElementById('opModal');
+        if (modal.classList.contains('op-modal--open')) {
+          closeOverpaymentModal();
+        }
+      }
+    });
+  });
+
+})();
+</script>
+{{ end }}

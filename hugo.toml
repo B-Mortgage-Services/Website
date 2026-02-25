@@ -24,23 +24,21 @@ theme = 'bms-theme'
     url = "/"
     weight = 1
   [[menu.main]]
-    name = "Individuals"
+    name = "Mortgages"
     url = "/individuals/"
     weight = 2
-    identifier = "individuals"
   [[menu.main]]
-    name = "Protection"
+    name = "Insurance"
     url = "/individuals/protection/"
-    weight = 1
-    parent = "individuals"
+    weight = 3
   [[menu.main]]
     name = "Employers"
     url = "/employers/"
-    weight = 3
+    weight = 4
   [[menu.main]]
     name = "Tools"
     url = "#"
-    weight = 4
+    weight = 5
     identifier = "tools"
   [[menu.main]]
     name = "Affordability Calculator"
@@ -58,9 +56,10 @@ theme = 'bms-theme'
     weight = 3
     parent = "tools"
   [[menu.main]]
-    name = "Contact"
-    url = "/contact/"
-    weight = 5
+    name = "Overpayment Calculator"
+    url = "/overpayment-calculator/"
+    weight = 4
+    parent = "tools"
 
 [markup]
   [markup.goldmark]

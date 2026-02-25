@@ -344,6 +344,7 @@ section {
     top: 80px;
     left: 0;
     right: 0;
+    bottom: 0;
     background: var(--white);
     flex-direction: column;
     padding: var(--space-xl);
@@ -353,6 +354,8 @@ section {
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-base);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .nav__list--open {
@@ -3877,6 +3880,687 @@ section {
 
   .term-slider__value {
     font-size: 1rem;
+  }
+}
+
+/* ================================================
+   OVERPAYMENT CALCULATOR
+   ================================================ */
+
+.overpayment-calc {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.overpayment-calc__section-title {
+  font-size: 1.25rem;
+  color: var(--brand-charcoal);
+  margin-bottom: var(--space-lg);
+}
+
+.overpayment-calc__inputs {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.overpayment-calc__inline-input {
+  width: 72px;
+  text-align: center;
+  border: 2px solid var(--medium-grey);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--brand-orange);
+  font-family: var(--font-body);
+}
+
+.overpayment-calc__inline-input:focus {
+  outline: none;
+  border-color: var(--brand-orange);
+}
+
+.overpayment-calc__inline-input--rate {
+  width: 84px;
+}
+
+/* Summary strip */
+.overpayment-calc__summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  background: var(--cream);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.overpayment-calc__summary-item {
+  text-align: center;
+}
+
+.overpayment-calc__summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-xs);
+}
+
+.overpayment-calc__summary-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-charcoal);
+}
+
+/* Overpayments panel */
+.overpayment-calc__overpayments {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.overpayment-calc__overpayments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.overpayment-calc__overpayments-header .overpayment-calc__section-title {
+  margin-bottom: 0;
+}
+
+.overpayment-calc__empty {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--text-secondary);
+}
+
+.overpayment-calc__empty svg {
+  margin-bottom: var(--space-md);
+}
+
+.overpayment-calc__empty p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Overpayment cards */
+.overpayment-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.overpayment-card {
+  display: flex;
+  align-items: center;
+  background: var(--light-grey);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border-left: 4px solid var(--brand-orange);
+  transition: all var(--transition-fast);
+}
+
+.overpayment-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.overpayment-card--disabled {
+  opacity: 0.45;
+  border-left-color: var(--medium-grey);
+}
+
+.overpayment-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.overpayment-card__label {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.overpayment-card__detail {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.overpayment-card__impact {
+  text-align: right;
+  margin: 0 var(--space-lg);
+  flex-shrink: 0;
+}
+
+.overpayment-card__impact-value {
+  font-weight: 700;
+  color: var(--score-good);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.overpayment-card__impact-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.overpayment-card__actions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.overpayment-card__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overpayment-card__btn:hover {
+  background: var(--white);
+  color: var(--brand-orange);
+}
+
+.overpayment-card__btn--delete:hover {
+  color: var(--score-critical);
+}
+
+/* Actions row */
+.overpayment-calc__actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
+}
+
+/* Overpayment modal */
+.op-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.op-modal--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.op-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.op-modal__container {
+  position: relative;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  max-width: 520px;
+  width: 92%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.op-modal--open .op-modal__container {
+  transform: translateY(0);
+}
+
+.op-modal__close {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.op-modal__close:hover {
+  background: var(--light-grey);
+  color: var(--brand-charcoal);
+}
+
+.op-modal__progress {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.op-modal__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--light-grey);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.op-modal__dot--active {
+  background: var(--brand-orange);
+  color: var(--white);
+  transform: scale(1.1);
+}
+
+.op-modal__title {
+  font-size: 1.2rem;
+  color: var(--brand-charcoal);
+  margin-bottom: var(--space-lg);
+}
+
+.op-modal__step {
+  animation: opFadeIn 0.3s ease;
+}
+
+@keyframes opFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.op-modal__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: var(--space-lg);
+  transition: color var(--transition-fast);
+}
+
+.op-modal__back:hover {
+  color: var(--brand-orange);
+}
+
+.op-modal__actions {
+  margin-top: var(--space-xl);
+}
+
+.op-modal__when-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+/* Type selection cards */
+.op-modal__type-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.op-modal__type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  background: var(--light-grey);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+}
+
+.op-modal__type-card span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.op-modal__type-card strong {
+  font-size: 0.95rem;
+}
+
+.op-modal__type-card:hover {
+  border-color: var(--brand-orange);
+  background: var(--white);
+}
+
+.op-modal__type-card--active {
+  border-color: var(--brand-orange);
+  background: var(--cream);
+  color: var(--brand-orange);
+}
+
+.op-modal__type-card--active svg {
+  color: var(--brand-orange);
+}
+
+/* Preview card */
+.op-modal__preview {
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.op-modal__preview-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand-orange);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.op-modal__preview-detail {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Comparison strip */
+.overpayment-compare {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.overpayment-compare__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.overpayment-compare__col {
+  background: var(--light-grey);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.overpayment-compare__col--savings {
+  background: var(--cream);
+  border: 2px solid var(--brand-orange);
+}
+
+.overpayment-compare__heading {
+  display: block;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.overpayment-compare__col--savings .overpayment-compare__heading {
+  color: var(--brand-orange);
+}
+
+.overpayment-compare__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--medium-grey);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.overpayment-compare__row:last-child {
+  border-bottom: none;
+}
+
+.overpayment-compare__row strong {
+  color: var(--text-primary);
+}
+
+.overpayment-compare__row--highlight strong {
+  color: var(--brand-orange);
+  font-size: 1.15rem;
+}
+
+/* Escalation tip */
+.overpayment-compare__tip {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  background: linear-gradient(135deg, #FEF6F0, #FFF8F4);
+  border: 1px solid rgba(240, 91, 40, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-top: var(--space-lg);
+  animation: opFadeIn 0.4s ease;
+}
+
+.overpayment-compare__tip-icon {
+  flex-shrink: 0;
+  color: var(--brand-orange);
+  margin-top: 2px;
+}
+
+.overpayment-compare__tip-content p {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.overpayment-compare__tip-content p strong {
+  color: var(--brand-orange);
+}
+
+/* Chart */
+.overpayment-chart {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.overpayment-chart__canvas-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Amortisation table */
+.overpayment-table {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.overpayment-table__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.overpayment-table__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.overpayment-table__wrapper {
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--medium-grey);
+}
+
+.overpayment-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.overpayment-table__table th {
+  position: sticky;
+  top: 0;
+  background: var(--brand-charcoal);
+  color: var(--white);
+  padding: var(--space-sm) var(--space-md);
+  text-align: right;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.overpayment-table__table th:first-child {
+  text-align: left;
+}
+
+.overpayment-table__table td {
+  padding: var(--space-xs) var(--space-md);
+  text-align: right;
+  border-bottom: 1px solid var(--light-grey);
+  color: var(--text-secondary);
+}
+
+.overpayment-table__table td:first-child {
+  text-align: left;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.overpayment-table__table tr:hover {
+  background: var(--cream);
+}
+
+.overpayment-table__table tr.amort-row--overpaid {
+  background: rgba(240, 91, 40, 0.04);
+}
+
+.overpayment-table__table tr.amort-row--overpaid td:nth-child(5) {
+  color: var(--brand-orange);
+  font-weight: 700;
+}
+
+.overpayment-table__table tr.amort-row--final {
+  font-weight: 700;
+  background: var(--light-grey);
+}
+
+.overpayment-table__table tr.amort-row--final td {
+  color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .overpayment-calc__summary {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .overpayment-calc__summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    text-align: left;
+  }
+
+  .overpayment-calc__summary-value {
+    font-size: 1.2rem;
+  }
+
+  .overpayment-calc__overpayments-header {
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: stretch;
+  }
+
+  .overpayment-compare__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overpayment-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .overpayment-card__impact {
+    text-align: left;
+    margin: 0;
+  }
+
+  .overpayment-card__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .op-modal__container {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .op-modal {
+    align-items: flex-end;
+  }
+
+  .op-modal__type-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .op-modal__when-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overpayment-calc__actions {
+    flex-direction: column;
+  }
+
+  .overpayment-calc__actions .btn {
+    width: 100%;
   }
 }
 
