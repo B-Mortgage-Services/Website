@@ -4627,6 +4627,38 @@ section {
   }
 }
 
+@media (max-width: 480px) {
+  .overpayment-calc__inputs {
+    padding: var(--space-lg);
+  }
+
+  .overpayment-calc__summary {
+    padding: var(--space-md);
+  }
+
+  .overpayment-calc__summary-value {
+    font-size: 1rem;
+  }
+
+  .overpayment-compare__col {
+    padding: var(--space-md);
+  }
+
+  .overpayment-card {
+    padding: var(--space-md);
+  }
+
+  .overpayment-card__impact-value,
+  .overpayment-card__impact-label {
+    white-space: normal;
+  }
+
+  .overpayment-calc__actions .btn {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
 /* ================================================
    FAQ ACCORDION
    ================================================ */
