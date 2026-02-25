@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const navList = document.getElementById('nav-list');
   
   if (navToggle && navList) {
-    navToggle.addEventListener('click', function() {
+    navToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
       const isOpen = navList.classList.toggle('nav__list--open');
       navToggle.setAttribute('aria-expanded', isOpen);
 
@@ -47,21 +48,28 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
-  
+
   // Dropdown menu toggle (mobile + accessibility)
   document.querySelectorAll('.nav__link--dropdown').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       var parent = this.parentElement;
-      var wasOpen = parent.classList.contains('nav__item--open');
 
-      // Close all dropdowns
+      // On mobile, just toggle this dropdown
+      if (window.innerWidth <= 968) {
+        parent.classList.toggle('nav__item--open');
+        var isNowOpen = parent.classList.contains('nav__item--open');
+        this.setAttribute('aria-expanded', isNowOpen ? 'true' : 'false');
+        return;
+      }
+
+      // On desktop, close others then toggle
+      var wasOpen = parent.classList.contains('nav__item--open');
       document.querySelectorAll('.nav__item--dropdown').forEach(function(item) {
         item.classList.remove('nav__item--open');
         item.querySelector('.nav__link--dropdown').setAttribute('aria-expanded', 'false');
       });
-
-      // Toggle clicked dropdown
       if (!wasOpen) {
         parent.classList.add('nav__item--open');
         this.setAttribute('aria-expanded', 'true');
@@ -69,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Close dropdowns when clicking outside
+  // Close dropdowns when clicking outside (desktop only)
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.nav__item--dropdown')) {
+    if (!e.target.closest('.nav__item--dropdown') && !e.target.closest('.nav__toggle')) {
       document.querySelectorAll('.nav__item--dropdown').forEach(function(item) {
         item.classList.remove('nav__item--open');
         var btn = item.querySelector('.nav__link--dropdown');
