@@ -728,6 +728,8 @@
         opData.push(0);
       }
 
+      var isMobile = window.innerWidth < 576;
+
       chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -738,10 +740,10 @@
               data: baseData,
               borderColor: 'rgba(45,45,45,0.3)',
               backgroundColor: 'rgba(45,45,45,0.05)',
-              borderWidth: 2,
+              borderWidth: isMobile ? 1.5 : 2,
               borderDash: [6, 4],
               pointRadius: 0,
-              pointHoverRadius: 5,
+              pointHoverRadius: isMobile ? 3 : 5,
               fill: true,
               tension: 0.3
             },
@@ -750,9 +752,9 @@
               data: opData,
               borderColor: '#F05B28',
               backgroundColor: 'rgba(240,91,40,0.1)',
-              borderWidth: 3,
+              borderWidth: isMobile ? 2 : 3,
               pointRadius: 0,
-              pointHoverRadius: 5,
+              pointHoverRadius: isMobile ? 3 : 5,
               fill: true,
               tension: 0.3
             }
@@ -760,19 +762,25 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { usePointStyle: true, padding: 20 }
+              labels: {
+                usePointStyle: true,
+                padding: isMobile ? 12 : 20,
+                font: { size: isMobile ? 11 : 12 }
+              }
             },
             tooltip: {
               backgroundColor: 'rgba(45,45,45,0.95)',
               titleColor: '#fff',
               bodyColor: '#fff',
               cornerRadius: 8,
-              padding: 12,
+              padding: isMobile ? 8 : 12,
+              titleFont: { size: isMobile ? 11 : 13 },
+              bodyFont: { size: isMobile ? 11 : 13 },
               callbacks: {
                 label: function(context) {
                   return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
@@ -785,12 +793,30 @@
               beginAtZero: true,
               grid: { color: 'rgba(0,0,0,0.06)' },
               ticks: {
-                callback: function(value) { return formatCurrency(value); },
-                maxTicksLimit: 6
+                callback: function(value) {
+                  if (isMobile) {
+                    if (value >= 1000) return '£' + Math.round(value / 1000) + 'k';
+                    return '£' + value;
+                  }
+                  return formatCurrency(value);
+                },
+                maxTicksLimit: isMobile ? 5 : 6,
+                font: { size: isMobile ? 10 : 12 }
               }
             },
             x: {
-              grid: { display: false }
+              grid: { display: false },
+              ticks: {
+                maxRotation: isMobile ? 45 : 0,
+                font: { size: isMobile ? 10 : 12 },
+                callback: function(value, index) {
+                  var label = labels[index];
+                  if (isMobile && label && label.indexOf('Year') === 0) {
+                    return 'Yr ' + label.replace('Year ', '');
+                  }
+                  return label;
+                }
+              }
             }
           }
         }

@@ -4443,6 +4443,27 @@ section {
 .overpayment-chart__canvas-wrap {
   position: relative;
   width: 100%;
+  height: 350px;
+}
+
+@media (max-width: 768px) {
+  .overpayment-chart {
+    padding: var(--space-lg);
+  }
+
+  .overpayment-chart__canvas-wrap {
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overpayment-chart {
+    padding: var(--space-md);
+  }
+
+  .overpayment-chart__canvas-wrap {
+    height: 240px;
+  }
 }
 
 /* Amortisation table */
