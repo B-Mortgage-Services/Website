@@ -214,19 +214,21 @@
 <section class="section--white" style="padding-top: 0;">
   <div class="container" style="max-width: 900px;">
     <div class="wellness-banner">
-      <div class="wellness-banner__icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-        </svg>
-      </div>
       <div class="wellness-banner__content">
-        <h3 class="wellness-banner__title">Get Your Full Financial Picture</h3>
-        <p class="wellness-banner__text">Our free Financial Wellness Assessment scores your mortgage readiness across 4 key areas and gives you a personalised action plan.</p>
+        <div class="wellness-banner__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+          </svg>
+        </div>
+        <div class="wellness-banner__text">
+          <h3 class="wellness-banner__title">Get Your Full Financial Picture</h3>
+          <p class="wellness-banner__desc">Our free Financial Wellness Assessment scores your mortgage readiness across 4 key areas and gives you a personalised action plan.</p>
+        </div>
+        <button type="button" class="btn btn--primary btn--large" onclick="if(typeof openWellnessModal==='function'){openWellnessModal({source:'overpayment-calc'})}else{window.location='/wellness/'}">
+          Start Assessment
+          <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
-      <button class="btn btn--primary" onclick="if(typeof openWellnessModal==='function'){openWellnessModal({source:'overpayment-calc'})}else{window.location='/wellness/'}">
-        Start Assessment
-        <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
     </div>
   </div>
 </section>
