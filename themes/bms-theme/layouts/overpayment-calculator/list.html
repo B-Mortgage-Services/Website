@@ -899,12 +899,22 @@
     updateFreqToggle();
     updateModalStep();
     document.getElementById('opModal').classList.add('op-modal--open');
+    window._scrollLockY = window.pageYOffset;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + window._scrollLockY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
     document.body.style.overflow = 'hidden';
   }
 
   function closeOverpaymentModal() {
     document.getElementById('opModal').classList.remove('op-modal--open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
     document.body.style.overflow = '';
+    window.scrollTo(0, window._scrollLockY || 0);
     editingId = null;
   }
 

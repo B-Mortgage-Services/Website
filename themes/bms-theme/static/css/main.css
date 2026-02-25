@@ -87,6 +87,7 @@ body {
   background: var(--white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* Typography */
@@ -345,6 +346,7 @@ section {
     left: 0;
     right: 0;
     max-height: calc(100vh - 80px);
+    max-height: calc(100dvh - 80px);
     background: var(--white);
     flex-direction: column;
     align-items: flex-start;
@@ -381,7 +383,7 @@ section {
     display: none;
   }
 
-  .nav__item--open .nav__dropdown {
+  .nav__item--dropdown.nav__item--open .nav__dropdown {
     display: block;
   }
 
@@ -1054,6 +1056,12 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-xl);
+}
+
+@media (max-width: 576px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ================================================
@@ -3600,7 +3608,9 @@ section {
   max-width: 560px;
   width: 90%;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: var(--space-2xl);
   transform: translateY(20px);
   transition: transform var(--transition-base);
@@ -3882,6 +3892,35 @@ section {
   }
 }
 
+@media (max-width: 480px) {
+  .affordability-calculator {
+    padding: var(--space-md);
+  }
+
+  .input-prefix {
+    padding: 0 var(--space-sm);
+    font-size: 0.9rem;
+  }
+
+  .input-with-prefix .form-input {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 1rem;
+  }
+
+  .toggle-btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.9rem;
+  }
+
+  .calculator-results {
+    padding: var(--space-md);
+  }
+
+  .form-group {
+    gap: var(--space-sm);
+  }
+}
+
 /* ================================================
    OVERPAYMENT CALCULATOR
    ================================================ */
@@ -4129,7 +4168,9 @@ section {
   max-width: 520px;
   width: 92%;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-xl);
   transform: translateY(20px);
   transition: transform 0.3s ease;
@@ -4539,7 +4580,9 @@ section {
   .op-modal__container {
     width: 100%;
     max-height: 100vh;
+    max-height: 100dvh;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: var(--space-lg);
   }
 
   .op-modal {
@@ -5129,6 +5172,24 @@ section {
   color: var(--text-secondary);
 }
 
+@media (max-width: 576px) {
+  .comparison-table th,
+  .comparison-table td {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.85rem;
+  }
+
+  .comparison-table th:first-child {
+    width: auto;
+  }
+
+  .comparison-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Offer Ready Section */
 .offer-ready {
   display: grid;
@@ -5423,14 +5484,55 @@ section {
   section {
     padding: var(--space-3xl) 0;
   }
-  
+
   .btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .hero__actions {
     flex-direction: column;
+  }
+}
+
+/* ================================================
+   SMALL PHONE BREAKPOINT (375-480px)
+   ================================================ */
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--space-md);
+  }
+
+  section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .tool-cta {
+    padding: 1.5rem 1rem;
+  }
+
+  .trust-bar__logos {
+    gap: var(--space-md);
+  }
+
+  .trust-bar__logo img {
+    max-height: 22px;
+    max-width: 70px;
+  }
+
+  .btn--large {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .wellness-banner {
+    padding: var(--space-xl);
+  }
+
+  .wellness-banner__content {
+    flex-direction: column;
+    text-align: center;
   }
 }
 
@@ -6634,6 +6736,7 @@ video.wellness-cta-overlay__media {
   max-width: 760px;
   width: 92%;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow: hidden;
   transform: translateY(20px);
   transition: transform 0.3s ease;
@@ -6642,7 +6745,9 @@ video.wellness-cta-overlay__media {
 .wellness-modal__scroll {
   overflow-y: auto;
   max-height: 90vh;
+  max-height: 90dvh;
   padding: var(--space-2xl);
+  -webkit-overflow-scrolling: touch;
 }
 
 .wellness-modal--open .wellness-modal__container {
@@ -6739,6 +6844,7 @@ video.wellness-cta-overlay__media {
   border-radius: var(--radius-md);
   width: 100%;
   font-size: 1rem;
+  font-size: max(1rem, 16px);
   font-family: inherit;
 }
 
@@ -6764,12 +6870,14 @@ video.wellness-cta-overlay__media {
   .wellness-modal__container {
     width: 100%;
     max-height: 95vh;
+    max-height: 95dvh;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     margin-top: auto;
   }
 
   .wellness-modal__scroll {
     max-height: 95vh;
+    max-height: 95dvh;
     padding: var(--space-lg);
   }
 

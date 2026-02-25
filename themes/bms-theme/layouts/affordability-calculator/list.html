@@ -1093,13 +1093,23 @@ function printCalculatorResults() {
 // Quote Modal Functions
 function openQuoteModal() {
   document.getElementById('quoteModal').classList.add('quote-modal--open');
+  window._scrollLockY = window.pageYOffset;
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-' + window._scrollLockY + 'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
   document.body.style.overflow = 'hidden';
   resetModal();
 }
 
 function closeQuoteModal() {
   document.getElementById('quoteModal').classList.remove('quote-modal--open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
   document.body.style.overflow = '';
+  window.scrollTo(0, window._scrollLockY || 0);
 }
 
 function showSuccess() {

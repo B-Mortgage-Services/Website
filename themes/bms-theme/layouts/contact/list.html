@@ -10,7 +10,7 @@
 
 <section class="section--white">
   <div class="container">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+    <div class="contact-grid">
       
       <!-- Contact Form -->
       <div>
@@ -154,9 +154,17 @@
   min-height: 100px;
 }
 
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
 @media (max-width: 768px) {
-  .contact-form + div {
-    grid-template-columns: 1fr !important;
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
 </style>

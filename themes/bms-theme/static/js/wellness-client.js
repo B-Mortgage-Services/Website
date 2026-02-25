@@ -36,6 +36,11 @@ function openWellnessModal(options) {
 
   resetWellnessForm();
   modal.classList.add('wellness-modal--open');
+  window._scrollLockY = window.pageYOffset;
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-' + window._scrollLockY + 'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
   document.body.style.overflow = 'hidden';
 
   // Check for pre-fill data from affordability calculator
@@ -72,7 +77,12 @@ function closeWellnessModal() {
   }
 
   modal.classList.remove('wellness-modal--open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
   document.body.style.overflow = '';
+  window.scrollTo(0, window._scrollLockY || 0);
 }
 
 /**
