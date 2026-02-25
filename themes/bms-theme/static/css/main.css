@@ -344,13 +344,12 @@ section {
     top: 80px;
     left: 0;
     right: 0;
-    bottom: 0;
+    max-height: calc(100vh - 80px);
     background: var(--white);
     flex-direction: column;
     padding: var(--space-xl);
     gap: var(--space-md);
     box-shadow: var(--shadow-lg);
-    transform: translateY(-100%);
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-base);
@@ -359,7 +358,6 @@ section {
   }
   
   .nav__list--open {
-    transform: translateY(0);
     opacity: 1;
     visibility: visible;
   }
