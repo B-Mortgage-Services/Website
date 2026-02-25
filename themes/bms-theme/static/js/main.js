@@ -28,8 +28,17 @@ document.addEventListener('DOMContentLoaded', function() {
     navToggle.addEventListener('click', function() {
       const isOpen = navList.classList.toggle('nav__list--open');
       navToggle.setAttribute('aria-expanded', isOpen);
+
+      // Auto-expand all dropdowns on mobile so the full menu is visible
+      if (isOpen && window.innerWidth <= 968) {
+        document.querySelectorAll('.nav__item--dropdown').forEach(function(item) {
+          item.classList.add('nav__item--open');
+          var btn = item.querySelector('.nav__link--dropdown');
+          if (btn) btn.setAttribute('aria-expanded', 'true');
+        });
+      }
     });
-    
+
     // Close menu on link click
     navList.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', function() {
