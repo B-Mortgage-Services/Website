@@ -15,8 +15,12 @@ Need to seek authority from each employer before displaying their logos on the s
 - [x] Homepage (`themes/bms-theme/layouts/index.html`) — commented out
 - [x] Employers page (`themes/bms-theme/layouts/employers/list.html`) — commented out
 
+### Section backgrounds changed to white (restore when trust bars go live)
+- [ ] Homepage "Our Services" — restore `section--cream` (currently `section--white`) in `index.html`
+- [ ] Individuals "What Are You Looking to Achieve?" — restore `section--off-white` (currently `section--white`) in `individuals/list.html`
+
 ### To reactivate
-Once permissions are confirmed, uncomment the relevant `<!-- Partner Logos Section -->` or `<!-- Lender Trust Bar -->` block in each affected layout file. Remove any logos where permission was not granted.
+Once permissions are confirmed, uncomment the relevant `<!-- Partner Logos Section -->` or `<!-- Lender Trust Bar -->` block in each affected layout file. Remove any logos where permission was not granted. Also restore the section background classes listed above.
 
 ---
 
@@ -37,7 +41,3 @@ Need to seek authority from each lender before displaying their logos on the sit
 - [x] Individuals/Mortgages page (`themes/bms-theme/layouts/individuals/list.html`) — commented out
 
 ---
-
-## Verify Testimonials
-
-- [ ] Review and verify all testimonials displayed on the site are accurate and approved for use
