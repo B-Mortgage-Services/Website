@@ -1064,6 +1064,20 @@ section {
   }
 }
 
+/* Risk Warning Box */
+.risk-warning {
+  margin-top: var(--space-xl);
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--brand-charcoal, #2D2D2D);
+  text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.risk-warning p {
+  margin: 0;
+}
+
 /* ================================================
    FINANCIAL WELLNESS SECTION
    ================================================ */
