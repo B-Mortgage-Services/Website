@@ -61,7 +61,13 @@
 
   {{ block "scripts" . }}{{ end }}
 
-  <!-- Site-wide Wellness Modal -->
+  {{/* Only on pages that can open it. The questionnaire is ~14KB of template
+       plus its script; there is no reason to ship it to the cookie policy.
+       Set wellnessModal: true in a page's front matter to include it. A page
+       that gains a trigger without the param still works — openWellnessModal
+       falls back to sending the visitor to /wellness/. */}}
+  {{ if .Params.wellnessModal }}
   {{ partial "wellness-modal.html" . }}
+  {{ end }}
 </body>
 </html>

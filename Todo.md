@@ -118,6 +118,26 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
       "Move home"), so this one breaks the pattern. A first-person
       alternative would read "Support my team".
 
+### Performance and markup — resolved
+
+- [x] **The wellness questionnaire no longer sits in every page's DOM.** It
+      was ~23KB of markup after the footer on all 18 pages, including 18
+      inputs, 12 selects and 10 headings, on pages that could never open it.
+      It now lives in a `<template>` and is cloned into the page by
+      `ensureWellnessModal()` on first open, and the template itself only
+      ships on pages with `wellnessModal: true` in their front matter —
+      currently /wellness/, /affordability-calculator/ and
+      /overpayment-calculator/.
+- Worth knowing for the record: the old `visibility: hidden` did already keep
+  it out of the accessibility tree and the tab order, so screen readers were
+  not reading it out, and there was no `<form>` element so nothing could be
+  submitted. The real costs were page weight, document structure, and
+  crawlable content on pages it had no business being on. Those are fixed.
+- [ ] **If you add a wellness trigger to a new page, set `wellnessModal: true`
+      in its front matter.** Forgetting now degrades to a redirect to
+      /wellness/ rather than a dead button, but it is still worth getting
+      right.
+
 ### Compliance
 
 - [x] **Openwork approval line is always shown in the footer**, on all 18

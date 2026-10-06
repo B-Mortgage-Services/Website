@@ -23,10 +23,42 @@ const WELLNESS_TOTAL_STEPS = 4;
  * Open the wellness modal
  * @param {Object} options - Optional config (source tracking)
  */
+/**
+ * Mount the questionnaire into the page the first time it is needed.
+ *
+ * The markup lives in a <template> so it stays out of the DOM, the
+ * accessibility tree and the page's crawlable content until someone actually
+ * opens it. Safe to call repeatedly — it returns the existing modal once
+ * mounted.
+ *
+ * @returns {HTMLElement|null} the modal element, or null if neither it nor
+ *   the template is present on this page
+ */
+function ensureWellnessModal() {
+  var modal = document.getElementById('wellnessModal');
+  if (modal) return modal;
+
+  var tpl = document.getElementById('wellness-modal-template');
+  if (!tpl || !tpl.content) return null;
+
+  document.body.appendChild(tpl.content.cloneNode(true));
+  return document.getElementById('wellnessModal');
+}
+
+/**
+ * Fallback for pages that don't ship the template. Sends the visitor to the
+ * wellness page rather than having a button do nothing, so a page that gains
+ * a trigger without setting wellnessModal in its front matter degrades to a
+ * working link instead of failing silently.
+ */
+function goToWellnessPage() {
+  window.location.href = '/wellness/';
+}
+
 function openWellnessModal(options) {
   options = options || {};
-  var modal = document.getElementById('wellnessModal');
-  if (!modal) return;
+  var modal = ensureWellnessModal();
+  if (!modal) { goToWellnessPage(); return; }
 
   // Close any other modals that might be open
   var quoteModal = document.querySelector('.quote-modal--open');

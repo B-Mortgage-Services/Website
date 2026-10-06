@@ -357,6 +357,11 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       if (typeof openWellnessModal === 'function') {
         openWellnessModal({ source: this.dataset.wellnessSource || 'generic' });
+      } else {
+        // The questionnaire only ships on pages with wellnessModal: true in
+        // their front matter. Without it, send them to the wellness page
+        // rather than letting the click do nothing.
+        window.location.href = '/wellness/';
       }
     });
   });

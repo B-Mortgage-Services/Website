@@ -1,4 +1,21 @@
-<!-- Wellness Assessment Modal (site-wide) -->
+{{/*
+  Wellness questionnaire, held in a <template> rather than live markup.
+
+  This used to sit in the DOM of every page after the footer — about 23KB,
+  roughly 40% of a page, including 18 inputs, 12 selects and 10 headings. It
+  was hidden with visibility:hidden, which does keep it out of the
+  accessibility tree and tab order, but it still appeared in the HTML of pages
+  that never open it.
+
+  Template content is inert: not in the DOM, not in the accessibility tree,
+  not focusable, and not treated as page content by crawlers. It is cloned
+  into <body> on first open by ensureWellnessModal() in wellness-client.js.
+
+  Nothing in wellness-client.js queries the modal at load time — every lookup
+  happens inside a function called after opening — so deferring the mount is
+  safe.
+*/}}
+<template id="wellness-modal-template">
 <div class="wellness-modal" id="wellnessModal">
   <div class="wellness-modal__overlay" onclick="closeWellnessModal()"></div>
   <div class="wellness-modal__container">
@@ -469,6 +486,7 @@
     </div><!-- /.wellness-modal__scroll -->
   </div>
 </div>
+</template>
 
 <!-- Wellness config injected from Hugo data files -->
 <script>
