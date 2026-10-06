@@ -75,6 +75,14 @@ Do the pre-launch checklist first — several items are not cosmetic.
 - [ ] **Remove the spam enquiries** and detach them from the real employer
       records they were wrongly attributed to (Nottingham Trent University,
       Giacom).
+- [ ] **Give `develop` its own `404.html`.** `main` has
+      `themes/bms-theme/layouts/404.html` worded for the pre-launch state
+      ("our new website isn't live yet"). The restore in Step 2 takes
+      `develop`'s tree wholesale, so that file disappears unless `develop`
+      has its own version with launch-appropriate wording. Without a
+      `404.html` in the build, Cloudflare Pages falls back to serving
+      `index.html` with HTTP **200** for every unmatched path (see gotcha
+      below).
 
 ## Step 2 — Restore the full site onto `main`
 
@@ -139,6 +147,42 @@ Because the custom domain is Cloudflare's, a GitHub Pages deploy alone does not
 change the live site. Note also that Cloudflare Pages creates a public preview
 deployment for **every** pushed branch by default — keep previews disabled or
 behind Cloudflare Access so `develop` does not become publicly reachable.
+
+### Gotcha: no `404.html` means every unknown URL returns HTTP 200
+
+Cloudflare Pages has single-page-app fallback behaviour: if the build output
+contains no `404.html`, it serves `index.html` with status **200** for any path
+that doesn't match a file. Removing a page therefore does *not* make its URL
+return 404 — it silently becomes a soft 404.
+
+That matters because search engines will not deindex a URL that returns 200.
+After the content pages were deleted, `/contact/`, `/individuals/` and even
+`/zzz-does-not-exist/` all returned 200 serving the holding page, so the old
+URLs would have stayed in Google's index indefinitely. `layouts/404.html` exists
+on `main` to force real 404s. Keep a `404.html` in the build on every branch.
+
+Verify with a path that never existed:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://bmortgageservices.co.uk/zzz-test/   # want 404
+```
+
+### Gotcha: "Purge Everything" does not always clear non-homepage HTML
+
+Pages other than the homepage are served with `cache-control: public,
+s-maxage=604800` (7 days), while the homepage sends `max-age=0,
+must-revalidate`. The result is that a deploy updates the homepage immediately
+while old inner pages keep being served from the edge for up to a week.
+
+Check the `age` response header to tell whether a purge actually landed — it
+resets to near 0 on a successful purge and keeps climbing if the object was
+missed. Confirm the purge was run on the **`bmortgageservices.co.uk` zone**
+(Caching → Configuration → Purge Everything), not inside the Pages project,
+which has no purge control of its own.
+
+```bash
+curl -sI https://bmortgageservices.co.uk/contact/ | grep -i age
+```
 
 ---
 

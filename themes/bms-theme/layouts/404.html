@@ -1,0 +1,60 @@
+{{ define "main" }}
+
+<section class="coming-soon">
+  <div class="ambient-glow ambient-glow--home">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+  </div>
+  <div class="container">
+    <div class="coming-soon__inner">
+      <img src="{{ "images/BMS_logo.jpg" | relURL }}" alt="B Mortgage Services" class="coming-soon__logo">
+      <span class="coming-soon__eyebrow">Page Not Found</span>
+      <h1 class="coming-soon__title">This page isn't available.</h1>
+      <p class="coming-soon__subtitle">Our new website isn't live yet. Please get in touch &mdash; we'd love to help with your mortgage and protection needs.</p>
+
+      <div class="coming-soon__contact">
+        <a href="tel:01452925209" class="coming-soon__contact-item">
+          <span>01452 925209</span>
+        </a>
+        <a href="mailto:info@bmortgageservices.co.uk" class="coming-soon__contact-item">
+          <span>info@bmortgageservices.co.uk</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.page-home main { padding-top: 0; }
+.coming-soon {
+  position: relative;
+  min-height: calc(100vh - 80px);
+  min-height: calc(100dvh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3xl) 0;
+}
+.coming-soon__inner { text-align: center; max-width: 720px; margin: 0 auto; }
+.coming-soon__logo { max-width: 200px; height: auto; margin-bottom: var(--space-xl); }
+.coming-soon__eyebrow {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--brand-orange);
+  margin-bottom: var(--space-md);
+}
+.coming-soon__title { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: var(--space-md); }
+.coming-soon__subtitle { font-size: 1.125rem; line-height: 1.6; margin-bottom: var(--space-xl); }
+.coming-soon__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  justify-content: center;
+}
+.coming-soon__contact-item { display: inline-flex; align-items: center; gap: 0.5rem; }
+</style>
+
+{{ end }}
