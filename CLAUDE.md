@@ -2,6 +2,146 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+# ⚠️ CURRENT STATE: THE SITE IS NOT LAUNCHED
+
+`main` publishes **one page only** — the Coming Soon holding page. Most of what the
+rest of this document describes (the wellness tool, the `/api/*` functions, the
+calculators) exists on `develop`, **not** on `main`.
+
+## Branches
+
+| Branch | Contents | Published? |
+|---|---|---|
+| `main` | Coming Soon holding page, nothing else | **Yes — this is the live public site** |
+| `develop` | The complete site. Do all work here. | No |
+| `holding-page` | Snapshot of the holding-page reduction | No |
+| `full-site` | Legacy, same commit as `develop` started from. Safe to delete. | No |
+
+## Why the site was reduced
+
+The earlier "Coming Soon" commit only replaced the homepage *layout*. Every other
+page stayed published, the nav and footer links to them were merely CSS-hidden
+(`display: none`) — which crawlers still follow — and the `/api/*` functions stayed
+live regardless of which pages existed. Google and Bing indexed the unlaunched
+site, and the open `/api/contact` endpoint collected spam enquiries.
+
+Commit `6775163` on `main` fixed that by:
+
+- Deleting every `content/` page except `content/_index.md`
+- Deleting `functions/` and `netlify/` (this is what closed `/api/contact`)
+- Adding `holdingPage = true` under `[params]` in `hugo.toml`, which gates the
+  header, footer, wellness modal and visitor tracking out of
+  `themes/bms-theme/layouts/_default/baseof.html`
+- Adding `disableKinds = ['taxonomy', 'term', 'rss']` to `hugo.toml`
+- Restricting `static/robots.txt` to the homepage only
+- Stripping the page list out of `static/llms.txt`
+- Emptying `static/_redirects` and removing the function config from `netlify.toml`
+
+A correct holding-page build produces **exactly one HTML file** with **zero
+internal links**. Verify before any deploy of `main`:
+
+```bash
+hugo --gc --minify
+find public -name "*.html"                               # must be only public/index.html
+grep -oE 'href="[^"]*"' public/index.html | grep -v fonts.googleapis   # must be empty
+```
+
+---
+
+# HOW TO PUT THE FULL SITE BACK
+
+Do the pre-launch checklist first — several items are not cosmetic.
+
+## Step 1 — Pre-launch checklist
+
+- [ ] **Fix the `visitor_tool_results` UPDATE policy.** Migration
+      `006_visitor_tracking.sql` in the CRM repo has
+      `FOR UPDATE USING (true)`, letting any anonymous user modify *any* saved
+      result. Scope it to the row's own `visitor_id`.
+- [ ] **Add bot protection to the contact form.** All five enquiries received
+      while unlaunched were spam. `/api/contact` has IP rate limiting (5/hr) but
+      no CAPTCHA or honeypot. Add Cloudflare Turnstile plus a honeypot field.
+- [ ] **Fix the tracker** (`themes/bms-theme/static/js/bms-tracker.js`):
+      `sendEvent()` never populates `user_agent` or `ip_country`, so bot traffic
+      is indistinguishable from real visitors; `tool_complete` fires on page load
+      against empty form state (every stored result is all-zeros); and
+      `setConsent()` calls `trackPageView()` a second time, double-counting.
+- [ ] **Restrict CORS** in the API handlers from `*` to `bmortgageservices.co.uk`.
+- [ ] **Clear the junk analytics.** `visitor_activity` holds ~3,400 rows of
+      almost entirely crawler traffic. Truncate it and `visitor_tool_results`
+      so launch metrics start clean.
+- [ ] **Remove the spam enquiries** and detach them from the real employer
+      records they were wrongly attributed to (Nottingham Trent University,
+      Giacom).
+
+## Step 2 — Restore the full site onto `main`
+
+This makes `main`'s tree exactly match `develop`, re-adding the deleted pages and
+reverting `hugo.toml`, `robots.txt`, `llms.txt` and `baseof.html` in one step. It
+is an ordinary commit — **no force push**.
+
+```bash
+git checkout develop && git pull
+git checkout main && git pull
+git read-tree -m -u develop          # main's tree becomes develop's, exactly
+git commit -m "Restore full site for launch"
+```
+
+Verify before pushing — `holdingPage` must be gone and the pages must be back:
+
+```bash
+grep holdingPage hugo.toml           # must return nothing
+hugo --gc --minify
+find public -name "*.html" | wc -l   # expect ~13, not 1
+grep -c bms-tracker public/index.html   # expect 1
+head -3 static/robots.txt            # must be "Allow: /", not "Disallow: /"
+```
+
+Then `git push origin main`.
+
+Do **not** use `git merge develop` for this. `main` deleted those content files,
+`develop` never touched them, so git keeps the deletions and the pages stay gone.
+
+## Step 3 — Purge the Cloudflare cache
+
+**This step is mandatory and easy to miss.** The live domain is served by
+**Cloudflare Pages**, not GitHub Pages. Non-homepage HTML is sent with
+`cache-control: public, s-maxage=604800` (7 days), so old pages keep being served
+from the edge long after a deploy — a cache purge is the only thing that clears
+them. Purge Everything in the Cloudflare dashboard (Caching → Configuration),
+then confirm:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://bmortgageservices.co.uk/contact/
+```
+
+## Step 4 — Re-open indexing
+
+Once live, ask Google Search Console and Bing Webmaster Tools to recrawl, and
+resubmit `sitemap.xml`. If the holding page was indexed, request removal of any
+stale URLs.
+
+---
+
+## Deployment topology (easy to get wrong)
+
+Three targets are configured, and **the live domain is not GitHub Pages**:
+
+| Target | Config | Serves |
+|---|---|---|
+| **Cloudflare Pages** | `wrangler.toml` (project `bms-website`) | **`bmortgageservices.co.uk` — the live site**, plus `bms-website-gjc.pages.dev` |
+| GitHub Pages | `.github/workflows/jekyll-gh-pages.yml`, builds on push to `main` | `b-mortgage-services.github.io/Website/` only |
+| Netlify | `netlify.toml` | Legacy, functions removed |
+
+Because the custom domain is Cloudflare's, a GitHub Pages deploy alone does not
+change the live site. Note also that Cloudflare Pages creates a public preview
+deployment for **every** pushed branch by default — keep previews disabled or
+behind Cloudflare Access so `develop` does not become publicly reachable.
+
+---
+
 ## Build & Development Commands
 
 ```bash
