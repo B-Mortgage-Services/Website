@@ -118,6 +118,22 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
       "Move home"), so this one breaks the pattern. A first-person
       alternative would read "Support my team".
 
+### Compliance
+
+- [x] **Openwork approval line is always shown in the footer**, on all 18
+      pages, falling back to "xx/xx/xxxx" until a real date exists. This
+      deliberately reverses the redesign brief, which said to hide the
+      sentence rather than publish a placeholder (its §2.2), and means the
+      brief's acceptance check "no xx/xx/xxxx anywhere in the built site" will
+      now fail by design. Noted so nobody 'fixes' it back.
+- [ ] **Set `financialPromotionApprovalDate` in `hugo.toml`** the moment the
+      pages are approved, e.g. "6 October 2026". It fills in site-wide from
+      that one value. Verified both states render correctly.
+- [ ] Until then, be aware the live site carries a visible placeholder date.
+      Worth a decision before go-live about whether that is acceptable to show
+      the public, or whether the pages should simply not be published until
+      approved.
+
 ### Content
 
 - [x] **Fees section** — built on the homepage. No fee for residential

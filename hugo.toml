@@ -13,8 +13,9 @@ theme = 'bms-theme'
   brandOrange = "#F05B28"
   brandCharcoal = "#2D2D2D"
   # Openwork financial promotion sign-off date, e.g. "6 October 2026".
-  # While empty the whole approval sentence is hidden rather than showing a
-  # placeholder date. INPUT NEEDED: Q13
+  # The approval sentence always renders in the footer; while this is empty it
+  # shows "xx/xx/xxxx". Fill this in once the pages are approved and the real
+  # date appears site-wide. INPUT NEEDED: Q13
   financialPromotionApprovalDate = ""
   # Public Google review profile. While empty, the reviews component and the
   # "rated on Google" badge render nothing at all. INPUT NEEDED: Q6

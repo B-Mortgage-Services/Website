@@ -69,11 +69,12 @@
     <div class="footer__disclaimer">
       <p>B Mortgage Services is a trading style of House Financial Ltd which is an appointed representative of The Openwork Partnership, a trading style of Openwork Limited which is authorised and regulated by the Financial Conduct Authority. House Financial Ltd Registered Office: 39 Teddington Gardens, Gloucester. GL4 6RL. Registered in England No. 16879049</p>
       <p style="margin-top: 0.5rem;">The guidance and/or information contained within this website is subject to the UK regulatory regime and is therefore targeted at consumers based in the UK.</p>
-      {{/* Hidden entirely until a real sign-off date is configured, rather
-           than publishing a placeholder. INPUT NEEDED: Q13 */}}
-      {{ with .Site.Params.financialPromotionApprovalDate }}
-      <p style="margin-top: 0.5rem;">Approved by The Openwork Partnership on {{ . }}.</p>
-      {{ end }}
+      {{/* Always shown. The redesign brief had this hidden until a real date
+           existed, but the statement is required on the page, so it renders
+           with an "xx/xx/xxxx" placeholder until sign-off. Set
+           financialPromotionApprovalDate in hugo.toml and it fills in
+           everywhere. INPUT NEEDED: Q13 */}}
+      <p style="margin-top: 0.5rem;">Approved by The Openwork Partnership on {{ with .Site.Params.financialPromotionApprovalDate }}{{ . }}{{ else }}xx/xx/xxxx{{ end }}.</p>
     </div>
 
     <div class="footer__bottom">
