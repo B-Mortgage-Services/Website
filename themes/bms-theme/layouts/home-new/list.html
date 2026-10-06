@@ -38,7 +38,7 @@
       <div class="hero__content">
         <span class="mhero__eyebrow">Mortgage &amp; protection advice</span>
         <h1 class="hero__title">Mortgage advice that feels personal.</h1>
-        <p class="hero__subtitle">Buying your first home, moving house or looking for a better deal when your current one ends? We&rsquo;ll explain your options in plain English, compare mortgages from a wide range of lenders and guide you from first conversation to completion.</p>
+        <p class="hero__subtitle">Buying your first home, moving house or coming to the end of your current mortgage deal? We&rsquo;ll explain your options in plain English, compare mortgages from a wide range of lenders and guide you from first conversation to completion.</p>
 
         <div class="hero__actions">
           <a href="/mortgages/first-time-buyers/" class="btn btn--primary btn--large">I&rsquo;m buying a home</a>
@@ -112,8 +112,18 @@
             <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
           <p class="wellness-showcase__note">About 3 minutes &nbsp;&bull;&nbsp; No credit check &nbsp;&bull;&nbsp; No obligation</p>
-          <p class="wellness-showcase__note">This is an indication only. It isn&rsquo;t a mortgage decision or an eligibility check.</p>
         </div>
+
+        {{/* Given more weight than the usual grey small print: it is the line
+             that stops the score being read as a lending decision. */}}
+        <p class="score-caveat" role="note">
+          <svg class="score-caveat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <line x1="12" y1="8" x2="12" y2="13"/>
+            <line x1="12" y1="16.5" x2="12.01" y2="16.5"/>
+          </svg>
+          <span>Your score is an indication of financial preparedness &mdash; it isn&rsquo;t a mortgage eligibility score or lending decision.</span>
+        </p>
       </div>
 
       <div class="wellness-showcase__visual">
