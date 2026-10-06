@@ -34,17 +34,18 @@
 </head>
 <body class="{{ with .Section }}page-{{ . }}{{ end }}{{ if .IsHome }} page-home{{ end }}">
   
-  {{ partial "header.html" . }}
-  
+  {{ if not .Site.Params.holdingPage }}{{ partial "header.html" . }}{{ end }}
+
   <main id="main-content">
     {{ block "main" . }}{{ end }}
   </main>
-  
-  {{ partial "footer.html" . }}
-  
+
+  {{ if not .Site.Params.holdingPage }}{{ partial "footer.html" . }}{{ end }}
+
   <!-- Scripts -->
   <script src="{{ "js/main.js" | relURL }}"></script>
 
+  {{ if not .Site.Params.holdingPage }}
   <!-- Cookie Consent & Visitor Tracking -->
   <script src="{{ "js/bms-cookie-consent.js" | relURL }}" defer></script>
   <script src="{{ "js/bms-tracker.js" | relURL }}" defer></script>
@@ -53,10 +54,13 @@
       if (typeof BMSTracker !== 'undefined') BMSTracker.init();
     });
   </script>
+  {{ end }}
 
   {{ block "scripts" . }}{{ end }}
 
+  {{ if not .Site.Params.holdingPage }}
   <!-- Site-wide Wellness Modal -->
   {{ partial "wellness-modal.html" . }}
+  {{ end }}
 </body>
 </html>

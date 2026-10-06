@@ -1,5 +1,4 @@
 # Cloudflare Pages redirects
 # https://developers.cloudflare.com/pages/configuration/redirects/
 
-# Wellness report pages — rewrite dynamic report IDs to static HTML
-/wellness/report/:id  /wellness/report.html  200
+# Holding page only — no application routes are published on this branch.

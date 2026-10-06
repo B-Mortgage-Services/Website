@@ -3,7 +3,13 @@ languageCode = 'en-gb'
 title = 'B Mortgage Services | Expert Mortgage & Insurance Advice'
 theme = 'bms-theme'
 
+# Holding page publishes the homepage only — no taxonomy or RSS endpoints.
+disableKinds = ['taxonomy', 'term', 'rss']
+
 [params]
+  # Suppresses nav, footer, visitor tracking and the wellness modal so the
+  # Coming Soon page exposes no crawlable links to unlaunched pages.
+  holdingPage = true
   description = "Expert mortgage and insurance advice for individuals and employers. Access to a wide range of lenders."
   author = "B Mortgage Services"
   phone = "01452 925209"
