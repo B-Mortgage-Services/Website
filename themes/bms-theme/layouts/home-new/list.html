@@ -1,45 +1,61 @@
 {{ define "main" }}
 
 {{/*
-  Redesigned homepage — DRAFT, for comparison against the live homepage at /.
+  Combined homepage + mortgage overview — DRAFT, for comparison against the
+  live homepage at /.
 
-  Structure follows the brief's Phase 2.4: hero → journey cards → wellness band
-  → brand line → process → reviews → protection scenarios → meet Bev → final
-  CTA, with employers and referrals moved below the primary journeys.
+  The separate /mortgages/ hub has been merged into this page: the hero,
+  journey cards, wellness band and process stepper were duplicated across
+  both. The hub's unique sections (adviser comparison, moving home, complex
+  income, buy-to-let, FAQs) now live here, and /mortgages/ no longer renders.
 
-  This page is noindex and excluded from the sitemap (see its front matter).
-  When approved, move this into layouts/index.html and delete content/home-new/.
+  Journey sub-pages keep their URLs: /mortgages/first-time-buyers/ and
+  /mortgages/remortgage/.
+
+  At launch: move this into layouts/index.html, delete content/home-new/, and
+  change the #moving-home / #complex-income / #buy-to-let anchors in hugo.toml
+  from /home-new/ to /.
 */}}
 
 <div class="preview-banner">
   <div class="container">
-    <strong>Draft homepage preview.</strong> For comparison only &mdash; the live homepage is at <a href="/">/</a>. Not indexed, not for publication.
+    <strong>Draft homepage preview.</strong> Combines the homepage and mortgage overview. The live homepage is at <a href="/">/</a>. Not indexed, not for publication.
   </div>
 </div>
 
-<!-- Hero -->
-<section class="mhero">
-  <div class="ambient-glow">
+<!-- Hero — photo left, content right -->
+<section class="hero hero--home hero--ambient">
+  <div class="ambient-glow ambient-glow--home">
     <div class="ambient-glow__blob ambient-glow__blob--1"></div>
     <div class="ambient-glow__blob ambient-glow__blob--2"></div>
     <div class="ambient-glow__blob ambient-glow__blob--3"></div>
   </div>
   <div class="container">
-    <div class="mhero__inner">
-      <span class="mhero__eyebrow">Mortgage &amp; protection advice</span>
-      <h1 class="mhero__title">Mortgage advice that feels personal.</h1>
-      <p class="mhero__sub">Buying your first home, moving house or looking for a better deal when your current one ends? We&rsquo;ll explain your options in plain English, compare mortgages from a wide range of lenders and guide you from first conversation to completion.</p>
-
-      <div class="mhero__actions">
-        <a href="/contact/" class="btn btn--primary btn--large">Talk to an adviser</a>
-        <a href="/wellness/" class="btn btn--secondary btn--large">Check my mortgage readiness</a>
+    <div class="hero__grid hero__grid--image-left">
+      <div class="hero__visual">
+        <img src="{{ "images/clientmeeting3.png" | relURL }}" alt="Bev House of B Mortgage Services talking with clients" class="hero__image">
       </div>
+      <div class="hero__content">
+        <span class="mhero__eyebrow">Mortgage &amp; protection advice</span>
+        <h1 class="hero__title">Mortgage advice that feels personal.</h1>
+        <p class="hero__subtitle">Buying your first home, moving house or looking for a better deal when your current one ends? We&rsquo;ll explain your options in plain English, compare mortgages from a wide range of lenders and guide you from first conversation to completion.</p>
 
-      <ul class="proof-strip">
-        <li>Free first conversation</li>
-        <li>Personal adviser from start to finish</li>
-        <li>Jargon-free advice</li>
-      </ul>
+        <div class="hero__actions">
+          <a href="/mortgages/first-time-buyers/" class="btn btn--primary btn--large">I&rsquo;m buying a home</a>
+          <a href="/mortgages/remortgage/" class="btn btn--secondary btn--large">I&rsquo;m remortgaging</a>
+        </div>
+
+        <p class="mhero__alt">Prefer to talk it through? <a href="/contact/">Talk to an adviser
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a></p>
+
+        <!-- INPUT NEEDED: Q5 — "100+ lenders" deliberately left out. -->
+        <ul class="proof-strip">
+          <li>Free first conversation</li>
+          <li>Personal adviser from start to finish</li>
+          <li>Jargon-free advice</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -56,42 +72,149 @@
           "label" "Review my mortgage" "url" "/mortgages/remortgage/")
     (dict "icon" "truck"     "title" "Move home"
           "body" "Upsizing, downsizing or relocating. We’ll work out how your current mortgage fits into your next move."
-          "label" "Moving home" "url" "/mortgages/#moving-home")
+          "label" "Moving home" "url" "#moving-home")
     (dict "icon" "briefcase" "title" "Self-employed or complex income"
           "body" "Contractor, company director or several income streams? We know which lenders understand you."
-          "label" "Find out more" "url" "/mortgages/#complex-income"))
-  "footLink" (dict "lead" "Looking for something else?" "label" "See all mortgage advice" "url" "/mortgages/")
+          "label" "Find out more" "url" "#complex-income"))
+  "footLink" (dict "lead" "Investing in property?" "label" "Buy-to-let advice" "url" "#buy-to-let")
 ) }}
 
-<!-- Wellness check band -->
-<section class="wellness-band">
+<!-- Wellness check — reuses the dial infographic style -->
+<section class="wellness-showcase" id="wellness">
   <div class="container">
-    <div class="wellness-band__inner">
-      <h2 class="wellness-band__heading">Not sure where to start? Know where you stand first.</h2>
-      <p class="wellness-band__body">Our free Mortgage &amp; Financial Wellness Check takes about three minutes. You&rsquo;ll get an indication of how ready you are for a mortgage, how comfortable the repayments could feel, and where you could strengthen your position.</p>
-      <a href="/wellness/" class="btn btn--white btn--large">Check my mortgage readiness</a>
-      <ul class="wellness-band__micro">
-        <li>About 3 minutes</li>
-        <li>No credit check</li>
-        <li>No obligation</li>
-      </ul>
-      <p class="wellness-band__smallprint">This is an indication only. It isn&rsquo;t a mortgage decision or an eligibility check.</p>
+    <div class="wellness-showcase__grid">
+
+      <div class="wellness-showcase__content">
+        <span class="wellness-showcase__eyebrow">Free assessment</span>
+        <h2 class="wellness-showcase__title">Not sure where to start? Know where you stand first.</h2>
+        <p class="wellness-showcase__subtitle">Our free Mortgage &amp; Financial Wellness Check takes about three minutes. You&rsquo;ll get an indication of how ready you are for a mortgage, how comfortable the repayments could feel, and where you could strengthen your position.</p>
+
+        <ul class="wellness-showcase__features">
+          <li>
+            <svg class="wellness-showcase__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Estimate your borrowing range</span>
+          </li>
+          <li>
+            <svg class="wellness-showcase__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Check your financial resilience</span>
+          </li>
+          <li>
+            <svg class="wellness-showcase__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>See where you could strengthen your position</span>
+          </li>
+        </ul>
+
+        <div class="wellness-showcase__actions">
+          <a href="/wellness/" class="btn btn--primary btn--large">
+            Check my mortgage readiness
+            <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <p class="wellness-showcase__note">About 3 minutes &nbsp;&bull;&nbsp; No credit check &nbsp;&bull;&nbsp; No obligation</p>
+          <p class="wellness-showcase__note">This is an indication only. It isn&rsquo;t a mortgage decision or an eligibility check.</p>
+        </div>
+      </div>
+
+      <div class="wellness-showcase__visual">
+        <div class="wellness-infographic">
+          <div class="wellness-infographic__gauge">
+            <img src="{{ "images/wellness-dial.png" | relURL }}" alt="" class="wellness-infographic__dial-img" width="500" height="270" loading="lazy"/>
+            <div class="wellness-infographic__score">
+              <span class="wellness-infographic__score-value">72</span>
+              <span class="wellness-infographic__score-max">/ 100</span>
+            </div>
+          </div>
+
+          <div class="wellness-infographic__pillar wellness-infographic__pillar--tl">
+            <div class="wellness-infographic__pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+            </div>
+            <strong class="wellness-infographic__pillar-name">Mortgage Eligibility</strong>
+            <span class="wellness-infographic__pillar-detail">Employment &bull; Credit &bull; LTI &bull; DTI</span>
+          </div>
+
+          <div class="wellness-infographic__pillar wellness-infographic__pillar--tr">
+            <div class="wellness-infographic__pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <strong class="wellness-infographic__pillar-name">Affordability &amp; Budget</strong>
+            <span class="wellness-infographic__pillar-detail">Deposit / LTV &bull; Monthly Surplus</span>
+          </div>
+
+          <div class="wellness-infographic__pillar wellness-infographic__pillar--bl">
+            <div class="wellness-infographic__pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <strong class="wellness-infographic__pillar-name">Financial Resilience</strong>
+            <span class="wellness-infographic__pillar-detail">Emergency Fund Runway</span>
+          </div>
+
+          <div class="wellness-infographic__pillar wellness-infographic__pillar--br">
+            <div class="wellness-infographic__pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <strong class="wellness-infographic__pillar-name">Protection Readiness</strong>
+            <span class="wellness-infographic__pillar-detail">Life &bull; Income &bull; Critical Illness</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- Brand line -->
-<!-- INPUT NEEDED: Q3b — confirm this brand line. -->
-<section class="brandline">
-  <div class="container container--narrow">
-    <h2 class="brandline__title">The technology is useful. The advice is personal.</h2>
-    <p class="brandline__body">Our calculators and wellness check are a good place to start, and they&rsquo;ll give you a realistic picture before you talk to anyone. But a mortgage is one of the biggest commitments you&rsquo;ll make, and no tool can understand your circumstances the way a conversation can. That&rsquo;s where we come in.</p>
+<!-- What's different about using a mortgage adviser? -->
+<section class="section compare">
+  <div class="container">
+    <h2 class="compare__heading">What&rsquo;s different about using a mortgage adviser?</h2>
+    <p class="compare__intro">Going straight to your bank is a perfectly reasonable option. Here&rsquo;s what changes when you use an adviser instead.</p>
+
+    <!-- INPUT NEEDED: Q5 — if Openwork require "access to a comprehensive range
+         of mortgages", use it in the Choice row. -->
+    <div class="compare__table-wrap">
+      <table class="compare__table">
+        <caption class="visually-hidden">Comparison of going to your bank versus using B Mortgage Services</caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">Aspect</span></th>
+            <th scope="col">Going to your bank</th>
+            <th scope="col">With B Mortgage Services</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Choice</th>
+            <td data-label="Going to your bank">That bank&rsquo;s own mortgages</td>
+            <td data-label="With B Mortgage Services">Mortgages from a wide range of lenders, including some only available through advisers</td>
+          </tr>
+          <tr>
+            <th scope="row">Advice</th>
+            <td data-label="Going to your bank">Based on their products</td>
+            <td data-label="With B Mortgage Services">Based on your circumstances and plans</td>
+          </tr>
+          <tr>
+            <th scope="row">Your application</th>
+            <td data-label="Going to your bank">You manage much of it yourself</td>
+            <td data-label="With B Mortgage Services">We manage it with you, and chase it for you</td>
+          </tr>
+          <tr>
+            <th scope="row">Support</th>
+            <td data-label="Going to your bank">Mainly while you apply</td>
+            <td data-label="With B Mortgage Services">From first conversation to completion, and afterwards</td>
+          </tr>
+          <tr>
+            <th scope="row">Relationship</th>
+            <td data-label="Going to your bank">Product-led</td>
+            <td data-label="With B Mortgage Services">Personal and ongoing</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 
-<!-- Process -->
+<!-- What happens after you get in touch -->
 {{ partial "process-stepper.html" (dict
-  "heading" "From “Can I afford it?” to “Here are the keys.”"
+  "heading" "What happens after you get in touch"
   "intro" "No hard sell, no jargon. Here’s exactly what to expect."
   "variant" "full"
   "steps" (slice
@@ -100,8 +223,81 @@
     (dict "title" "We find the right route." "body" "We compare mortgages that suit you and explain our recommendation in plain English.")
     (dict "title" "We manage the process." "body" "From application to completion we keep things moving, chase lenders and solicitors, and keep you updated.")
     (dict "title" "We’re still here afterwards." "body" "When your deal ends, you move, or your life changes, we’ll be in touch. Your mortgage isn’t the end of the relationship."))
+  "quote" (dict
+    "text" "I’ve helped hundreds of people who thought they couldn’t get a mortgage because their situation was ‘different.’"
+    "attribution" "Bev House, Founder")
   "button" (dict "label" "Talk to an adviser" "url" "/contact/")
 ) }}
+<!-- INPUT NEEDED: Q7 — confirm Bev's credit line and the "hundreds of people" claim. -->
+
+<!-- Moving home -->
+<section class="section section--off-white" id="moving-home">
+  <div class="container container--narrow">
+    <h2>Moving home</h2>
+    <p>Moving means juggling a sale, a purchase and your existing mortgage at the same time. We&rsquo;ll help you work out whether to take your current mortgage with you (known as &ldquo;porting&rdquo;) or switch to a new one, what any early repayment charges could mean, and how much you could borrow for your next home.</p>
+    <ul class="tick-list">
+      <li>Porting vs. a new mortgage, explained clearly</li>
+      <li>Borrowing more for a bigger home</li>
+      <li>Downsizing and releasing equity</li>
+      <li>Keeping your sale and purchase timelines in step</li>
+    </ul>
+    <p class="section-actions">
+      <a href="/contact/?topic=moving" class="btn btn--primary">Talk to an adviser</a>
+      <a href="/affordability-calculator/" class="btn btn--secondary">Try the calculator</a>
+    </p>
+  </div>
+</section>
+
+<!-- Self-employed or complex income -->
+<section class="section" id="complex-income">
+  <div class="container container--narrow">
+    <h2>Self-employed or complex income? It&rsquo;s what we specialise in.</h2>
+    <p>If you&rsquo;re self-employed, a contractor, a company director or have several income streams, high-street banks can find your income hard to assess. We know which lenders are comfortable with your situation and how to present your figures, whether that&rsquo;s your latest tax calculations, net profit, salary and dividends, or a daily contract rate.</p>
+    <ul class="tick-list">
+      <li>Self-employed and sole traders</li>
+      <li>Contractors (day-rate assessments)</li>
+      <li>Limited company directors</li>
+      <li>Multiple or variable incomes, including bonuses and commission</li>
+    </ul>
+    <p class="section-actions">
+      <a href="/contact/?topic=complex-income" class="btn btn--primary">Talk to an adviser</a>
+    </p>
+  </div>
+</section>
+
+<!-- Buy-to-let -->
+<section class="section section--off-white" id="buy-to-let">
+  <div class="container container--narrow">
+    <h2>Buy-to-let and property investors</h2>
+    <p>Whether it&rsquo;s your first rental property or you&rsquo;re growing a portfolio, including through a limited company, we can talk you through the lending options that may suit you.</p>
+    <p class="section-actions">
+      <a href="/contact/?topic=buy-to-let" class="btn btn--primary">Talk to an adviser</a>
+    </p>
+    <!-- INPUT NEEDED: Q10 — confirm BTL is active and this is Openwork's required wording. -->
+    <p class="smallprint">Most buy-to-let mortgages are not regulated by the Financial Conduct Authority.</p>
+  </div>
+</section>
+
+<!-- Meet Bev -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image">
+        <!-- INPUT NEEDED: Q12 / Phase 2.6 — portrait due to be replaced by real photography. -->
+        <img src="{{ "images/BevOffice.png" | relURL }}" alt="Bev House, founder of B Mortgage Services, at her desk" loading="lazy">
+      </div>
+      <div class="about-content">
+        <h2>Advice that&rsquo;s personal because we&rsquo;re a real business</h2>
+        <p class="about-lead">B Mortgage Services was founded by <strong>Bev House</strong>. The firm began as part of Brunsdon Financial and is now independently owned and run by Bev, from Gloucester.</p>
+        <p>That matters because you deal with a person, not a call centre. Bev&rsquo;s clients range from first-time buyers to self-employed professionals with more complicated circumstances, and many of them come back years later when their deal ends or their life changes.</p>
+        <p>As a partner of <strong>The Openwork Partnership</strong>, we work within a regulated framework with access to a wide range of lenders, so a small business can still give you proper choice.</p>
+        <p class="section-actions">
+          <a href="/contact/" class="btn btn--primary">Talk to an adviser</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- Reviews -->
 {{ partial "reviews.html" (dict "heading" "What our clients say") }}
@@ -133,30 +329,26 @@
   </div>
 </section>
 
-<!-- Meet Bev -->
-<section class="section" id="about">
-  <div class="container">
-    <div class="about-grid">
-      <div class="about-image">
-        <!-- INPUT NEEDED: Q12 / Phase 2.6 — current portrait is AI-generated and
-             due to be replaced by real photography. -->
-        <img src="{{ "images/BevOffice.png" | relURL }}" alt="Bev House, founder of B Mortgage Services, at her desk" loading="lazy">
-      </div>
-      <div class="about-content">
-        <h2>Advice that&rsquo;s personal because we&rsquo;re a real business</h2>
-        <p class="about-lead">B Mortgage Services was founded by <strong>Bev House</strong>. The firm began as part of Brunsdon Financial and is now independently owned and run by Bev, from Gloucester.</p>
-        <p>That matters because you deal with a person, not a call centre. Bev&rsquo;s clients range from first-time buyers to self-employed professionals with more complicated circumstances, and many of them come back years later when their deal ends or their life changes.</p>
-        <p>As a partner of <strong>The Openwork Partnership</strong>, we work within a regulated framework with access to a wide range of lenders, so a small business can still give you proper choice.</p>
-        <p class="section-actions">
-          <a href="/contact/" class="btn btn--primary">Talk to an adviser</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Common questions -->
+{{ partial "faq-accordion.html" (dict
+  "heading" "Common questions"
+  "items" (slice
+    (dict "q" "Do you charge a fee for your advice?"
+          "a" "We offer an initial consultation at no cost to you. If you choose to proceed with an application, we may charge a fee for our services. The actual amount you pay will depend upon your circumstances. We will always agree on any fees with you upfront before any work begins.")
+    (dict "q" "Will speaking to you affect my credit score?"
+          "a" "An initial discussion with us has no impact on your credit score. When we move to an Agreement in Principle, the majority of our lenders use a &ldquo;soft search&rdquo;, which is visible to you but does not leave a footprint for other lenders. A &ldquo;hard search&rdquo; typically only occurs when a full mortgage application is submitted.")
+    (dict "q" "What if I’m self-employed or a contractor?"
+          "a" "High-street banks often struggle with complex income structures. We help self-employed clients and contractors by using your latest tax calculations, net profit, or daily contract rates to show your true borrowing power. Most lenders ask for one to two years of trading history, though we have access to lenders who may consider shorter periods or base lending on your contract value.")
+    (dict "q" "How much could I borrow?"
+          "a" "Most lenders will consider lending around four to four-and-a-half times your income, though the exact amount depends on your outgoings, credit history, deposit and the lender&rsquo;s own criteria. A small number of lenders may lend more to higher earners or certain professions, but that&rsquo;s the exception rather than the rule. The quickest way to get a realistic figure is to try our calculator or talk to us."
+          "extraHTML" "<p class=\"faq__cta\"><a href=\"/affordability-calculator/\" class=\"btn btn--secondary btn--small\">Try the calculator</a></p>")
+    (dict "q" "Should I consolidate debts into my mortgage?"
+          "a" "Consolidating short-term debt into your mortgage can lower your monthly payments, but you will likely pay more in total because the debt is repaid over a longer term, and the debt becomes secured on your home. Think carefully before securing other debts against your home."))
+) }}
+<!-- INPUT NEEDED: Q4 — confirm the fee policy wording. -->
 
-<!-- Employers, moved below the personal journeys -->
-<section class="section section--off-white">
+<!-- For employers -->
+<section class="section">
   <div class="container container--narrow">
     <h2>For employers</h2>
     <p>We work with employers who want to support their people with mortgage and protection advice, including a Financial Wellness Check offered as an employee benefit at no cost to the organisation.</p>

@@ -8773,3 +8773,11 @@ video.wellness-cta-overlay__media {
 @media (max-width: 600px) {
   .risk-notice__inner { flex-direction: column; text-align: center; gap: var(--space-sm); }
 }
+
+/* Hero column is narrower than a full-width section, so the proof strip
+   wraps untidily as 2-then-1. Stack it instead. */
+.hero__content .proof-strip {
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}

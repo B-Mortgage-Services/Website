@@ -30,36 +30,34 @@ theme = 'bms-theme'
     name = "Home"
     url = "/"
     weight = 1
+  # The mortgage overview was merged into the homepage, so the dropdown has no
+  # separate "overview" item. While the redesign is in preview the anchors
+  # point at /home-new/; at launch change them to /#moving-home etc.
   [[menu.main]]
     name = "Mortgages"
-    url = "/mortgages/"
+    url = "/home-new/"
     weight = 2
     identifier = "mortgages"
   [[menu.main]]
-    name = "Mortgages overview"
-    url = "/mortgages/"
-    weight = 1
-    parent = "mortgages"
-  [[menu.main]]
     name = "First-time buyers"
     url = "/mortgages/first-time-buyers/"
-    weight = 2
+    weight = 1
     parent = "mortgages"
   [[menu.main]]
     name = "Remortgaging"
     url = "/mortgages/remortgage/"
-    weight = 3
+    weight = 2
     parent = "mortgages"
-  # Sections on the hub until they are promoted to their own pages in Phase 2.
+  # Sections on the homepage until they are promoted to their own pages in Phase 2.
   [[menu.main]]
     name = "Moving home"
-    url = "/mortgages/#moving-home"
-    weight = 4
+    url = "/home-new/#moving-home"
+    weight = 3
     parent = "mortgages"
   [[menu.main]]
     name = "Self-employed & complex income"
-    url = "/mortgages/#complex-income"
-    weight = 5
+    url = "/home-new/#complex-income"
+    weight = 4
     parent = "mortgages"
   [[menu.main]]
     name = "Protection"
