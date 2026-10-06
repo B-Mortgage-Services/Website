@@ -9022,3 +9022,18 @@ video.wellness-cta-overlay__media {
 /* display:flex above would override the browser's [hidden] rule, leaving the
    arrows visible (but inert) when the track isn't scrollable. */
 .vcar__nav[hidden] { display: none; }
+
+/* Two secondary routes under the journey cards. */
+.journeys__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+.journeys__foot-item { white-space: nowrap; }
+.journeys__foot-sep { color: var(--medium-grey); }
+@media (max-width: 560px) {
+  .journeys__foot-sep { display: none; }
+  .journeys__foot { flex-direction: column; gap: var(--space-sm); }
+}

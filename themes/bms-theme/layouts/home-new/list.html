@@ -73,10 +73,12 @@
     (dict "icon" "truck"     "title" "Move home"
           "body" "Upsizing, downsizing or relocating. We’ll work out how your current mortgage fits into your next move."
           "label" "Moving home" "url" "/mortgages/moving-home/")
-    (dict "icon" "briefcase" "title" "Self-employed or complex income"
-          "body" "Contractor, company director or several income streams? We know which lenders understand you."
-          "label" "Find out more" "url" "#complex-income"))
-  "footLink" (dict "lead" "Investing in property?" "label" "Buy-to-let advice" "url" "/mortgages/buy-to-let/")
+    (dict "icon" "building" "title" "Solutions in the workplace"
+          "body" "Support your people with mortgage and protection advice and a three-minute wellness check, at no cost to the organisation."
+          "label" "For employers" "url" "/employers/"))
+  "footLinks" (slice
+    (dict "lead" "Self-employed or complex income?" "label" "How we help" "url" "#complex-income")
+    (dict "lead" "Investing in property?" "label" "Buy-to-let advice" "url" "/mortgages/buy-to-let/"))
 ) }}
 
 <!-- Wellness check — reuses the dial infographic style -->
@@ -303,28 +305,6 @@
 {{/* FAQs deliberately removed from the homepage — they now live on the page
      each question actually belongs to, where they can be more specific. See
      /mortgages/first-time-buyers/ and /mortgages/remortgage/. */}}
-
-<!-- For employers -->
-<section class="employer-banner">
-  <div class="container">
-    <div class="employer-banner__inner">
-      <div>
-        <span class="employer-banner__eyebrow">For employers</span>
-        <h2>Financial wellbeing your team will actually use</h2>
-        <p>Money worries follow people to work. We give your employees access to clear, personal mortgage and protection advice, and a Financial Wellness Check they can complete in about three minutes.</p>
-        <p class="section-actions">
-          <a href="/employers/" class="btn btn--primary">Workplace financial wellness</a>
-        </p>
-      </div>
-      <ul class="employer-banner__points">
-        <li>No cost to the organisation</li>
-        <li>Anonymised insight into how your team is coping financially</li>
-        <li>Workplace clinics, online or in person</li>
-        <li>Independent, regulated advice</li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <!-- Final CTA -->
 <section class="cta-band">

@@ -101,9 +101,16 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
 - [ ] **Protection teaser** — the three scenario cards are plain. Needs a
       stronger visual treatment. The brief's Phase 2.3 rebuilds the protection
       page around these same scenarios, so design them together.
-- [ ] **For employers** — currently a plain text block. Wants a more
-      interesting banner. Note the employer logo trust bar above is still
-      blocked on permissions, so the banner can't rely on logos yet.
+- [x] **For employers** — resolved differently. A banner was built, then the
+      whole bottom-of-page section was removed because it didn't sit well with
+      the rest of the homepage. Employers are now the fourth journey card
+      ("Solutions in the workplace"), which surfaces them higher up and treats
+      them as an audience rather than an afterthought. The `.employer-banner`
+      CSS is still in main.css if a banner is wanted on /employers/ itself.
+- [ ] Decide whether "Solutions in the workplace" is the right card title. The
+      other three cards are first-person visitor intents ("Buy my first home",
+      "Move home"), so this one breaks the pattern. A first-person
+      alternative would read "Support my team".
 
 ### Content
 

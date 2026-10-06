@@ -41,10 +41,16 @@
       {{ end }}
     </ul>
 
-    {{ with .footLink }}
-    <p class="journeys__foot">{{ .lead }} <a href="{{ .url }}">{{ .label }}
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a></p>
+    {{/* Secondary routes for audiences that don't warrant a card of their own. */}}
+    {{ with .footLinks }}
+    <p class="journeys__foot">
+      {{ range $i, $link := . }}
+        {{ if $i }}<span class="journeys__foot-sep" aria-hidden="true">·</span>{{ end }}
+        <span class="journeys__foot-item">{{ $link.lead }} <a href="{{ $link.url }}">{{ $link.label }}
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a></span>
+      {{ end }}
+    </p>
     {{ end }}
   </div>
 </section>
