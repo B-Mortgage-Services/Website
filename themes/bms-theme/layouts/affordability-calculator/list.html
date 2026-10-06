@@ -94,7 +94,7 @@
           </div>
         </div>
 
-        <button type="button" class="btn btn--primary btn--large" style="margin-top: 1.5rem; width: 100%;" onclick="calculateAffordability()">Calculate Borrowing</button>
+        <button type="button" class="btn btn--primary btn--large" style="margin-top: 1.5rem; width: 100%;" onclick="calculateAffordability(true)">Calculate Borrowing</button>
       </div>
 
       <!-- Results -->
@@ -205,7 +205,7 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn--primary btn--large" style="margin-top: 1.5rem; width: 100%;" onclick="calculateMovingCosts()">Calculate Costs</button>
+          <button type="button" class="btn btn--primary btn--large" style="margin-top: 1.5rem; width: 100%;" onclick="calculateMovingCosts(true)">Calculate Costs</button>
         </div>
 
         <div class="moving-cost__results">
@@ -611,7 +611,7 @@ function updateMovingMortgageTerm(value) {
   calculateMovingCosts();
 }
 
-function calculateAffordability() {
+function calculateAffordability(track) {
   const yourIncome = parseFormattedNumber(document.getElementById('yourIncome').value);
   const partnerIncome = applicationType === 'joint'
     ? parseFormattedNumber(document.getElementById('partnerIncome').value)
@@ -664,8 +664,10 @@ function calculateAffordability() {
   // Save to sessionStorage for wellness assessment pre-fill
   saveAffordabilityToSession();
 
-  // Visitor tracking
-  if (typeof BMSTracker !== 'undefined') {
+  // Visitor tracking — only on an explicit Calculate click with real input.
+  // This function also runs on page load and on every keystroke; tracking those
+  // recorded a completed result for every bot that loaded the page.
+  if (track && totalIncome > 0 && typeof BMSTracker !== 'undefined') {
     try {
       if (!_affordCalcStarted) {
         BMSTracker.trackToolStart('affordability_calculator');
@@ -731,7 +733,7 @@ function formatMovingInput(input) {
   input.value = value;
 }
 
-function calculateMovingCosts() {
+function calculateMovingCosts(track) {
   const mortgagePurpose = document.getElementById('mortgagePurpose').value;
   const isFirstTimeBuyer = mortgagePurpose === 'first-time';
   const isMover = mortgagePurpose === 'moving';
@@ -791,8 +793,9 @@ function calculateMovingCosts() {
     document.getElementById('legalFeesLabel').textContent = 'Legal Fees';
   }
 
-  // Visitor tracking
-  if (typeof BMSTracker !== 'undefined') {
+  // Visitor tracking — only on an explicit Calculate click with real input.
+  // See the note in calculateAffordability().
+  if (track && housePrice > 0 && typeof BMSTracker !== 'undefined') {
     try {
       if (!_movingCostStarted) {
         BMSTracker.trackToolStart('moving_cost_calculator');

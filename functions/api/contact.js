@@ -9,17 +9,33 @@
 
 const supabaseClient = require('../_utils/supabase-client');
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // TODO: Restrict to bmortgageservices.co.uk
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
-};
+const ALLOWED_ORIGINS = [
+  'https://bmortgageservices.co.uk',
+  'https://www.bmortgageservices.co.uk',
+  'http://localhost:8788'
+];
+
+// A human cannot read the page and complete the form faster than this.
+const MIN_SUBMIT_MS = 2500;
+
+const RATE_LIMIT_MAX = 3;
+const RATE_LIMIT_WINDOW_SECONDS = 3600;
+
+function buildCorsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  return {
+    'Access-Control-Allow-Origin': ALLOWED_ORIGINS.indexOf(origin) !== -1 ? origin : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin'
+  };
+}
 
 /**
  * Handle CORS preflight
  */
-export async function onRequestOptions() {
-  return new Response(null, { status: 204, headers: corsHeaders });
+export async function onRequestOptions(context) {
+  return new Response(null, { status: 204, headers: buildCorsHeaders(context.request) });
 }
 
 /**
@@ -27,10 +43,45 @@ export async function onRequestOptions() {
  */
 export async function onRequestPost(context) {
   const { env } = context;
-  const headers = { ...corsHeaders, 'Content-Type': 'application/json' };
+  const headers = { ...buildCorsHeaders(context.request), 'Content-Type': 'application/json' };
+
+  // Spam rejections return success so bots see no signal to retry or adapt.
+  const silentOk = () => new Response(JSON.stringify({ success: true }), { status: 200, headers });
 
   try {
     const data = await context.request.json();
+
+    // Honeypot: hidden field, invisible to real users.
+    if (data.website && String(data.website).trim() !== '') {
+      return silentOk();
+    }
+
+    // Instant submissions are automated.
+    if (typeof data.elapsed_ms === 'number' && data.elapsed_ms < MIN_SUBMIT_MS) {
+      return silentOk();
+    }
+
+    // Rate limit per IP. Fails open so a database problem cannot block
+    // genuine enquiries.
+    const ip = context.request.headers.get('CF-Connecting-IP');
+    if (ip) {
+      try {
+        const db = supabaseClient.getClient(env);
+        const { data: limited } = await db.rpc('check_rate_limit', {
+          p_key: 'contact:' + ip,
+          p_max_attempts: RATE_LIMIT_MAX,
+          p_window_seconds: RATE_LIMIT_WINDOW_SECONDS
+        });
+        if (limited === true) {
+          return new Response(
+            JSON.stringify({ success: false, error: 'Too many enquiries. Please try again later or call 01452 925209.' }),
+            { status: 429, headers }
+          );
+        }
+      } catch (e) {
+        console.error('Rate limit check failed, allowing request:', e.message);
+      }
+    }
 
     // Validate required fields
     if (!data.name || !data.name.trim()) {

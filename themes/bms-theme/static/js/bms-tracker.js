@@ -204,6 +204,7 @@ var BMSTracker = (function() {
     var payload = {
       visitor_id: vid,
       session_id: _sessionId || '',
+      user_agent: (navigator && navigator.userAgent) || null,
       utm_source: _utmParams.utm_source || null,
       utm_medium: _utmParams.utm_medium || null,
       utm_campaign: _utmParams.utm_campaign || null
@@ -301,8 +302,9 @@ var BMSTracker = (function() {
       if (granted) {
         initVisitorId();
         checkEmailToken();
-        // Re-track page view with persistent visitor ID
-        this.trackPageView();
+        // Deliberately no second trackPageView() here. init() has already
+        // recorded this view against the session ID, and re-sending it on
+        // consent counted the same page twice. session_id links the two.
       } else {
         deleteCookie('bms_vid');
         deleteCookie('bms_ref');

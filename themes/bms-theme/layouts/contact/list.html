@@ -66,6 +66,14 @@
 
           <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">By submitting this form, you agree to our <a href="/images/privacy-policy.pdf" target="_blank">Privacy Policy</a>. We may link your enquiry to your activity on this site to provide a better service.</p>
 
+          <!-- Spam honeypot. Hidden from users and screen readers; bots that fill
+               every field in the DOM will populate it and be rejected. Named
+               "website" because that is a field name scrapers commonly target. -->
+          <div class="bms-hp" aria-hidden="true">
+            <label for="bms-website">Website</label>
+            <input type="text" name="website" id="bms-website" tabindex="-1" autocomplete="off">
+          </div>
+
           <!-- Tracking fields (populated by bms-tracker.js) -->
           <input type="hidden" name="visitor_id" id="bms-visitor-id">
           <input type="hidden" name="session_id" id="bms-session-id">
@@ -154,6 +162,16 @@
   min-height: 100px;
 }
 
+/* Honeypot — kept in the layout but off-screen rather than display:none,
+   which some bots detect and skip. */
+.bms-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -209,6 +227,10 @@
     var form = document.getElementById('contact-form');
     if (!form) return;
 
+    // Used server-side to reject instant submissions. A human cannot read the
+    // page and complete the form in under a couple of seconds.
+    var formReadyAt = Date.now();
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -231,7 +253,9 @@
         session_id: document.getElementById('bms-session-id').value || null,
         utm_source: document.getElementById('bms-utm-source').value || null,
         utm_medium: document.getElementById('bms-utm-medium').value || null,
-        utm_campaign: document.getElementById('bms-utm-campaign').value || null
+        utm_campaign: document.getElementById('bms-utm-campaign').value || null,
+        website: document.getElementById('bms-website').value || '',
+        elapsed_ms: Date.now() - formReadyAt
       };
 
       fetch('/api/contact', {
