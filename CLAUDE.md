@@ -75,6 +75,13 @@ Do the pre-launch checklist first — several items are not cosmetic.
 - [ ] **Remove the spam enquiries** and detach them from the real employer
       records they were wrongly attributed to (Nottingham Trent University,
       Giacom).
+- [ ] **Confirm the apex cache purge works** before launch — see the known issue
+      below. You do not want to discover an unresponsive purge on launch day.
+- [ ] **Canonicalise `www`.** Both `www` and the apex now serve identical
+      content. Hugo's `baseURL` is the apex, so add a Cloudflare Redirect Rule
+      `www.bmortgageservices.co.uk/*` → `https://bmortgageservices.co.uk/$1`
+      (301). Harmless on a one-page holding site, duplicate content once the
+      full site is live.
 - [ ] **Give `develop` its own `404.html`.** `main` has
       `themes/bms-theme/layouts/404.html` worded for the pre-launch state
       ("our new website isn't live yet"). The restore in Step 2 takes
@@ -132,6 +139,86 @@ resubmit `sitemap.xml`. If the holding page was indexed, request removal of any
 stale URLs.
 
 ---
+
+## DNS and hostnames (resolved 2026-10-06)
+
+Cloudflare is authoritative. The domain is *registered* at IONOS, but the
+nameservers delegate to Cloudflare (`lila.ns.cloudflare.com`,
+`benedict.ns.cloudflare.com`), so **the IONOS DNS panel is dormant** — records
+edited there have no effect on live traffic. Only change DNS in Cloudflare.
+
+| Record | Value | |
+|---|---|---|
+| `bmortgageservices.co.uk` CNAME | `bms-website-gjc.pages.dev` (proxied) | correct |
+| `www` | Pages custom domain (proxied) | fixed 2026-10-06 |
+| `MX` | `...mail.protection.outlook.com` | do not touch |
+| `TXT` | SPF (`_spf-eu.ionos.com`, `spf.protection.outlook.com`) | do not touch |
+| `autodiscover` CNAME | `autodiscover.outlook.com` | do not touch |
+
+If you ever attach a new hostname to the Pages project, delete any conflicting
+`A`/`AAAA` record **first**, then add it under Workers & Pages → `bms-website` →
+Custom domains. Pages routes by `Host` header, so a bare CNAME to
+`bms-website-gjc.pages.dev` without registering the custom domain will not serve
+this project.
+
+### Resolved: `www` was serving a forgotten IONOS WordPress site
+
+Until 2026-10-06 the `www` A/AAAA records pointed at `217.160.0.37`, an IONOS
+WordPress box, while the apex pointed at Pages. Two different public websites
+were live on the brand domain, and the WordPress one had `/wp-json/` exposed and
+sat entirely outside this deployment pipeline. `www` is now a Pages custom domain
+and the IONOS WordPress package has been cancelled.
+
+The lesson worth keeping: the apex and `www` were configured independently, so
+**check both hostnames after any deployment change**. Verifying only the apex
+would have missed this completely.
+
+## Known issue: cache purge does not work on the apex
+
+As of 2026-10-06, seven apex URLs still serve the *previous* Hugo deployment and
+cannot be cleared:
+
+```
+/contact/  /individuals/  /individuals/protection/  /employers/
+/wellness/  /affordability-calculator/  /cookie-policy/
+```
+
+Treat this as a **pre-launch blocker**. It is harmless now (those responses carry
+`x-robots-tag: noindex`, and `/api/*` is gone so no form can submit), but at
+launch you will need a bad page gone in minutes, and right now that is not
+possible.
+
+What was ruled out, so nobody repeats it:
+
+- Origin is correct — every URL variant returns the right 404
+- Always Online: off. Cache Reserve: off. No Cache Rules, no Page Rules
+- DNS is correct (apex CNAME → Pages, proxied)
+- **Purge Everything, single-URL Custom Purge, and Development Mode all had zero
+  effect** — the `age` header kept climbing in step with real time through all of
+  them, when a successful purge resets it to 0
+
+### The diagnostic that actually isolates the problem
+
+Append a unique query string. Cache keys include the full URL, so this forces a
+miss and reaches the origin:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" "https://bmortgageservices.co.uk/contact/?nonce=$RANDOM"   # 404 — origin is fine
+curl -s -o /dev/null -w "%{http_code}\n" "https://bmortgageservices.co.uk/contact/"                 # 200 — stale cached copy
+```
+
+If those two disagree, the origin is healthy and the problem is purely an edge
+cache entry. `/contact` (no slash), `/contact//` and `/Contact/` all correctly
+404 too — only the exact cached key is affected.
+
+Corroborating evidence: `www`, added fresh with no cache history, returns 404 for
+all seven paths while the apex does not. Same deployment, same origin — so this
+is per-hostname cached objects, not a build or routing fault.
+
+Escalate to Cloudflare support with the above if it recurs. Removing and
+re-adding the apex custom domain in the Pages project may reset the edge state,
+at the cost of brief downtime. Objects carry `s-maxage=604800`, so untouched they
+expire within 7 days.
 
 ## Deployment topology (easy to get wrong)
 
