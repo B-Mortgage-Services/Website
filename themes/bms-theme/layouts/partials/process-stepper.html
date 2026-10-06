@@ -1,0 +1,46 @@
+{{/*
+  Numbered process stepper. Horizontal on desktop, vertical on mobile.
+
+  Params:
+    heading (string, required)
+    intro   (string, optional)
+    steps   (slice of dicts: title, body)
+    variant "full" (default) or "compact"
+    button  (dict: label, url) optional
+    note    (string, optional) paragraph beneath the steps
+    quote   (dict: text, attribution) optional pull-quote
+*/}}
+{{ $variant := default "full" .variant }}
+<section class="process section process--{{ $variant }}">
+  <div class="container">
+    <h2 class="process__heading">{{ .heading }}</h2>
+    {{ with .intro }}<p class="process__intro">{{ . }}</p>{{ end }}
+
+    <ol class="process__steps">
+      {{ range $i, $step := .steps }}
+      <li class="process__step">
+        <span class="process__number" aria-hidden="true">{{ add $i 1 }}</span>
+        <span class="process__step-title">{{ $step.title }}</span>
+        <span class="process__step-body">{{ $step.body }}</span>
+      </li>
+      {{ end }}
+    </ol>
+
+    {{ with .note }}<p class="process__note">{{ . }}</p>{{ end }}
+
+    {{ with .quote }}
+    <figure class="process__quote">
+      <blockquote><p>{{ .text }}</p></blockquote>
+      <figcaption>{{ .attribution }}</figcaption>
+    </figure>
+    {{ end }}
+
+    {{ with .button }}
+    <p class="process__cta">
+      <a href="{{ .url }}" class="btn btn--primary btn--large">{{ .label }}
+        <svg class="btn__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </p>
+    {{ end }}
+  </div>
+</section>

@@ -1,0 +1,19 @@
+{{/*
+  Mandatory mortgage risk warning. Required on every mortgage page, placed
+  above the footer and visually distinct — it must not be reduced to grey
+  footer small print.
+*/}}
+{{/* Class is risk-notice, not risk-warning: the theme already has a
+     .risk-warning rule used for inline boxes on existing pages. */}}
+<div class="risk-notice" role="note">
+  <div class="container">
+    <div class="risk-notice__inner">
+      <svg class="risk-notice__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <p class="risk-notice__text">Your home may be repossessed if you do not keep up repayments on your mortgage.</p>
+    </div>
+  </div>
+</div>

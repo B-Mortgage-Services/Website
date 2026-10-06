@@ -35,14 +35,18 @@
             <svg class="hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            100+ lenders searched
+            A wide range of lenders searched
           </span>
+          {{/* The Google rating claim renders only when a review profile is
+               configured, and links to it as evidence. INPUT NEEDED: Q6 */}}
+          {{ with site.Params.googleReviewUrl }}
           <span class="hero__feature">
             <svg class="hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            5-star rated on Google
+            <a href="{{ . }}" target="_blank" rel="noopener">Rated on Google</a>
           </span>
+          {{ end }}
         </div>
       </div>
     </div>
@@ -325,14 +329,10 @@
   </div>
 </section>
 
-<!-- Testimonials Section — Google Reviews via Jotform Widget -->
-<section class="testimonials-section">
-  <div class="container">
-    <h2>What Our Clients Say</h2>
-    <div id="JFWebsiteWidget-019cf8a5b94f797cbba7fe73dd73a1b13992"></div>
-    <script src='https://www.jotform.com/website-widgets/embed/019cf8a5b94f797cbba7fe73dd73a1b13992'></script>
-  </div>
-</section>
+{{/* Replaces the Jotform widget, which left an empty "What Our Clients Say"
+     heading on the page next to a 5-star claim. This component renders
+     nothing at all until data/reviews.json holds real reviews. */}}
+{{ partial "reviews.html" (dict "heading" "What our clients say") }}
 
 <!-- Old hardcoded testimonials — COMMENTED OUT: Replaced by Jotform Google Reviews widget
 <section class="testimonials-section">

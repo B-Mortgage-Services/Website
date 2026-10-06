@@ -1,0 +1,182 @@
+{{ define "main" }}
+
+{{/*
+  Redesigned homepage — DRAFT, for comparison against the live homepage at /.
+
+  Structure follows the brief's Phase 2.4: hero → journey cards → wellness band
+  → brand line → process → reviews → protection scenarios → meet Bev → final
+  CTA, with employers and referrals moved below the primary journeys.
+
+  This page is noindex and excluded from the sitemap (see its front matter).
+  When approved, move this into layouts/index.html and delete content/home-new/.
+*/}}
+
+<div class="preview-banner">
+  <div class="container">
+    <strong>Draft homepage preview.</strong> For comparison only &mdash; the live homepage is at <a href="/">/</a>. Not indexed, not for publication.
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="mhero">
+  <div class="ambient-glow">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--3"></div>
+  </div>
+  <div class="container">
+    <div class="mhero__inner">
+      <span class="mhero__eyebrow">Mortgage &amp; protection advice</span>
+      <h1 class="mhero__title">Mortgage advice that feels personal.</h1>
+      <p class="mhero__sub">Buying your first home, moving house or looking for a better deal when your current one ends? We&rsquo;ll explain your options in plain English, compare mortgages from a wide range of lenders and guide you from first conversation to completion.</p>
+
+      <div class="mhero__actions">
+        <a href="/contact/" class="btn btn--primary btn--large">Talk to an adviser</a>
+        <a href="/wellness/" class="btn btn--secondary btn--large">Check my mortgage readiness</a>
+      </div>
+
+      <ul class="proof-strip">
+        <li>Free first conversation</li>
+        <li>Personal adviser from start to finish</li>
+        <li>Jargon-free advice</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- What are you looking to do? -->
+{{ partial "journey-cards.html" (dict
+  "heading" "What are you looking to do?"
+  "cards" (slice
+    (dict "icon" "home"      "title" "Buy my first home"
+          "body" "Find out what you could borrow, what you’ll need for a deposit and what happens at each step."
+          "label" "Start here" "url" "/mortgages/first-time-buyers/")
+    (dict "icon" "refresh"   "title" "Remortgage"
+          "body" "Your deal is ending, or you think you’re paying too much. See whether changing could make sense."
+          "label" "Review my mortgage" "url" "/mortgages/remortgage/")
+    (dict "icon" "truck"     "title" "Move home"
+          "body" "Upsizing, downsizing or relocating. We’ll work out how your current mortgage fits into your next move."
+          "label" "Moving home" "url" "/mortgages/#moving-home")
+    (dict "icon" "briefcase" "title" "Self-employed or complex income"
+          "body" "Contractor, company director or several income streams? We know which lenders understand you."
+          "label" "Find out more" "url" "/mortgages/#complex-income"))
+  "footLink" (dict "lead" "Looking for something else?" "label" "See all mortgage advice" "url" "/mortgages/")
+) }}
+
+<!-- Wellness check band -->
+<section class="wellness-band">
+  <div class="container">
+    <div class="wellness-band__inner">
+      <h2 class="wellness-band__heading">Not sure where to start? Know where you stand first.</h2>
+      <p class="wellness-band__body">Our free Mortgage &amp; Financial Wellness Check takes about three minutes. You&rsquo;ll get an indication of how ready you are for a mortgage, how comfortable the repayments could feel, and where you could strengthen your position.</p>
+      <a href="/wellness/" class="btn btn--white btn--large">Check my mortgage readiness</a>
+      <ul class="wellness-band__micro">
+        <li>About 3 minutes</li>
+        <li>No credit check</li>
+        <li>No obligation</li>
+      </ul>
+      <p class="wellness-band__smallprint">This is an indication only. It isn&rsquo;t a mortgage decision or an eligibility check.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Brand line -->
+<!-- INPUT NEEDED: Q3b — confirm this brand line. -->
+<section class="brandline">
+  <div class="container container--narrow">
+    <h2 class="brandline__title">The technology is useful. The advice is personal.</h2>
+    <p class="brandline__body">Our calculators and wellness check are a good place to start, and they&rsquo;ll give you a realistic picture before you talk to anyone. But a mortgage is one of the biggest commitments you&rsquo;ll make, and no tool can understand your circumstances the way a conversation can. That&rsquo;s where we come in.</p>
+  </div>
+</section>
+
+<!-- Process -->
+{{ partial "process-stepper.html" (dict
+  "heading" "From “Can I afford it?” to “Here are the keys.”"
+  "intro" "No hard sell, no jargon. Here’s exactly what to expect."
+  "variant" "full"
+  "steps" (slice
+    (dict "title" "We talk." "body" "A relaxed conversation, usually about 15 minutes, about what you’re trying to achieve.")
+    (dict "title" "We work out your options." "body" "We look at your income, circumstances and plans, and tell you honestly what’s realistic.")
+    (dict "title" "We find the right route." "body" "We compare mortgages that suit you and explain our recommendation in plain English.")
+    (dict "title" "We manage the process." "body" "From application to completion we keep things moving, chase lenders and solicitors, and keep you updated.")
+    (dict "title" "We’re still here afterwards." "body" "When your deal ends, you move, or your life changes, we’ll be in touch. Your mortgage isn’t the end of the relationship."))
+  "button" (dict "label" "Talk to an adviser" "url" "/contact/")
+) }}
+
+<!-- Reviews -->
+{{ partial "reviews.html" (dict "heading" "What our clients say") }}
+
+<!-- Protection scenarios teaser -->
+<section class="section section--off-white">
+  <div class="container">
+    <h2 class="text-center">Your mortgage is a commitment. Protection helps you keep it.</h2>
+    <p class="section-intro text-center">Once you have a mortgage, and people who depend on you, it&rsquo;s worth knowing what would happen if illness, injury or death affected your income.</p>
+
+    <ul class="icon-grid icon-grid--three">
+      <li class="icon-grid__item">
+        <strong>If you die.</strong> Could your family carry on living in your home?
+        <span class="icon-grid__meta">Life cover</span>
+      </li>
+      <li class="icon-grid__item">
+        <strong>If you become seriously ill.</strong> Would you have the money to focus on getting better, not on bills?
+        <span class="icon-grid__meta">Critical illness cover</span>
+      </li>
+      <li class="icon-grid__item">
+        <strong>If you can&rsquo;t work.</strong> How long could your household manage without your normal income?
+        <span class="icon-grid__meta">Income protection</span>
+      </li>
+    </ul>
+
+    <p class="section-actions text-center">
+      <a href="/individuals/protection/" class="btn btn--secondary">How protection works</a>
+    </p>
+  </div>
+</section>
+
+<!-- Meet Bev -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image">
+        <!-- INPUT NEEDED: Q12 / Phase 2.6 — current portrait is AI-generated and
+             due to be replaced by real photography. -->
+        <img src="{{ "images/BevOffice.png" | relURL }}" alt="Bev House, founder of B Mortgage Services, at her desk" loading="lazy">
+      </div>
+      <div class="about-content">
+        <h2>Advice that&rsquo;s personal because we&rsquo;re a real business</h2>
+        <p class="about-lead">B Mortgage Services was founded by <strong>Bev House</strong>. The firm began as part of Brunsdon Financial and is now independently owned and run by Bev, from Gloucester.</p>
+        <p>That matters because you deal with a person, not a call centre. Bev&rsquo;s clients range from first-time buyers to self-employed professionals with more complicated circumstances, and many of them come back years later when their deal ends or their life changes.</p>
+        <p>As a partner of <strong>The Openwork Partnership</strong>, we work within a regulated framework with access to a wide range of lenders, so a small business can still give you proper choice.</p>
+        <p class="section-actions">
+          <a href="/contact/" class="btn btn--primary">Talk to an adviser</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Employers, moved below the personal journeys -->
+<section class="section section--off-white">
+  <div class="container container--narrow">
+    <h2>For employers</h2>
+    <p>We work with employers who want to support their people with mortgage and protection advice, including a Financial Wellness Check offered as an employee benefit at no cost to the organisation.</p>
+    <p class="section-actions">
+      <a href="/employers/" class="btn btn--secondary">Workplace financial wellness</a>
+    </p>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-band">
+  <div class="container">
+    <h2>Not sure where to start? That&rsquo;s exactly what we&rsquo;re here for.</h2>
+    <p class="section-actions">
+      <a href="/contact/" class="btn btn--white btn--large">Talk to an adviser</a>
+      <a href="/wellness/" class="btn btn--outline-white btn--large">Check my mortgage readiness</a>
+    </p>
+  </div>
+</section>
+
+{{ partial "risk-warning.html" . }}
+
+{{ end }}

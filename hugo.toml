@@ -12,6 +12,13 @@ theme = 'bms-theme'
   tagline = "We Make Your Mortgage Simple"
   brandOrange = "#F05B28"
   brandCharcoal = "#2D2D2D"
+  # Openwork financial promotion sign-off date, e.g. "6 October 2026".
+  # While empty the whole approval sentence is hidden rather than showing a
+  # placeholder date. INPUT NEEDED: Q13
+  financialPromotionApprovalDate = ""
+  # Public Google review profile. While empty, the reviews component and the
+  # "rated on Google" badge render nothing at all. INPUT NEEDED: Q6
+  googleReviewUrl = ""
 
 [params.social]
   facebook = "https://facebook.com/bmortgageservices"
@@ -25,10 +32,37 @@ theme = 'bms-theme'
     weight = 1
   [[menu.main]]
     name = "Mortgages"
-    url = "/individuals/"
+    url = "/mortgages/"
     weight = 2
+    identifier = "mortgages"
   [[menu.main]]
-    name = "Insurance"
+    name = "Mortgages overview"
+    url = "/mortgages/"
+    weight = 1
+    parent = "mortgages"
+  [[menu.main]]
+    name = "First-time buyers"
+    url = "/mortgages/first-time-buyers/"
+    weight = 2
+    parent = "mortgages"
+  [[menu.main]]
+    name = "Remortgaging"
+    url = "/mortgages/remortgage/"
+    weight = 3
+    parent = "mortgages"
+  # Sections on the hub until they are promoted to their own pages in Phase 2.
+  [[menu.main]]
+    name = "Moving home"
+    url = "/mortgages/#moving-home"
+    weight = 4
+    parent = "mortgages"
+  [[menu.main]]
+    name = "Self-employed & complex income"
+    url = "/mortgages/#complex-income"
+    weight = 5
+    parent = "mortgages"
+  [[menu.main]]
+    name = "Protection"
     url = "/individuals/protection/"
     weight = 3
   [[menu.main]]

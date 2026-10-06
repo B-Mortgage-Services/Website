@@ -1,0 +1,234 @@
+{{ define "main" }}
+
+<!-- 6.1 Hero with deal-end selector -->
+<section class="mhero">
+  <div class="ambient-glow">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+  </div>
+  <div class="container">
+    <div class="mhero__inner">
+      <span class="mhero__eyebrow">Remortgaging</span>
+      <h1 class="mhero__title">Is your mortgage deal coming to an end?</h1>
+      <p class="mhero__sub">Before you accept the rate your current lender offers, it&rsquo;s worth checking what else is available. We&rsquo;ll look at your circumstances, compare your options and help you decide whether switching makes sense, or whether staying put is the better choice.</p>
+
+      {{/*
+        Deal-end selector.
+
+        Progressive enhancement: without JavaScript these are ordinary links
+        straight to the contact page with the right query parameters, so the
+        component still works. The inline script upgrades them in place to
+        show a tailored message without a page load.
+      */}}
+      <div class="deal-end" id="deal-end">
+        <h2 class="deal-end__label" id="deal-end-label">When does your current deal end?</h2>
+
+        <ul class="deal-end__options" role="list" aria-labelledby="deal-end-label">
+          <li><a class="deal-end__option" href="/contact/?topic=remortgage&amp;deal_end=0-3m"
+                 data-value="0-3m"
+                 data-message="Now is a good time to look. Many lenders let you secure a new deal in advance, so let’s get your options lined up before your rate changes."
+                 data-button="Review my mortgage">Within 3 months</a></li>
+          <li><a class="deal-end__option" href="/contact/?topic=remortgage&amp;deal_end=3-6m"
+                 data-value="3-6m"
+                 data-message="Ideal timing. Many lenders let you lock in a new deal up to six months ahead, which protects you if rates rise."
+                 data-button="Review my mortgage">3&ndash;6 months</a></li>
+          <li><a class="deal-end__option" href="/contact/?topic=remortgage&amp;deal_end=6-12m"
+                 data-value="6-12m"
+                 data-message="You’re nicely ahead. We can talk now and set a reminder to review your options at the right time."
+                 data-button="Set up my review">6&ndash;12 months</a></li>
+          <li><a class="deal-end__option" href="/contact/?topic=remortgage&amp;deal_end=12m%2B"
+                 data-value="12m+"
+                 data-message="Plenty of time. If you’d like, we’ll get in touch when you’re closer to the end of your deal. You could also check whether overpaying could save you money."
+                 data-button="Remind me later">More than 12 months</a></li>
+          <li><a class="deal-end__option" href="/contact/?topic=remortgage&amp;deal_end=unknown"
+                 data-value="unknown"
+                 data-message="If your deal has ended, you may now be on your lender’s standard variable rate, which is often higher. It’s worth checking as soon as possible."
+                 data-button="Review my mortgage">It&rsquo;s already ended / I&rsquo;m not sure</a></li>
+        </ul>
+
+        <!-- Populated by the enhancement script; empty and hidden without JS. -->
+        <div class="deal-end__result" id="deal-end-result" role="status" aria-live="polite" hidden></div>
+      </div>
+
+      <p class="mhero__alt">Not sure where to start? <a href="/contact/">Talk to an adviser
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a></p>
+      <!-- INPUT NEEDED: Q11 — sends people to the contact form, as specified.
+           Collecting an email for a deal-end reminder is a later option. -->
+    </div>
+  </div>
+</section>
+
+<!-- 6.2 Why it's worth checking -->
+<section class="section">
+  <div class="container">
+    <h2 class="text-center">Why it&rsquo;s worth checking before your deal ends</h2>
+    <ul class="icon-grid icon-grid--three">
+      <li class="icon-grid__item">
+        <strong>Avoid the standard variable rate.</strong> When a fixed or tracker deal ends, most lenders move you onto their standard variable rate, which is usually higher.
+      </li>
+      <li class="icon-grid__item">
+        <strong>Your situation may have changed.</strong> If your home has gone up in value or you&rsquo;ve paid down your mortgage, you may now qualify for better rates.
+      </li>
+      <li class="icon-grid__item">
+        <strong>It&rsquo;s a chance to review everything.</strong> Your term, overpayments, borrowing for home improvements, or how your mortgage fits your plans for the next few years.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6.3 Stay or switch -->
+<section class="section section--off-white">
+  <div class="container container--narrow">
+    <h2>Stay with your lender, or switch?</h2>
+    <p>You usually have two options when a deal ends. Neither is automatically better. The right choice depends on your circumstances.</p>
+
+    <div class="two-col">
+      <div class="two-col__card">
+        <h3>Stay with your current lender (a &ldquo;product transfer&rdquo;)</h3>
+        <ul class="tick-list">
+          <li>Often quick, with little paperwork</li>
+          <li>Usually no new credit check or valuation</li>
+          <li>But you only see one lender&rsquo;s rates</li>
+        </ul>
+      </div>
+      <div class="two-col__card">
+        <h3>Switch to a new lender (a &ldquo;remortgage&rdquo;)</h3>
+        <ul class="tick-list">
+          <li>Compare rates from a wide range of lenders</li>
+          <li>A chance to borrow more or change your term</li>
+          <li>Involves a new application and checks</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- INPUT NEEDED: Q3 — this sentence depends on confirming that you advise on
+         and arrange product transfers. -->
+    <p>We can advise on both, so you get an honest comparison rather than a sales pitch. If staying with your lender is the better option, we&rsquo;ll tell you.</p>
+  </div>
+</section>
+
+<!-- 6.4 What we'll look at -->
+<section class="section">
+  <div class="container container--narrow">
+    <h2>What we&rsquo;ll look at with you</h2>
+    <ul class="tick-list">
+      <li>What your current lender is offering you</li>
+      <li>Whether other lenders could offer a better overall deal (including fees, not just the rate)</li>
+      <li>Any early repayment charges, and when they end</li>
+      <li>Whether you want to borrow more, for example for home improvements</li>
+      <li>The right length of fix (or tracker) for your plans</li>
+      <li>Whether your mortgage term still suits you</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6.5 How it works (compact stepper) -->
+{{ partial "process-stepper.html" (dict
+  "heading" "How it works"
+  "variant" "compact"
+  "steps" (slice
+    (dict "title" "Tell us about your current mortgage." "body" "A short call, or send us your latest mortgage statement.")
+    (dict "title" "We compare your options." "body" "Including your current lender’s offer, so you see the full picture.")
+    (dict "title" "We handle the switch." "body" "If changing makes sense, we manage the application and keep you updated through to completion."))
+  "button" (dict "label" "Review my mortgage" "url" "/contact/?topic=remortgage")
+) }}
+
+<!-- 6.6 Overpayments -->
+<section class="overpay-band">
+  <div class="container container--narrow">
+    <h2 class="overpay-band__heading">Could overpaying save you money?</h2>
+    <p>If you have spare cash, overpaying can reduce the interest you pay and shorten your mortgage. Check your lender&rsquo;s overpayment allowance first to avoid charges.</p>
+    <p class="section-actions">
+      <a href="/overpayment-calculator/" class="btn btn--secondary">Try the overpayment calculator</a>
+    </p>
+  </div>
+</section>
+
+<!-- 6.7 Reviews -->
+{{ partial "reviews.html" (dict
+  "heading" "Why our clients come back to us"
+  "preferTags" (slice "remortgage" "existing-client")) }}
+
+<!-- 6.8 Remortgage questions -->
+{{ partial "faq-accordion.html" (dict
+  "heading" "Remortgage questions"
+  "items" (slice
+    (dict "q" "When should I start looking at remortgaging?"
+          "a" "Ideally three to six months before your current deal ends. Many lenders let you secure a new rate up to six months in advance, and if rates fall before you complete, it&rsquo;s sometimes possible to switch to a lower one.")
+    (dict "q" "Will I have to pay an early repayment charge?"
+          "a" "If you leave your deal before it ends, you&rsquo;ll usually pay an early repayment charge, often a percentage of the amount you owe. Most people time their remortgage so the new deal starts when the old one ends. We&rsquo;ll check this for you.")
+    (dict "q" "Can I borrow more when I remortgage?"
+          "a" "Often, yes, for example for home improvements, subject to affordability and the lender&rsquo;s criteria. If you&rsquo;re thinking of using extra borrowing to pay off other debts, talk to us first: it can increase the total you pay back over time, and the debt becomes secured on your home.")
+    (dict "q" "Does remortgaging affect my credit score?"
+          "a" "Switching to a new lender usually involves a hard credit check at the full application stage. Staying with your current lender often doesn&rsquo;t. Talking to us doesn&rsquo;t affect your credit score.")
+    (dict "q" "Is an interest-only mortgage a good way to lower my monthly costs?"
+          "a" "Interest-only mortgages can reduce monthly outgoings, but they require a significant deposit and a proven repayment vehicle to pay off the capital at the end of the term. With an interest-only mortgage, your monthly payments do not reduce the amount you owe. We will assess whether this is a suitable and sustainable option for your long-term goals.")
+    (dict "q" "Do you charge a fee?"
+          "a" "We offer an initial consultation at no cost to you. If you choose to proceed with an application, we may charge a fee for our services. The actual amount you pay will depend upon your circumstances. We will always agree on any fees with you upfront before any work begins."))
+) }}
+<!-- INPUT NEEDED: Q4 — confirm the fee policy wording. -->
+
+<!-- 6.9 Final CTA -->
+<section class="cta-band">
+  <div class="container">
+    <h2>Let&rsquo;s check your mortgage is still working for you</h2>
+    <p>A quick, free review now could save you from drifting onto a higher rate later.</p>
+    <p class="section-actions">
+      <a href="/contact/?topic=remortgage" class="btn btn--white btn--large">Review my mortgage</a>
+      <a href="/contact/" class="btn btn--outline-white btn--large">Talk to an adviser</a>
+    </p>
+  </div>
+</section>
+
+{{ partial "risk-warning.html" . }}
+
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+/* Deal-end selector enhancement.
+   The options are real links, so this only upgrades the interaction: it shows
+   a tailored message in place and points one button at the same URL the link
+   already used. No rates, numbers or savings figures are shown. */
+(function () {
+  'use strict';
+  var root = document.getElementById('deal-end');
+  if (!root) return;
+
+  var options = root.querySelectorAll('.deal-end__option');
+  var result = document.getElementById('deal-end-result');
+  if (!options.length || !result) return;
+
+  function select(link) {
+    for (var i = 0; i < options.length; i++) {
+      options[i].classList.remove('is-selected');
+      options[i].removeAttribute('aria-current');
+    }
+    link.classList.add('is-selected');
+    link.setAttribute('aria-current', 'true');
+
+    var msg = document.createElement('p');
+    msg.className = 'deal-end__message';
+    msg.textContent = link.getAttribute('data-message');
+
+    var cta = document.createElement('a');
+    cta.className = 'btn btn--primary btn--large';
+    cta.href = link.getAttribute('href');
+    cta.textContent = link.getAttribute('data-button');
+
+    result.innerHTML = '';
+    result.appendChild(msg);
+    result.appendChild(cta);
+    result.hidden = false;
+  }
+
+  for (var i = 0; i < options.length; i++) {
+    options[i].addEventListener('click', function (e) {
+      e.preventDefault();
+      select(this);
+    });
+  }
+})();
+</script>
+{{ end }}

@@ -81,6 +81,12 @@
           <input type="hidden" name="utm_medium" id="bms-utm-medium">
           <input type="hidden" name="utm_campaign" id="bms-utm-campaign">
 
+          <!-- Journey context from ?topic= and ?deal_end= on the mortgage pages.
+               Also written into the message so it reaches the adviser without
+               needing new contact_enquiries columns. -->
+          <input type="hidden" name="topic" id="bms-topic">
+          <input type="hidden" name="deal_end" id="bms-deal-end">
+
           <div id="contact-form-error" style="display: none; color: #c53030; background: #fff5f5; padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-top: 1rem; font-size: 0.9rem;"></div>
 
           <button type="submit" class="btn btn--primary btn--large" style="width: 100%; margin-top: 1rem;">
@@ -194,7 +200,65 @@
 (function() {
   'use strict';
 
+  // Journey context arriving from the mortgage pages.
+  var TOPIC_TO_ENQUIRY = {
+    'first-time-buyer': 'first-time',
+    'aip': 'first-time',
+    'remortgage': 'remortgage',
+    'moving': 'moving',
+    'buy-to-let': 'btl',
+    'complex-income': 'other',
+    'protection': 'protection',
+    'employer': 'employer'
+  };
+
+  var DEAL_END_LABELS = {
+    '0-3m': 'within 3 months',
+    '3-6m': '3–6 months',
+    '6-12m': '6–12 months',
+    '12m+': 'more than 12 months',
+    'unknown': 'it has already ended, or I’m not sure'
+  };
+
+  function applyJourneyContext() {
+    var params = new URLSearchParams(window.location.search);
+    var topic = params.get('topic') || '';
+    var dealEnd = params.get('deal_end') || '';
+    if (!topic && !dealEnd) return;
+
+    document.getElementById('bms-topic').value = topic;
+    document.getElementById('bms-deal-end').value = dealEnd;
+
+    var select = document.getElementById('enquiry-type');
+    var mapped = TOPIC_TO_ENQUIRY[topic];
+    if (select && mapped) select.value = mapped;
+
+    // Pre-fill the message only if the visitor hasn't typed anything, so we
+    // never overwrite their own words.
+    var message = document.getElementById('message');
+    if (message && !message.value.trim()) {
+      if (topic === 'remortgage' || dealEnd) {
+        var label = DEAL_END_LABELS[dealEnd];
+        message.value = label
+          ? 'I’d like a mortgage review. My current deal ends: ' + label + '.'
+          : 'I’d like a mortgage review.';
+      } else if (topic === 'aip') {
+        message.value = 'I’d like to start an Agreement in Principle.';
+      } else if (topic === 'first-time-buyer') {
+        message.value = 'I’m a first-time buyer and would like to understand what I could borrow.';
+      } else if (topic === 'complex-income') {
+        message.value = 'I’m self-employed or have complex income and would like to discuss my options.';
+      } else if (topic === 'moving') {
+        message.value = 'I’m moving home and would like to discuss my mortgage options.';
+      } else if (topic === 'buy-to-let') {
+        message.value = 'I’d like to discuss buy-to-let options.';
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
+    applyJourneyContext();
+
     // Populate hidden tracking fields
     if (typeof BMSTracker !== 'undefined') {
       var vid = BMSTracker.getVisitorId();
@@ -254,6 +318,8 @@
         utm_source: document.getElementById('bms-utm-source').value || null,
         utm_medium: document.getElementById('bms-utm-medium').value || null,
         utm_campaign: document.getElementById('bms-utm-campaign').value || null,
+        topic: document.getElementById('bms-topic').value || null,
+        deal_end: document.getElementById('bms-deal-end').value || null,
         website: document.getElementById('bms-website').value || '',
         elapsed_ms: Date.now() - formReadyAt
       };

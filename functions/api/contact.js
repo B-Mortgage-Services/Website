@@ -105,6 +105,27 @@ export async function onRequestPost(context) {
       );
     }
 
+    // Journey context from the mortgage pages (?topic= / ?deal_end=). There are
+    // no columns for these, so append them to the message — the adviser needs
+    // to know which journey the enquiry came from and when the deal ends.
+    const DEAL_END_LABELS = {
+      '0-3m': 'within 3 months',
+      '3-6m': '3-6 months',
+      '6-12m': '6-12 months',
+      '12m+': 'more than 12 months',
+      'unknown': 'already ended or unknown'
+    };
+    let message = data.message ? data.message.trim() : '';
+    const context = [];
+    if (data.topic) context.push(`Enquiry topic: ${String(data.topic).slice(0, 40)}`);
+    if (data.deal_end) {
+      const label = DEAL_END_LABELS[data.deal_end] || String(data.deal_end).slice(0, 40);
+      context.push(`Current deal ends: ${label}`);
+    }
+    if (context.length) {
+      message = message ? `${message}\n\n---\n${context.join('\n')}` : context.join('\n');
+    }
+
     // Save to Supabase
     const supabase = supabaseClient.getClient(env);
     const { error: insertError } = await supabase
@@ -115,7 +136,7 @@ export async function onRequestPost(context) {
         phone: data.phone ? data.phone.trim() : null,
         enquiry_type: data.enquiry_type || null,
         employer_id: data.employer_id || null,
-        message: data.message ? data.message.trim() : null,
+        message: message || null,
         visitor_id: data.visitor_id || null,
         session_id: data.session_id || null,
         utm_source: data.utm_source || null,

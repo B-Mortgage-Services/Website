@@ -1,0 +1,78 @@
+{{/*
+  Shared reviews component.
+
+  Renders NOTHING — heading included — when data/reviews.json has no reviews.
+  This is deliberate: the live site previously showed an empty "What Our
+  Clients Say" section next to a "5-star rated on Google" claim. Never add
+  sample reviews to the data file; real reviews only, with permission.
+
+  Params:
+    heading     (string, required) section heading
+    max         (int, default 3)   how many to show
+    preferTags  (slice, optional)  tags to prioritise, e.g. "first-time-buyer"
+
+  Usage:
+    {{ partial "reviews.html" (dict "heading" "Don't just take our word for it"
+                                    "preferTags" (slice "remortgage")) }}
+*/}}
+
+{{ $all := default (slice) site.Data.reviews.reviews }}
+{{ $max := default 3 .max }}
+{{ $preferTags := default (slice) .preferTags }}
+
+{{/* Preferred-tag matches first, then everything else, order otherwise kept. */}}
+{{ $preferred := slice }}
+{{ $rest := slice }}
+{{ range $all }}
+  {{ $tags := default (slice) .tags }}
+  {{ $isPreferred := false }}
+  {{ range $preferTags }}
+    {{ if in $tags . }}{{ $isPreferred = true }}{{ end }}
+  {{ end }}
+  {{ if $isPreferred }}
+    {{ $preferred = $preferred | append . }}
+  {{ else }}
+    {{ $rest = $rest | append . }}
+  {{ end }}
+{{ end }}
+{{ $ordered := first $max ($preferred | append $rest) }}
+
+{{ if gt (len $ordered) 0 }}
+<section class="reviews section">
+  <div class="container">
+    <h2 class="reviews__heading">{{ .heading }}</h2>
+
+    <div class="reviews__grid">
+      {{ range $ordered }}
+      <figure class="review-card">
+        {{ with .rating }}
+        <div class="review-card__rating" aria-label="{{ . }} out of 5">
+          {{ range seq . }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          {{ end }}
+        </div>
+        {{ end }}
+
+        <blockquote class="review-card__quote">
+          <p>{{ .quote }}</p>
+        </blockquote>
+
+        <figcaption class="review-card__meta">
+          <span class="review-card__name">{{ .name }}</span>
+          {{ with .context }}<span class="review-card__context">{{ . }}</span>{{ end }}
+          {{ with .source }}<span class="review-card__source">via {{ . }}</span>{{ end }}
+        </figcaption>
+      </figure>
+      {{ end }}
+    </div>
+
+    {{ with site.Params.googleReviewUrl }}
+    <p class="reviews__link">
+      <a href="{{ . }}" target="_blank" rel="noopener">Read our Google reviews
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+    </p>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

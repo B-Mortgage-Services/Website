@@ -1,0 +1,47 @@
+{{/*
+  FAQ accordion plus matching FAQPage JSON-LD.
+
+  Uses native <details>/<summary>, which is keyboard accessible and works
+  without JavaScript.
+
+  Params:
+    heading (string, required)
+    items   (slice of dicts: q, a, extraHTML)
+              a        — plain text answer, used for both display and JSON-LD
+              extraHTML — optional markup (e.g. a CTA) shown after the answer
+                          and deliberately excluded from the JSON-LD
+*/}}
+<section class="faq section">
+  <div class="container container--narrow">
+    <h2 class="faq__heading">{{ .heading }}</h2>
+
+    <div class="faq__list">
+      {{ range .items }}
+      <details class="faq__item">
+        <summary class="faq__question">
+          <span>{{ .q }}</span>
+          <svg class="faq__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="faq__answer">
+          <p>{{ .a | safeHTML }}</p>
+          {{ with .extraHTML }}{{ . | safeHTML }}{{ end }}
+        </div>
+      </details>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+{{/* Answers are plain-text for JSON-LD; extraHTML is excluded on purpose. */}}
+{{ $faqs := slice }}
+{{ range .items }}
+  {{ $faqs = $faqs | append (dict
+      "@type" "Question"
+      "name" .q
+      "acceptedAnswer" (dict "@type" "Answer" "text" (.a | plainify))) }}
+{{ end }}
+{{/* safeJS is required: inside <script>, Go's contextual escaping would
+     otherwise treat the JSON as a JS string literal and double-encode it. */}}
+<script type="application/ld+json">
+{{ dict "@context" "https://schema.org" "@type" "FAQPage" "mainEntity" $faqs | jsonify | safeJS }}
+</script>
