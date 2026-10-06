@@ -56,25 +56,29 @@ Do the pre-launch checklist first — several items are not cosmetic.
 
 ## Step 1 — Pre-launch checklist
 
-- [ ] **Fix the `visitor_tool_results` UPDATE policy.** Migration
-      `006_visitor_tracking.sql` in the CRM repo has
-      `FOR UPDATE USING (true)`, letting any anonymous user modify *any* saved
-      result. Scope it to the row's own `visitor_id`.
-- [ ] **Add bot protection to the contact form.** All five enquiries received
-      while unlaunched were spam. `/api/contact` has IP rate limiting (5/hr) but
-      no CAPTCHA or honeypot. Add Cloudflare Turnstile plus a honeypot field.
-- [ ] **Fix the tracker** (`themes/bms-theme/static/js/bms-tracker.js`):
-      `sendEvent()` never populates `user_agent` or `ip_country`, so bot traffic
-      is indistinguishable from real visitors; `tool_complete` fires on page load
-      against empty form state (every stored result is all-zeros); and
-      `setConsent()` calls `trackPageView()` a second time, double-counting.
-- [ ] **Restrict CORS** in the API handlers from `*` to `bmortgageservices.co.uk`.
-- [ ] **Clear the junk analytics.** `visitor_activity` holds ~3,400 rows of
-      almost entirely crawler traffic. Truncate it and `visitor_tool_results`
-      so launch metrics start clean.
-- [ ] **Remove the spam enquiries** and detach them from the real employer
-      records they were wrongly attributed to (Nottingham Trent University,
-      Giacom).
+- [ ] **Apply migration `049` to production.** The file exists in the CRM repo
+      but **has not been run** — it is DDL, so it cannot go through the REST
+      API. Paste into the Supabase SQL Editor:
+      `DROP POLICY IF EXISTS "visitor_tool_results_update_anon" ON public.visitor_tool_results;`
+      Until this runs, any holder of the public anon key can update any row in
+      `visitor_tool_results`. Verify with the `pg_policies` query in the
+      migration file.
+- [ ] **Add Cloudflare Turnstile to the contact form.** A honeypot, a minimum
+      submit time and per-IP rate limiting are now in place (done below), which
+      handles the commodity spam seen so far. Turnstile needs a site key and a
+      secret key created in the Cloudflare dashboard, so it could not be done
+      from the repo alone. Add the secret as a Pages environment variable.
+- [ ] **Populate `ip_country`.** Still always NULL. It cannot be set from the
+      browser — it needs the tracker to POST to a Pages Function that reads
+      `request.cf.country` and the `User-Agent` header server-side. That change
+      would also stop shipping the Supabase anon key in the page bundle and
+      allow rate limiting of tracking writes. Worth doing; not done.
+- [ ] **Re-clear the analytics tables after the stale cache expires
+      (~13 Oct).** They were emptied on 2026-10-06, but the seven stale cached
+      pages still serve the *old* build, which still loads the tracker and is
+      still writing rows (37 arrived in the few hours after deploy, 24 of them
+      from `/employers/`). Those rows are identifiable by `user_agent IS NULL`,
+      since the current build always sends one.
 - [ ] **Confirm the apex cache purge works** before launch — see the known issue
       below. You do not want to discover an unresponsive purge on launch day.
 - [ ] **Canonicalise `www`.** Both `www` and the apex now serve identical
@@ -90,6 +94,45 @@ Do the pre-launch checklist first — several items are not cosmetic.
       `404.html` in the build, Cloudflare Pages falls back to serving
       `index.html` with HTTP **200** for every unmatched path (see gotcha
       below).
+
+### Done on 2026-10-06
+
+**Tracker data quality.** Every one of the 121 stored tool results was all-zero
+and they arrived in pairs sharing a timestamp. Cause: the calculators called
+`trackToolComplete` at the end of *every* run of `calculateAffordability()` /
+`calculateMovingCosts()`, and those run on `DOMContentLoaded` (list.html:1248)
+and on each keystroke. So every bot that loaded the page filed a completed
+result, and the two calculators firing together produced the pairs. Both
+functions now take a `track` argument, passed only from the Calculate buttons,
+and additionally require real input (`totalIncome > 0` / `housePrice > 0`).
+
+If you add another caller, do **not** pass `track` unless it is a deliberate
+user action — and never wire these functions straight to an event listener,
+because the Event object would arrive as `track` and read as truthy.
+
+Also fixed: `user_agent` is now sent (it was always NULL, which is why bot and
+human traffic were indistinguishable), and `setConsent()` no longer re-sends a
+page view, which had been double-counting everyone who accepted cookies.
+
+**Contact form hardening** (`functions/api/contact.js`): honeypot field, a
+2.5-second minimum submit time, per-IP rate limiting (3/hour via the existing
+`check_rate_limit` RPC), and CORS narrowed from `*` to the live domains. The
+honeypot and timing checks deliberately return `{success: true}` so bots get no
+signal to adapt. Rate limiting fails open — a database problem must not block a
+genuine enquiry.
+
+Correction to an earlier note in this file: `/api/contact` never had rate
+limiting. The 5/hour limit is on the CRM's separate `/api/enquiry` route, which
+this form does not call — the website form posts straight to the Pages Function,
+which inserted into Supabase with no checks at all. That is how all five spam
+enquiries got in.
+
+**Data cleanup.** Deleted 5 spam enquiries (all B2B cold outreach; zero genuine
+enquiries had ever been received) and emptied `visitor_activity` (3,468 rows)
+and `visitor_tool_results` (121 rows). Employer and client records were
+untouched — verified Nottingham Trent University and Giacom survived, since two
+spam enquiries had been mis-attributed to them. Deleting the enquiry rows
+removed those links, so no separate detach was needed.
 
 ## Step 2 — Restore the full site onto `main`
 
