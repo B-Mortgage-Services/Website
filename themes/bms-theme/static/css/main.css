@@ -8916,3 +8916,109 @@ video.wellness-cta-overlay__media {
 @media (max-width: 860px) {
   .employer-banner__inner { grid-template-columns: 1fr; gap: var(--space-xl); }
 }
+
+/* --- Video carousel --- */
+.vcar__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.vcar__heading { margin-bottom: var(--space-xs); }
+.vcar__intro { color: var(--text-secondary); margin: 0; }
+.vcar__nav { display: flex; gap: var(--space-sm); flex-shrink: 0; }
+.vcar__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--medium-grey);
+  background: var(--white);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+.vcar__arrow:hover:not(:disabled),
+.vcar__arrow:focus-visible { border-color: var(--brand-orange); color: var(--brand-orange); }
+.vcar__arrow:disabled { opacity: 0.35; cursor: default; }
+.vcar__arrow svg { width: 1.25rem; height: 1.25rem; }
+
+.vcar__track {
+  list-style: none;
+  padding: 0 0 var(--space-md);
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--space-lg);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  /* Cards are sized as a fraction of the track so they always fill the width,
+     rather than switching between a fixed-width carousel and a static grid.
+     Behaviour stays identical at every breakpoint: it is always a scroll-snap
+     carousel, it just shows 4, 3, 2 or 1 card. The arrows hide themselves when
+     everything already fits. --vcar-cols is the only thing that changes. */
+  --vcar-cols: 4;
+  grid-auto-columns: calc((100% - (var(--vcar-cols) - 1) * var(--space-lg)) / var(--vcar-cols));
+}
+.vcar__track:focus-visible { outline: 2px solid var(--brand-orange); outline-offset: 4px; }
+
+@media (max-width: 1099px) { .vcar__track { --vcar-cols: 3; } }
+@media (max-width: 860px)  { .vcar__track { --vcar-cols: 2; } }
+/* One card plus a peek of the next, so it reads as swipeable. */
+@media (max-width: 600px)  { .vcar__track { --vcar-cols: 1; grid-auto-columns: 82%; } }
+
+.vcard { scroll-snap-align: start; }
+.vcard__thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--medium-grey);
+  background:
+    repeating-linear-gradient(45deg, rgba(240,91,40,0.04) 0 10px, transparent 10px 20px),
+    linear-gradient(135deg, var(--cream) 0%, var(--off-white) 100%);
+  margin-bottom: var(--space-md);
+}
+.vcard__play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  background: var(--brand-orange);
+  color: var(--white);
+  box-shadow: var(--shadow-orange);
+}
+.vcard__play svg { width: 1.2rem; height: 1.2rem; margin-left: 0.12rem; }
+.vcard__badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--brand-charcoal);
+  color: var(--white);
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.vcard__title { font-size: 1rem; margin-bottom: var(--space-xs); }
+.vcard__desc { font-size: 0.9rem; line-height: 1.55; color: var(--text-secondary); margin: 0; }
+
+@media (max-width: 600px) {
+  .vcar__head { flex-direction: column; align-items: flex-start; }
+}
+
+/* display:flex above would override the browser's [hidden] rule, leaving the
+   arrows visible (but inert) when the track isn't scrollable. */
+.vcar__nav[hidden] { display: none; }

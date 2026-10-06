@@ -162,78 +162,41 @@
   </div>
 </section>
 
-<!-- What's different about using a mortgage adviser? -->
-<section class="section compare">
-  <div class="container">
-    <h2 class="compare__heading">What&rsquo;s different about using a mortgage adviser?</h2>
-    <p class="compare__intro">Going straight to your bank is a perfectly reasonable option. Here&rsquo;s what changes when you use an adviser instead.</p>
+{{/*
+  Explainer videos.
 
-    {{ partial "video-block.html" (dict
-      "videoTitle" "Bank or broker? What actually changes."
-      "duration" "about 60 seconds") }}
+  These replace the broker-vs-bank comparison table and the five-step process
+  list, which were the two most text-heavy blocks on the page. The content
+  moves into the videos rather than sitting alongside them — see Todo.md,
+  which notes that until the videos exist the homepage no longer explains
+  either in text.
+*/}}
+{{ partial "video-carousel.html" (dict
+  "heading" "The short version"
+  "intro" "Four questions we get asked constantly, answered in a minute or two each."
+  "videos" (slice
+    (dict "title" "Bank or broker? What actually changes."
+          "description" "Your bank offers its own mortgages. We compare a wide range of lenders, manage the application and stay with you afterwards.")
+    (dict "title" "From first call to front door."
+          "description" "The five steps between your first conversation and getting the keys, and what we handle at each one.")
+    (dict "title" "Self-employed? What lenders actually look at."
+          "description" "How contractors, company directors and people with several income streams are assessed, and which lenders are comfortable with it.")
+    (dict "title" "Credit history isn’t simply pass or fail."
+          "description" "Defaults, CCJs and missed payments don’t automatically rule you out. What matters is how recent, how large and what’s happened since."))
+) }}
 
-    <!-- INPUT NEEDED: Q5 — if Openwork require "access to a comprehensive range
-         of mortgages", use it in the Choice row. -->
-    <div class="compare__table-wrap">
-      <table class="compare__table">
-        <caption class="visually-hidden">Comparison of going to your bank versus using B Mortgage Services</caption>
-        <thead>
-          <tr>
-            <th scope="col"><span class="visually-hidden">Aspect</span></th>
-            <th scope="col">Going to your bank</th>
-            <th scope="col">With B Mortgage Services</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Choice</th>
-            <td data-label="Going to your bank">That bank&rsquo;s own mortgages</td>
-            <td data-label="With B Mortgage Services">Mortgages from a wide range of lenders, including some only available through advisers</td>
-          </tr>
-          <tr>
-            <th scope="row">Advice</th>
-            <td data-label="Going to your bank">Based on their products</td>
-            <td data-label="With B Mortgage Services">Based on your circumstances and plans</td>
-          </tr>
-          <tr>
-            <th scope="row">Your application</th>
-            <td data-label="Going to your bank">You manage much of it yourself</td>
-            <td data-label="With B Mortgage Services">We manage it with you, and chase it for you</td>
-          </tr>
-          <tr>
-            <th scope="row">Support</th>
-            <td data-label="Going to your bank">Mainly while you apply</td>
-            <td data-label="With B Mortgage Services">From first conversation to completion, and afterwards</td>
-          </tr>
-          <tr>
-            <th scope="row">Relationship</th>
-            <td data-label="Going to your bank">Product-led</td>
-            <td data-label="With B Mortgage Services">Personal and ongoing</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<!-- Founder quote, kept from the process section -->
+<section class="section">
+  <div class="container container--narrow">
+    <figure class="process__quote">
+      <blockquote><p>I&rsquo;ve helped hundreds of people who thought they couldn&rsquo;t get a mortgage because their situation was &lsquo;different.&rsquo;</p></blockquote>
+      <figcaption>Bev House, Founder</figcaption>
+    </figure>
+    <p class="section-actions">
+      <a href="/contact/" class="btn btn--primary btn--large">Talk to an adviser</a>
+    </p>
   </div>
 </section>
-
-<!-- What happens after you get in touch -->
-{{ partial "process-stepper.html" (dict
-  "heading" "What happens after you get in touch"
-  "intro" "No hard sell, no jargon. Here’s exactly what to expect."
-  "variant" "full"
-  "videoTitle" "From first call to front door: the five steps."
-  "videoDuration" "about 90 seconds"
-  "steps" (slice
-    (dict "title" "We talk." "body" "A relaxed conversation, usually about 15 minutes, about what you’re trying to achieve.")
-    (dict "title" "We work out your options." "body" "We look at your income, circumstances and plans, and tell you honestly what’s realistic.")
-    (dict "title" "We find the right route." "body" "We compare mortgages that suit you and explain our recommendation in plain English.")
-    (dict "title" "We manage the process." "body" "From application to completion we keep things moving, chase lenders and solicitors, and keep you updated.")
-    (dict "title" "We’re still here afterwards." "body" "When your deal ends, you move, or your life changes, we’ll be in touch. Your mortgage isn’t the end of the relationship."))
-  "quote" (dict
-    "text" "I’ve helped hundreds of people who thought they couldn’t get a mortgage because their situation was ‘different.’"
-    "attribution" "Bev House, Founder")
-  "button" (dict "label" "Talk to an adviser" "url" "/contact/")
-) }}
 <!-- INPUT NEEDED: Q7 — confirm Bev's credit line and the "hundreds of people" claim. -->
 
 <!-- Moving home -->
@@ -411,4 +374,41 @@
 
 {{ partial "risk-warning.html" . }}
 
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+/* Carousel arrows. Enhancement only — the track is natively scrollable and
+   keyboard accessible, so the buttons stay hidden if this never runs. */
+(function () {
+  'use strict';
+  document.querySelectorAll('.vcar').forEach(function (car) {
+    var track = car.querySelector('.vcar__track');
+    var nav = car.querySelector('.vcar__nav');
+    if (!track || !nav) return;
+
+    function scrollable() { return track.scrollWidth > track.clientWidth + 1; }
+
+    function sync() {
+      if (!scrollable()) { nav.hidden = true; return; }
+      nav.hidden = false;
+      var max = track.scrollWidth - track.clientWidth;
+      nav.querySelector('[data-dir="-1"]').disabled = track.scrollLeft <= 1;
+      nav.querySelector('[data-dir="1"]').disabled = track.scrollLeft >= max - 1;
+    }
+
+    nav.querySelectorAll('.vcar__arrow').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var card = track.querySelector('.vcard');
+        var step = card ? card.getBoundingClientRect().width + 24 : track.clientWidth * 0.8;
+        track.scrollBy({ left: step * Number(btn.getAttribute('data-dir')), behavior: 'smooth' });
+      });
+    });
+
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  });
+})();
+</script>
 {{ end }}

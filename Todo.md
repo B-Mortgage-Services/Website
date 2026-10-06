@@ -53,14 +53,23 @@ Several explanatory sections would work better as short infographic videos
 than as text. A placeholder block (title + 16:9 frame + play affordance) is in
 place so the layout can be judged before any video exists.
 
-- [x] **What's different about using a mortgage adviser?** — placeholder built.
-      Comparison table kept beneath the video for people who prefer to read.
-- [x] **What happens after you get in touch** — placeholder built. Five-step
-      stepper kept beneath.
-- [ ] **Self-employed or complex income** — add a video placeholder to match.
-- [ ] **Complex credit** — new section, doesn't exist yet. Adverse credit,
-      defaults, CCJs, missed payments. Needs copy writing from scratch as well
+Built as a responsive carousel ("The short version"), four cards with a brief
+description under each. Shows 4 / 3 / 2 / 1-plus-peek as the viewport narrows;
+arrows appear only when the track actually scrolls.
+
+- [x] **Bank or broker? What actually changes.**
+- [x] **From first call to front door.**
+- [x] **Self-employed? What lenders actually look at.**
+- [x] **Credit history isn't simply pass or fail.** — new topic, placeholder
+      only. Adverse credit, defaults, CCJs, missed payments. Needs copy as well
       as a video.
+
+**Content removed from the homepage to make room.** The broker-vs-bank
+comparison table and the five-step process list are gone — they were the two
+most text-heavy blocks and their content is meant to live in the first two
+videos. Until those videos exist the homepage does not explain either in
+text. Both blocks are in git history (see the commit that added the carousel)
+if they need to come back or move to a sub-page.
 - [ ] Decide production route, aspect ratio and whether videos are hosted
       (YouTube/Vimeo embed) or self-hosted. Embeds will need a cookie-consent
       path, since the current banner gates third-party scripts.
@@ -104,16 +113,13 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
       questions. Review them for relevance and add page-specific ones —
       moving-home and buy-to-let will need their own once those pages exist.
 
-### Reviews
+### Reviews — resolved
 
-- [x] **Jotform Google reviews widget restored** on the homepage.
-- [ ] Confirm the widget actually renders reviews. It was removed during the
-      redesign because it was leaving an empty "What Our Clients Say" heading
-      next to a "5-star rated on Google" claim, which is the one thing to
-      avoid. If it renders empty again, either populate it or switch back to
-      the `reviews.html` partial, which renders nothing at all when it has no
-      data.
-- [ ] Decide long-term: live widget, or the static `data/reviews.json`
-      component with real reviews supplied once (brief question Q6).
+- [x] **Jotform Google reviews widget restored** on the homepage. Confirmed it
+      is populated live from Google in the real build, so the empty-section
+      problem the redesign brief raised does not apply. No further action.
+- The `reviews.html` partial and empty `data/reviews.json` remain in the repo
+  as the fallback if the widget is ever dropped. Brief question Q6 (supplying
+  static reviews) is therefore moot unless that happens.
 
 ---

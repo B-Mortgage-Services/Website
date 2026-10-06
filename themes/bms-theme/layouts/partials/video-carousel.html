@@ -1,0 +1,48 @@
+{{/*
+  Carousel of short infographic videos.
+
+  Horizontal scroll-snap rather than a JS carousel library: it works with no
+  JavaScript, with touch, with a trackpad and with the keyboard. The arrow
+  buttons are an enhancement and hide themselves if scripting is unavailable.
+
+  Each card is a placeholder until real videos exist — the thumbnail is drawn
+  in CSS so there is no missing asset to clean up. See Todo.md.
+
+  Params:
+    heading (string, required)
+    intro   (string, optional)
+    videos  (slice of dicts: title, description)
+*/}}
+<section class="vcar section">
+  <div class="container">
+    <div class="vcar__head">
+      <div>
+        <h2 class="vcar__heading">{{ .heading }}</h2>
+        {{ with .intro }}<p class="vcar__intro">{{ . }}</p>{{ end }}
+      </div>
+      <div class="vcar__nav" hidden>
+        <button type="button" class="vcar__arrow" data-dir="-1" aria-label="Previous videos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="vcar__arrow" data-dir="1" aria-label="More videos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <ul class="vcar__track" tabindex="0" aria-label="{{ .heading }}">
+      {{ range .videos }}
+      <li class="vcard">
+        <div class="vcard__thumb" role="img" aria-label="Placeholder for video: {{ .title }}">
+          <span class="vcard__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+          <span class="vcard__badge">Placeholder</span>
+        </div>
+        <h3 class="vcard__title">{{ .title }}</h3>
+        <p class="vcard__desc">{{ .description }}</p>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+</section>
