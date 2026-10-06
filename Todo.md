@@ -81,14 +81,20 @@ if they need to come back or move to a sub-page.
 `/mortgages/first-time-buyers/` and `/mortgages/remortgage/` already exist and
 are the pattern to follow — hero, what we help with, process, FAQs, CTA.
 
-- [ ] **Moving home** → `/mortgages/moving-home/`. Currently the
-      `#moving-home` section on the homepage. The brief has this as Phase 2.2.
-- [ ] **Buy-to-let** → `/mortgages/buy-to-let/`. Currently the `#buy-to-let`
-      section. Must carry the "most buy-to-let mortgages are not regulated by
-      the Financial Conduct Authority" note, and the £295 fee (see Fees).
-- [ ] When each page is created: add it to the Mortgages dropdown in
-      `hugo.toml`, remove the homepage section, and update the journey card
-      link that currently points at the anchor.
+- [x] **Moving home** → `/mortgages/moving-home/`. Built. Porting vs a new
+      mortgage, five-step process, six FAQs. Removed from the homepage and
+      added to the Mortgages dropdown.
+- [x] **Buy-to-let** → `/mortgages/buy-to-let/`. Built. How BTL lending
+      differs, who we help, the £295 fee, a tax note pointing at an
+      accountant, six FAQs. Carries the unregulated note in the hero and
+      again in the FAQs. Removed from the homepage.
+- [ ] **Self-employed & complex income** → `/mortgages/self-employed/` is the
+      last one still living as a `#complex-income` section on the homepage.
+- [ ] Both new pages claim things that should be checked before go-live:
+      that porting is never guaranteed, and the general shape of BTL criteria
+      (larger deposits, rent-based stress testing, interest-only being common).
+      All are hedged with "usually" or "typically" and none names a figure,
+      but they are still statements about lending and need Openwork sign-off.
 
 ### Sections needing design work
 

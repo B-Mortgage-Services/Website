@@ -48,16 +48,21 @@ theme = 'bms-theme'
     url = "/mortgages/remortgage/"
     weight = 2
     parent = "mortgages"
-  # Sections on the homepage until they are promoted to their own pages in Phase 2.
   [[menu.main]]
     name = "Moving home"
-    url = "/home-new/#moving-home"
+    url = "/mortgages/moving-home/"
     weight = 3
     parent = "mortgages"
   [[menu.main]]
+    name = "Buy-to-let"
+    url = "/mortgages/buy-to-let/"
+    weight = 4
+    parent = "mortgages"
+  # Still a section on the homepage until it is promoted to its own page.
+  [[menu.main]]
     name = "Self-employed & complex income"
     url = "/home-new/#complex-income"
-    weight = 4
+    weight = 5
     parent = "mortgages"
   [[menu.main]]
     name = "Protection"

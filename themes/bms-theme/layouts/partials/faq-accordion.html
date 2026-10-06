@@ -32,13 +32,16 @@
   </div>
 </section>
 
-{{/* Answers are plain-text for JSON-LD; extraHTML is excluded on purpose. */}}
+{{/* Answers are plain-text for JSON-LD; extraHTML is excluded on purpose.
+     plainify strips tags but leaves entities, so htmlUnescape turns
+     "&pound;295" into "£295" — otherwise the entity reaches search engines
+     verbatim. */}}
 {{ $faqs := slice }}
 {{ range .items }}
   {{ $faqs = $faqs | append (dict
       "@type" "Question"
-      "name" .q
-      "acceptedAnswer" (dict "@type" "Answer" "text" (.a | plainify))) }}
+      "name" (.q | plainify | htmlUnescape)
+      "acceptedAnswer" (dict "@type" "Answer" "text" (.a | plainify | htmlUnescape))) }}
 {{ end }}
 {{/* safeJS is required: inside <script>, Go's contextual escaping would
      otherwise treat the JSON as a JS string literal and double-encode it. */}}

@@ -1,0 +1,136 @@
+{{ define "main" }}
+
+<!-- Hero -->
+<section class="mhero">
+  <div class="ambient-glow">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+  </div>
+  <div class="container">
+    <div class="mhero__inner">
+      <span class="mhero__eyebrow">Buy-to-let</span>
+      <h1 class="mhero__title">Buy-to-let and property investment</h1>
+      <p class="mhero__sub">Whether it&rsquo;s your first rental property or you&rsquo;re growing a portfolio, in your own name or through a limited company, we&rsquo;ll talk you through the lending options that may suit you and what lenders will want to see.</p>
+
+      <div class="mhero__actions">
+        <a href="/contact/?topic=buy-to-let" class="btn btn--primary btn--large">Talk to an adviser</a>
+      </div>
+
+      <ul class="proof-strip">
+        <li>Free first conversation</li>
+        <li>No obligation</li>
+        <li>&pound;295 fee for buy-to-let advice</li>
+      </ul>
+
+      <!-- INPUT NEEDED: Q10 — confirm buy-to-let is an active service and that
+           this is Openwork's required wording for the unregulated note. -->
+      <p class="smallprint">Most buy-to-let mortgages are not regulated by the Financial Conduct Authority.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How buy-to-let lending is different -->
+<section class="section">
+  <div class="container container--narrow">
+    <h2>How buy-to-let lending works differently</h2>
+    <p>A buy-to-let mortgage is assessed differently from the one on your own home. It&rsquo;s worth knowing where the differences are before you start looking at properties.</p>
+    <ul class="tick-list">
+      <li><strong>Lending is based mainly on the rent.</strong> Lenders look at the rent the property is expected to achieve, and apply their own stress test to it, rather than looking only at your personal income.</li>
+      <li><strong>Deposits are usually larger.</strong> Lenders typically expect more than they would on a residential mortgage, and the rates available often improve as your deposit grows.</li>
+      <li><strong>Many are interest-only.</strong> Monthly payments cover the interest and the balance doesn&rsquo;t reduce, so you need a plan for repaying the capital at the end of the term.</li>
+      <li><strong>Some lenders want you to own your own home already,</strong> or to have a minimum personal income, before they&rsquo;ll lend on a rental property.</li>
+      <li><strong>Personal name or limited company.</strong> Both are common. They&rsquo;re assessed differently and have different tax consequences.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Who we help -->
+<section class="section section--off-white">
+  <div class="container">
+    <h2 class="text-center">Who we help</h2>
+    <ul class="icon-grid icon-grid--three">
+      <li class="icon-grid__item">
+        <strong>First-time landlords.</strong> Buying your first rental property, including if you already own the home you live in.
+      </li>
+      <li class="icon-grid__item">
+        <strong>Growing a portfolio.</strong> Adding properties, and the criteria that change once you hold several.
+      </li>
+      <li class="icon-grid__item">
+        <strong>Limited company landlords.</strong> Buying through a company, including special purpose vehicles.
+      </li>
+      <li class="icon-grid__item">
+        <strong>Remortgaging a rental.</strong> Your deal is ending, or you want to release equity to buy another.
+      </li>
+      <li class="icon-grid__item">
+        <strong>Moving out, keeping the property.</strong> Letting your current home and buying another, sometimes called let-to-buy.
+      </li>
+      <li class="icon-grid__item">
+        <strong>Inherited or unexpected landlords.</strong> Where letting wasn&rsquo;t the plan. These can count as consumer buy-to-let, which is regulated.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Fees -->
+<section class="fees">
+  <div class="container container--narrow">
+    <h2 class="text-center">What we charge</h2>
+    <div class="fees__grid">
+      <div class="fees__card">
+        <span class="fees__amount">&pound;295</span>
+        <span class="fees__label">Buy-to-let mortgage advice</span>
+        <span class="fees__detail">A single fee of &pound;295 applies to buy-to-let mortgages. There&rsquo;s no fee for advice on the home you live in.</span>
+      </div>
+    </div>
+    <!-- INPUT NEEDED: confirm when the £295 is payable and whether it is
+         refundable, then state it here. See Todo.md. -->
+    <p class="smallprint text-center">We&rsquo;ll always confirm any fee with you in writing before you commit to anything.</p>
+  </div>
+</section>
+
+<!-- Tax note -->
+<section class="section">
+  <div class="container container--narrow">
+    <h2>A word on tax</h2>
+    <p>How rental income and property ownership are taxed depends on your circumstances, and on whether you hold the property personally or through a company. It changes often, and it can make a real difference to whether an investment works.</p>
+    <p>We advise on the mortgage. We don&rsquo;t give tax advice, and we&rsquo;d always suggest speaking to an accountant or tax adviser before deciding how to structure a purchase.</p>
+  </div>
+</section>
+
+<!-- Reviews -->
+{{ partial "reviews.html" (dict
+  "heading" "From landlords we’ve worked with"
+  "preferTags" (slice "buy-to-let" "existing-client")) }}
+
+<!-- FAQs -->
+{{ partial "faq-accordion.html" (dict
+  "heading" "Buy-to-let questions"
+  "items" (slice
+    (dict "q" "How much deposit do I need for a buy-to-let?"
+          "a" "More than for a residential mortgage. Lenders set their own minimums and the rates available usually improve as your deposit grows. The amount you can borrow also depends on the rent the property is expected to achieve, so two people with the same deposit can end up with different answers.")
+    (dict "q" "How do lenders decide how much I can borrow?"
+          "a" "Mainly on the expected rental income rather than your salary. Lenders apply their own stress test, checking the rent would still cover the mortgage if rates were higher than they are today. Each lender sets this differently, which is why the same property can produce quite different offers.")
+    (dict "q" "Should I buy in my own name or through a limited company?"
+          "a" "Both are common and lenders will consider either, though the products, rates and criteria differ. The right answer usually comes down to tax rather than the mortgage, so this is one to discuss with an accountant. We&rsquo;ll then arrange the mortgage to fit whichever route you choose.")
+    (dict "q" "Is a buy-to-let mortgage regulated?"
+          "a" "Most are not regulated by the Financial Conduct Authority. There are exceptions, usually called consumer buy-to-let, which typically apply where you didn&rsquo;t set out to be a landlord, for example a property you inherited or a former home you&rsquo;re letting out. Those are regulated. We&rsquo;ll tell you which applies to you.")
+    (dict "q" "Can I live in my own buy-to-let property?"
+          "a" "No. A buy-to-let mortgage is for a property let to a tenant, and living in it would breach the terms. If your plans change, speak to us and your lender rather than leaving it, as there are usually proper ways to deal with it.")
+    (dict "q" "Do you charge a fee?"
+          "a" "Yes, for buy-to-let. A single fee of &pound;295 applies. There&rsquo;s no fee for advice on a residential mortgage for the home you live in. We&rsquo;ll always confirm any fee with you in writing before you commit to anything."))
+) }}
+
+<!-- Final CTA -->
+<section class="cta-band">
+  <div class="container">
+    <h2>Thinking about a rental property?</h2>
+    <p>Tell us what you&rsquo;re considering and we&rsquo;ll tell you honestly what&rsquo;s realistic.</p>
+    <p class="section-actions">
+      <a href="/contact/?topic=buy-to-let" class="btn btn--white btn--large">Talk to an adviser</a>
+    </p>
+  </div>
+</section>
+
+{{ partial "risk-warning.html" . }}
+
+{{ end }}

@@ -1,0 +1,145 @@
+{{ define "main" }}
+
+<!-- Hero -->
+<section class="mhero">
+  <div class="ambient-glow">
+    <div class="ambient-glow__blob ambient-glow__blob--1"></div>
+    <div class="ambient-glow__blob ambient-glow__blob--2"></div>
+  </div>
+  <div class="container">
+    <div class="mhero__inner">
+      <span class="mhero__eyebrow">Moving home</span>
+      <h1 class="mhero__title">Moving means juggling three things at once. We&rsquo;ll help you line them up.</h1>
+      <p class="mhero__sub">A sale, a purchase and your existing mortgage, all moving at the same time. We&rsquo;ll work out whether to take your current mortgage with you or switch to a new one, what any early repayment charges would mean, and how much you could borrow for your next home.</p>
+
+      <div class="mhero__actions">
+        <a href="/contact/?topic=moving" class="btn btn--primary btn--large">Talk to an adviser</a>
+        <a href="/affordability-calculator/" class="btn btn--secondary btn--large">Try the calculator</a>
+      </div>
+
+      <ul class="proof-strip">
+        <li>Free first conversation</li>
+        <li>No obligation</li>
+        <li>No fee for residential mortgage advice</li>
+      </ul>
+      <!-- INPUT NEEDED: Q12 — image slot left empty pending real photography. -->
+    </div>
+  </div>
+</section>
+
+<!-- What we'll work out -->
+<section class="section">
+  <div class="container">
+    <h2 class="text-center">We&rsquo;ll help you work out</h2>
+    <ul class="icon-grid">
+      <li class="icon-grid__item">
+        <span class="icon-grid__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 12a9 9 0 11-3.5-7.1"/><path d="M21 3v6h-6"/></svg></span>
+        <strong>Whether to port or switch:</strong> take your current mortgage with you, or start a new one.
+      </li>
+      <li class="icon-grid__item">
+        <span class="icon-grid__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h5M9.5 14.5h5"/></svg></span>
+        <strong>What an early repayment charge would cost:</strong> and whether it can be avoided.
+      </li>
+      <li class="icon-grid__item">
+        <span class="icon-grid__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H10v6H4a1 1 0 01-1-1V9.5z"/></svg></span>
+        <strong>How much you could borrow next:</strong> based on your equity, income and circumstances.
+      </li>
+      <li class="icon-grid__item">
+        <span class="icon-grid__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg></span>
+        <strong>The other costs of moving:</strong> estate agent, solicitor, survey, removals and Stamp Duty.
+      </li>
+      <li class="icon-grid__item">
+        <span class="icon-grid__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+        <strong>Whether downsizing releases what you hoped:</strong> once all the costs are counted.
+      </li>
+      <li class="icon-grid__item">
+        <span class="icon-grid__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></span>
+        <strong>How to keep the timings in step:</strong> so your sale and purchase complete together.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Port or switch -->
+<section class="section section--off-white">
+  <div class="container container--narrow">
+    <h2>Take your mortgage with you, or start a new one?</h2>
+    <p>When you move you usually have two routes. Neither is automatically better, and which one suits you depends on your current deal, how much you need to borrow and what else is available.</p>
+
+    <div class="two-col">
+      <div class="two-col__card">
+        <h3>Take it with you (&ldquo;porting&rdquo;)</h3>
+        <ul class="tick-list">
+          <li>You keep your current rate on the amount you move across</li>
+          <li>Can avoid an early repayment charge</li>
+          <li>You still have to apply, and the lender reassesses you and the new property</li>
+          <li>If you need to borrow more, the extra is usually on a separate product at current rates</li>
+        </ul>
+      </div>
+      <div class="two-col__card">
+        <h3>Start a new mortgage</h3>
+        <ul class="tick-list">
+          <li>Compare rates across a wide range of lenders</li>
+          <li>A chance to change your term or how your mortgage is structured</li>
+          <li>May trigger an early repayment charge on your current deal</li>
+          <li>Involves a full application and new checks</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>Porting is not guaranteed. It depends on your lender agreeing, your circumstances still meeting their criteria, and the new property being suitable security. We&rsquo;ll check where you stand before you commit to anything.</p>
+  </div>
+</section>
+
+<!-- How it works -->
+{{ partial "process-stepper.html" (dict
+  "heading" "How a move works with us"
+  "intro" "Five steps, and we handle the parts that involve the lender."
+  "variant" "full"
+  "steps" (slice
+    (dict "title" "Work out where you stand." "body" "Your current deal, any early repayment charge, and roughly how much equity you have.")
+    (dict "title" "Confirm what you could borrow." "body" "So you know your budget before you start viewing, and can offer with confidence.")
+    (dict "title" "Decide: port or switch." "body" "We compare both routes, including your current lender’s offer, and explain the difference in plain English.")
+    (dict "title" "We submit and manage it." "body" "We prepare the application, deal with the lender and chase the valuation.")
+    (dict "title" "Exchange and complete." "body" "Usually your sale and purchase complete on the same day. We keep things moving alongside the solicitors."))
+  "button" (dict "label" "Talk to an adviser" "url" "/contact/?topic=moving")
+) }}
+
+<!-- Reviews -->
+{{ partial "reviews.html" (dict
+  "heading" "From people who’ve moved with us"
+  "preferTags" (slice "moving-home" "existing-client")) }}
+
+<!-- FAQs -->
+{{ partial "faq-accordion.html" (dict
+  "heading" "Moving home questions"
+  "items" (slice
+    (dict "q" "What does “porting” actually mean?"
+          "a" "Porting means moving your existing mortgage deal to your new property, keeping your current rate and terms on the amount you carry across. It isn&rsquo;t automatic: you still make a full application, and the lender reassesses your circumstances and the new property before agreeing.")
+    (dict "q" "Will I have to pay an early repayment charge?"
+          "a" "If you leave your deal before it ends you&rsquo;ll usually pay an early repayment charge, often a percentage of the amount you owe. Porting can sometimes avoid it, and timing your move for when your deal ends avoids it altogether. We&rsquo;ll check your exact terms before you decide.")
+    (dict "q" "Can I borrow more than I owe now?"
+          "a" "Often yes, subject to affordability and the lender&rsquo;s criteria. If you port your existing deal and need more, the additional borrowing is usually arranged as a separate part at current rates, so your mortgage may end up with two parts on different rates and end dates.")
+    (dict "q" "What if my sale and purchase don’t complete on the same day?"
+          "a" "Most moves are timed so they complete together. If that isn&rsquo;t possible there may be options, but they carry extra cost and risk, so it&rsquo;s worth talking through with us early rather than when the dates are already fixed.")
+    (dict "q" "I’m downsizing. Do I still need a mortgage?"
+          "a" "Not always. If the sale covers your next purchase you may not need one, though it&rsquo;s still worth checking what any early repayment charge would be before you redeem. If you do need a smaller mortgage, lenders will still assess affordability, including into retirement if that applies.")
+    (dict "q" "Do you charge a fee?"
+          "a" "Not for residential mortgage advice. There&rsquo;s no fee from us for arranging the mortgage on the home you&rsquo;ll live in. A fee of &pound;295 applies to buy-to-let mortgages. We&rsquo;ll always confirm any fee with you in writing before you commit to anything."))
+) }}
+
+<!-- Final CTA -->
+<section class="cta-band">
+  <div class="container">
+    <h2>Thinking about moving?</h2>
+    <p>The earlier we look, the more options you tend to have. A free, no-obligation chat is the easiest place to start.</p>
+    <p class="section-actions">
+      <a href="/contact/?topic=moving" class="btn btn--white btn--large">Talk to an adviser</a>
+      <a href="/affordability-calculator/" class="btn btn--outline-white btn--large">Try the calculator</a>
+    </p>
+  </div>
+</section>
+
+{{ partial "risk-warning.html" . }}
+
+{{ end }}
