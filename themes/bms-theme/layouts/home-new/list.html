@@ -276,31 +276,11 @@
 </section>
 
 <!-- Protection scenarios teaser -->
-<section class="section section--off-white">
-  <div class="container">
-    <h2 class="text-center">Your mortgage is a commitment. Protection helps you keep it.</h2>
-    <p class="section-intro text-center">Once you have a mortgage, and people who depend on you, it&rsquo;s worth knowing what would happen if illness, injury or death affected your income.</p>
-
-    <ul class="icon-grid icon-grid--three">
-      <li class="icon-grid__item">
-        <strong>If you die.</strong> Could your family carry on living in your home?
-        <span class="icon-grid__meta">Life cover</span>
-      </li>
-      <li class="icon-grid__item">
-        <strong>If you become seriously ill.</strong> Would you have the money to focus on getting better, not on bills?
-        <span class="icon-grid__meta">Critical illness cover</span>
-      </li>
-      <li class="icon-grid__item">
-        <strong>If you can&rsquo;t work.</strong> How long could your household manage without your normal income?
-        <span class="icon-grid__meta">Income protection</span>
-      </li>
-    </ul>
-
-    <p class="section-actions text-center">
-      <a href="/individuals/protection/" class="btn btn--secondary">How protection works</a>
-    </p>
-  </div>
-</section>
+{{ partial "protection-scenarios.html" (dict
+  "heading" "Your mortgage is a commitment. Protection helps you keep it."
+  "intro" "Once you have a mortgage, and people who depend on you, it’s worth knowing what would happen if illness, injury or death affected your income."
+  "button" (dict "label" "How protection works" "url" "/individuals/protection/")
+) }}
 
 {{/* FAQs deliberately removed from the homepage — they now live on the page
      each question actually belongs to, where they can be more specific. See

@@ -9037,3 +9037,72 @@ video.wellness-cta-overlay__media {
   .journeys__foot-sep { display: none; }
   .journeys__foot { flex-direction: column; gap: var(--space-sm); }
 }
+
+/* --- Protection scenarios --- */
+.protection__heading { text-align: center; max-width: 46rem; margin: 0 auto var(--space-md); }
+.protection__intro {
+  text-align: center;
+  max-width: 44rem;
+  margin: 0 auto var(--space-2xl);
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+.protection__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-lg);
+}
+
+.scenario {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xl);
+  background: var(--white);
+  border: 1px solid var(--medium-grey);
+  border-radius: var(--radius-lg);
+  /* The accent bar is what stops the three reading as one block of text. */
+  border-top: 3px solid var(--brand-orange);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.scenario:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+
+.scenario__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  background: var(--cream);
+  color: var(--brand-orange);
+  margin-bottom: var(--space-lg);
+}
+.scenario__icon svg { width: 1.6rem; height: 1.6rem; }
+
+.scenario__title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+.scenario__question {
+  font-size: 1.15rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-lg);
+  flex-grow: 1;
+}
+.scenario__product {
+  margin: 0;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--medium-grey);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--brand-orange);
+}

@@ -1,0 +1,62 @@
+{{/*
+  The three protection scenarios, as distinct cards.
+
+  Framed as situations rather than product names — the brief's Phase 2.3
+  rebuilds the protection page around exactly these three, so this is a
+  partial rather than inline markup.
+
+  Params:
+    heading (string, required)
+    intro   (string, optional)
+    button  (dict: label, url) optional
+*/}}
+<section class="section section--off-white protection">
+  <div class="container">
+    <h2 class="protection__heading">{{ .heading }}</h2>
+    {{ with .intro }}<p class="protection__intro">{{ . }}</p>{{ end }}
+
+    <ul class="protection__grid">
+      <li class="scenario">
+        <span class="scenario__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1z"/>
+            <path d="M12 17.5s-3-2-3-4a1.75 1.75 0 013-1.2A1.75 1.75 0 0115 13.5c0 2-3 4-3 4z"/>
+          </svg>
+        </span>
+        <h3 class="scenario__title">If you die</h3>
+        <p class="scenario__question">Could your family carry on living in your home?</p>
+        <p class="scenario__product">Life cover</p>
+      </li>
+
+      <li class="scenario">
+        <span class="scenario__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M12 21s-7.5-4.35-7.5-10.2A4.3 4.3 0 0112 8.1a4.3 4.3 0 017.5 2.7C19.5 16.65 12 21 12 21z"/>
+            <path d="M4.8 13.2h3l1.4-2.4 1.8 4.2 1.6-3 1 1.2h3.6"/>
+          </svg>
+        </span>
+        <h3 class="scenario__title">If you become seriously ill</h3>
+        <p class="scenario__question">Would you have the money to focus on getting better, not on bills?</p>
+        <p class="scenario__product">Critical illness cover</p>
+      </li>
+
+      <li class="scenario">
+        <span class="scenario__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M12 3.2a8.8 8.8 0 018.8 8.8H3.2A8.8 8.8 0 0112 3.2z"/>
+            <path d="M12 12v6.6a2.2 2.2 0 01-4.4 0"/>
+          </svg>
+        </span>
+        <h3 class="scenario__title">If you can&rsquo;t work</h3>
+        <p class="scenario__question">How long could your household manage without your normal income?</p>
+        <p class="scenario__product">Income protection</p>
+      </li>
+    </ul>
+
+    {{ with .button }}
+    <p class="section-actions text-center">
+      <a href="{{ .url }}" class="btn btn--secondary btn--large">{{ .label }}</a>
+    </p>
+    {{ end }}
+  </div>
+</section>

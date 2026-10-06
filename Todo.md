@@ -98,9 +98,15 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
 
 ### Sections needing design work
 
-- [ ] **Protection teaser** — the three scenario cards are plain. Needs a
-      stronger visual treatment. The brief's Phase 2.3 rebuilds the protection
-      page around these same scenarios, so design them together.
+- [x] **Protection teaser** — rebuilt as proper cards: accent bar, icon in a
+      tinted circle, the scenario as a label, the question as the main text,
+      and the product name below a hairline rule. Built as the
+      `protection-scenarios.html` partial, because the brief's Phase 2.3
+      rebuilds the protection page around these same three scenarios — reuse
+      it there rather than rewriting the markup.
+- [ ] When the protection page is rebuilt (Phase 2.3), consider linking each
+      scenario card to the matching section on that page. They are static at
+      the moment because there is nothing specific to link to yet.
 - [x] **For employers** — resolved differently. A banner was built, then the
       whole bottom-of-page section was removed because it didn't sit well with
       the rest of the homepage. Employers are now the fourth journey card
