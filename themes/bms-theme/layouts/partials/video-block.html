@@ -1,0 +1,24 @@
+{{/*
+  Placeholder for a short infographic video.
+
+  Deliberately draws its own frame in CSS rather than referencing an image
+  file, so there is no missing asset and nothing to clean up when the real
+  poster image arrives. Swap .video-block__frame for the poster and wire up
+  the embed at that point — see Todo.md.
+
+  Params:
+    videoTitle (string, required) working title of the video
+    duration   (string, optional) e.g. "about 60 seconds"
+*/}}
+<div class="video-block">
+  <div class="video-block__frame" role="img" aria-label="Placeholder for video: {{ .videoTitle }}">
+    <span class="video-block__play" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </span>
+    <span class="video-block__badge">Video placeholder</span>
+  </div>
+  <p class="video-block__caption">
+    <strong class="video-block__title">{{ .videoTitle }}</strong>
+    {{ with .duration }}<span class="video-block__duration">{{ . }}</span>{{ end }}
+  </p>
+</div>

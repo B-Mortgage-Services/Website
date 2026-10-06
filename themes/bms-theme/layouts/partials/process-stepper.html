@@ -16,6 +16,11 @@
     <h2 class="process__heading">{{ .heading }}</h2>
     {{ with .intro }}<p class="process__intro">{{ . }}</p>{{ end }}
 
+    {{/* Optional video placeholder above the steps. */}}
+    {{ with .videoTitle }}
+    {{ partial "video-block.html" (dict "videoTitle" . "duration" $.videoDuration) }}
+    {{ end }}
+
     <ol class="process__steps">
       {{ range $i, $step := .steps }}
       <li class="process__step">

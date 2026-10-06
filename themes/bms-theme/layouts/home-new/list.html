@@ -168,6 +168,10 @@
     <h2 class="compare__heading">What&rsquo;s different about using a mortgage adviser?</h2>
     <p class="compare__intro">Going straight to your bank is a perfectly reasonable option. Here&rsquo;s what changes when you use an adviser instead.</p>
 
+    {{ partial "video-block.html" (dict
+      "videoTitle" "Bank or broker? What actually changes."
+      "duration" "about 60 seconds") }}
+
     <!-- INPUT NEEDED: Q5 — if Openwork require "access to a comprehensive range
          of mortgages", use it in the Choice row. -->
     <div class="compare__table-wrap">
@@ -217,6 +221,8 @@
   "heading" "What happens after you get in touch"
   "intro" "No hard sell, no jargon. Here’s exactly what to expect."
   "variant" "full"
+  "videoTitle" "From first call to front door: the five steps."
+  "videoDuration" "about 90 seconds"
   "steps" (slice
     (dict "title" "We talk." "body" "A relaxed conversation, usually about 15 minutes, about what you’re trying to achieve.")
     (dict "title" "We work out your options." "body" "We look at your income, circumstances and plans, and tell you honestly what’s realistic.")
@@ -278,6 +284,33 @@
   </div>
 </section>
 
+<!-- Fees -->
+<section class="fees" id="fees">
+  <div class="container container--narrow">
+    <h2 class="text-center">What we charge</h2>
+    <p class="section-intro text-center">No surprises. Here it is up front.</p>
+
+    <div class="fees__grid">
+      <div class="fees__card">
+        <span class="fees__amount">No fee</span>
+        <span class="fees__label">Residential mortgage advice</span>
+        <span class="fees__detail">We don&rsquo;t charge you a fee for advising on and arranging a mortgage for the home you live in.</span>
+      </div>
+      <div class="fees__card">
+        <span class="fees__amount">&pound;295</span>
+        <span class="fees__label">Buy-to-let mortgage advice</span>
+        <span class="fees__detail">A single fee of &pound;295 applies to buy-to-let mortgages.</span>
+      </div>
+    </div>
+
+    <!-- INPUT NEEDED: confirm when the £295 is payable (application, offer or
+         completion) and whether it is refundable, then state it here. Also
+         check this wording against Openwork's requirements — see Todo.md. -->
+    <p class="smallprint text-center">We&rsquo;ll always confirm any fee with you in writing before you commit to anything.</p>
+    <p class="smallprint text-center">Most buy-to-let mortgages are not regulated by the Financial Conduct Authority.</p>
+  </div>
+</section>
+
 <!-- Meet Bev -->
 <section class="section" id="about">
   <div class="container">
@@ -299,8 +332,18 @@
   </div>
 </section>
 
-<!-- Reviews -->
-{{ partial "reviews.html" (dict "heading" "What our clients say") }}
+{{/* Reviews: live Google reviews via the Jotform widget, as on the current
+     homepage. The redesign brief had replaced this with the reviews.html
+     partial because the widget was leaving an empty heading next to a
+     "5-star rated on Google" claim — if it renders empty again, switch back.
+     See Todo.md. */}}
+<section class="testimonials-section">
+  <div class="container">
+    <h2>What our clients say</h2>
+    <div id="JFWebsiteWidget-019cf8a5b94f797cbba7fe73dd73a1b13992"></div>
+    <script src='https://www.jotform.com/website-widgets/embed/019cf8a5b94f797cbba7fe73dd73a1b13992'></script>
+  </div>
+</section>
 
 <!-- Protection scenarios teaser -->
 <section class="section section--off-white">
@@ -329,32 +372,29 @@
   </div>
 </section>
 
-<!-- Common questions -->
-{{ partial "faq-accordion.html" (dict
-  "heading" "Common questions"
-  "items" (slice
-    (dict "q" "Do you charge a fee for your advice?"
-          "a" "We offer an initial consultation at no cost to you. If you choose to proceed with an application, we may charge a fee for our services. The actual amount you pay will depend upon your circumstances. We will always agree on any fees with you upfront before any work begins.")
-    (dict "q" "Will speaking to you affect my credit score?"
-          "a" "An initial discussion with us has no impact on your credit score. When we move to an Agreement in Principle, the majority of our lenders use a &ldquo;soft search&rdquo;, which is visible to you but does not leave a footprint for other lenders. A &ldquo;hard search&rdquo; typically only occurs when a full mortgage application is submitted.")
-    (dict "q" "What if I’m self-employed or a contractor?"
-          "a" "High-street banks often struggle with complex income structures. We help self-employed clients and contractors by using your latest tax calculations, net profit, or daily contract rates to show your true borrowing power. Most lenders ask for one to two years of trading history, though we have access to lenders who may consider shorter periods or base lending on your contract value.")
-    (dict "q" "How much could I borrow?"
-          "a" "Most lenders will consider lending around four to four-and-a-half times your income, though the exact amount depends on your outgoings, credit history, deposit and the lender&rsquo;s own criteria. A small number of lenders may lend more to higher earners or certain professions, but that&rsquo;s the exception rather than the rule. The quickest way to get a realistic figure is to try our calculator or talk to us."
-          "extraHTML" "<p class=\"faq__cta\"><a href=\"/affordability-calculator/\" class=\"btn btn--secondary btn--small\">Try the calculator</a></p>")
-    (dict "q" "Should I consolidate debts into my mortgage?"
-          "a" "Consolidating short-term debt into your mortgage can lower your monthly payments, but you will likely pay more in total because the debt is repaid over a longer term, and the debt becomes secured on your home. Think carefully before securing other debts against your home."))
-) }}
-<!-- INPUT NEEDED: Q4 — confirm the fee policy wording. -->
+{{/* FAQs deliberately removed from the homepage — they now live on the page
+     each question actually belongs to, where they can be more specific. See
+     /mortgages/first-time-buyers/ and /mortgages/remortgage/. */}}
 
 <!-- For employers -->
-<section class="section">
-  <div class="container container--narrow">
-    <h2>For employers</h2>
-    <p>We work with employers who want to support their people with mortgage and protection advice, including a Financial Wellness Check offered as an employee benefit at no cost to the organisation.</p>
-    <p class="section-actions">
-      <a href="/employers/" class="btn btn--secondary">Workplace financial wellness</a>
-    </p>
+<section class="employer-banner">
+  <div class="container">
+    <div class="employer-banner__inner">
+      <div>
+        <span class="employer-banner__eyebrow">For employers</span>
+        <h2>Financial wellbeing your team will actually use</h2>
+        <p>Money worries follow people to work. We give your employees access to clear, personal mortgage and protection advice, and a Financial Wellness Check they can complete in about three minutes.</p>
+        <p class="section-actions">
+          <a href="/employers/" class="btn btn--primary">Workplace financial wellness</a>
+        </p>
+      </div>
+      <ul class="employer-banner__points">
+        <li>No cost to the organisation</li>
+        <li>Anonymised insight into how your team is coping financially</li>
+        <li>Workplace clinics, online or in person</li>
+        <li>Independent, regulated advice</li>
+      </ul>
+    </div>
   </div>
 </section>
 

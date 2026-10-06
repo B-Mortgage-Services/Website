@@ -7,7 +7,7 @@ description: "Section parent for the mortgage journey pages."
 # /mortgages/ itself no longer renders.
 #
 # At launch, add to static/_redirects:  /mortgages/  /  301
-_build:
+build:
   render: never
   list: never
 ---
