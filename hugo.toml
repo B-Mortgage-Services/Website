@@ -1,13 +1,13 @@
 baseURL = 'https://bmortgageservices.co.uk/'
 languageCode = 'en-gb'
-title = 'B Mortgage Services | Expert Mortgage & Insurance Advice'
+title = 'B Mortgage Services | Expert Mortgage & Protection Advice'
 theme = 'bms-theme'
 
 [params]
-  description = "Expert mortgage and insurance advice for individuals and employers. Access to a wide range of lenders."
+  description = "Expert mortgage and protection advice for individuals and employers. Access to a wide range of lenders."
   author = "B Mortgage Services"
   phone = "01452 925209"
-  email = "info@bmortgagesolutions.co.uk"
+  email = "info@bmortgageservices.co.uk"
   address = "39 Teddington Gardens, Gloucester, GL4 6RL"
   tagline = "We Make Your Mortgage Simple"
   brandOrange = "#F05B28"

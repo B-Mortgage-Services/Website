@@ -1,48 +1,72 @@
 # B Mortgage Services
 
-> Expert mortgage and insurance advice for individuals and employers across the UK.
+> Expert mortgage and protection advice for individuals and employers across the UK.
 
-B Mortgage Services is a UK-based mortgage broker offering personalised mortgage and insurance advice. The firm provides access to a wide range of lenders and specialises in helping first-time buyers, home movers, and those remortgaging find the right deal.
+B Mortgage Services is a UK-based mortgage broker offering personalised mortgage and protection advice. The firm has access to a wide range of lenders and specialises in first-time buyers, home movers, remortgaging, and clients with self-employed or otherwise complex income.
 
 ## Services
 
 ### For Individuals
-- Mortgage advice (first-time buyers, remortgages, home movers)
-- Insurance and protection (life cover, income protection, critical illness)
-- Financial wellness assessment
+- Mortgage advice (first-time buyers, remortgaging, home movers)
+- Self-employed, contractor and complex income cases
+- Buy-to-let and property investment
+- Protection (life cover, income protection, critical illness cover)
+- Mortgage & Financial Wellness Check
 
 ### For Employers
 - Employee financial wellness programmes
-- Workplace mortgage and insurance clinics
-- Financial Wellness Check as an employee benefit — at zero cost to the organisation
+- Workplace mortgage and protection clinics
+- Financial Wellness Check as an employee benefit — at no cost to the organisation
+
+## Fees
+
+- No fee for residential mortgage advice.
+- £295 for buy-to-let mortgage advice.
 
 ## Free Tools
 
 ### Affordability Calculator
 URL: https://bmortgageservices.co.uk/affordability-calculator/
-Estimate how much you could borrow based on your income, deposit, and financial commitments. Covers conservative (3.5x), standard (4.5x), and maximum (6x) lending multiples.
+An indication of how much you could borrow, based on your income, deposit and financial commitments. What a lender will actually offer depends on your circumstances and their own criteria.
 
 ### Budget Planner
 URL: https://bmortgageservices.co.uk/budget-planner/
-Work out your household budget for a new home and understand what mortgage payment you can comfortably afford.
+Work out your household budget for a new home and understand what mortgage payment you could comfortably afford.
 
-### Financial Wellness Check
+### Overpayment Calculator
+URL: https://bmortgageservices.co.uk/overpayment-calculator/
+See how overpaying could reduce the interest you pay and shorten your mortgage term.
+
+### Mortgage & Financial Wellness Check
 URL: https://bmortgageservices.co.uk/wellness/
-A free 3-minute assessment that scores your mortgage readiness across four pillars: Mortgage Eligibility (35%), Affordability & Budget (30%), Financial Resilience (20%), and Protection Readiness (15%). No impact on your credit score.
+A free three-minute assessment scoring financial preparedness across four pillars: Mortgage Eligibility, Affordability & Budget, Financial Resilience and Protection Readiness. No credit check. It is an indication of preparedness, not a mortgage eligibility score or lending decision.
 
 ## Contact
 
 - Phone: 01452 925209
-- Email: info@bmortgagesolutions.co.uk
+- Email: info@bmortgageservices.co.uk
 - Address: 39 Teddington Gardens, Gloucester, GL4 6RL
 - Website: https://bmortgageservices.co.uk/
 
 ## Pages
 
 - Home: https://bmortgageservices.co.uk/
-- For Individuals: https://bmortgageservices.co.uk/individuals/
-- For Employers: https://bmortgageservices.co.uk/employers/
+- First-time buyers: https://bmortgageservices.co.uk/mortgages/first-time-buyers/
+- Remortgaging: https://bmortgageservices.co.uk/mortgages/remortgage/
+- Moving home: https://bmortgageservices.co.uk/mortgages/moving-home/
+- Buy-to-let: https://bmortgageservices.co.uk/mortgages/buy-to-let/
+- Protection: https://bmortgageservices.co.uk/individuals/protection/
+- For employers: https://bmortgageservices.co.uk/employers/
 - Affordability Calculator: https://bmortgageservices.co.uk/affordability-calculator/
 - Budget Planner: https://bmortgageservices.co.uk/budget-planner/
-- Financial Wellness: https://bmortgageservices.co.uk/wellness/
+- Overpayment Calculator: https://bmortgageservices.co.uk/overpayment-calculator/
+- Mortgage & Financial Wellness Check: https://bmortgageservices.co.uk/wellness/
 - Contact: https://bmortgageservices.co.uk/contact/
+
+## Regulatory
+
+B Mortgage Services is a trading style of House Financial Ltd, an appointed representative of The Openwork Partnership, a trading style of Openwork Limited, which is authorised and regulated by the Financial Conduct Authority.
+
+Your home may be repossessed if you do not keep up repayments on your mortgage.
+
+Most buy-to-let mortgages are not regulated by the Financial Conduct Authority.

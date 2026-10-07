@@ -87,7 +87,7 @@ This will install all required packages including:
 3. **Verify Sender Identity:**
    - Go to Settings > Sender Authentication
    - Click "Verify a Single Sender"
-   - Enter: info@bmortgagesolutions.co.uk
+   - Enter: info@bmortgageservices.co.uk
    - Fill in contact details
    - Click "Create"
    - Check inbox for verification email

@@ -1101,7 +1101,7 @@ module.exports = function renderHTML(data) {
     <div class="cta">
       <h3>Ready to Take the Next Step?</h3>
       <p>Book a free, no-obligation consultation. We'll review your report, discuss your goals, and create a personalised action plan.</p>
-      <div class="cta__contact">bmortgageservices.co.uk &middot; info@bmortgagesolutions.co.uk</div>
+      <div class="cta__contact">bmortgageservices.co.uk &middot; info@bmortgageservices.co.uk</div>
     </div>
 
     <div class="disc">

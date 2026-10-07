@@ -662,7 +662,7 @@
     html += '<h3 class="report-cta__title">Ready to Take the Next Step?</h3>';
     html += '<p class="report-cta__text">Book a free, no-obligation consultation. We\'ll review your report, discuss your goals, and create a personalised action plan.</p>';
     html += '<a href="https://calendly.com/bmortgageservices" class="btn btn--primary report-cta__btn" target="_blank" rel="noopener">Book a Free Consultation</a>';
-    html += '<p class="report-cta__contact">bmortgageservices.co.uk &middot; info@bmortgagesolutions.co.uk</p>';
+    html += '<p class="report-cta__contact">bmortgageservices.co.uk &middot; info@bmortgageservices.co.uk</p>';
     html += '</div>';
 
     // Disclaimer
