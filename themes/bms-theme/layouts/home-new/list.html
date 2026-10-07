@@ -176,6 +176,24 @@
   </div>
 </section>
 
+<!-- What happens after you get in touch -->
+{{ partial "process-stepper.html" (dict
+  "heading" "What happens after you get in touch"
+  "intro" "No hard sell, no jargon. Here’s exactly what to expect."
+  "variant" "full"
+  "steps" (slice
+    (dict "title" "We talk." "body" "A relaxed conversation, usually about 15 minutes, about what you’re trying to achieve.")
+    (dict "title" "We work out your options." "body" "We look at your income, circumstances and plans, and tell you honestly what’s realistic.")
+    (dict "title" "We find the right route." "body" "We compare mortgages that suit you and explain our recommendation in plain English.")
+    (dict "title" "We manage the process." "body" "From application to completion we keep things moving, chase lenders and solicitors, and keep you updated.")
+    (dict "title" "We’re still here afterwards." "body" "When your deal ends, you move, or your life changes, we’ll be in touch. Your mortgage isn’t the end of the relationship."))
+  "quote" (dict
+    "text" "I’ve helped hundreds of people who thought they couldn’t get a mortgage because their situation was ‘different.’"
+    "attribution" "Bev House, Founder")
+  "button" (dict "label" "Talk to an adviser" "url" "/contact/")
+) }}
+<!-- INPUT NEEDED: Q7 — confirm Bev's credit line and the "hundreds of people" claim. -->
+
 {{/*
   Explainer videos.
 
@@ -195,24 +213,6 @@
     (dict "title" "Credit history isn’t simply pass or fail."
           "description" "Defaults, CCJs and missed payments don’t automatically rule you out. What matters is how recent, how large and what’s happened since."))
 ) }}
-
-<!-- What happens after you get in touch -->
-{{ partial "process-stepper.html" (dict
-  "heading" "What happens after you get in touch"
-  "intro" "No hard sell, no jargon. Here’s exactly what to expect."
-  "variant" "full"
-  "steps" (slice
-    (dict "title" "We talk." "body" "A relaxed conversation, usually about 15 minutes, about what you’re trying to achieve.")
-    (dict "title" "We work out your options." "body" "We look at your income, circumstances and plans, and tell you honestly what’s realistic.")
-    (dict "title" "We find the right route." "body" "We compare mortgages that suit you and explain our recommendation in plain English.")
-    (dict "title" "We manage the process." "body" "From application to completion we keep things moving, chase lenders and solicitors, and keep you updated.")
-    (dict "title" "We’re still here afterwards." "body" "When your deal ends, you move, or your life changes, we’ll be in touch. Your mortgage isn’t the end of the relationship."))
-  "quote" (dict
-    "text" "I’ve helped hundreds of people who thought they couldn’t get a mortgage because their situation was ‘different.’"
-    "attribution" "Bev House, Founder")
-  "button" (dict "label" "Talk to an adviser" "url" "/contact/")
-) }}
-<!-- INPUT NEEDED: Q7 — confirm Bev's credit line and the "hundreds of people" claim. -->
 
 <!-- Fees -->
 <section class="fees" id="fees">
