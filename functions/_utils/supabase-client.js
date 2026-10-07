@@ -251,9 +251,44 @@ async function deleteExpiredReports(env) {
   return count;
 }
 
+/**
+ * Check the Supabase configuration is present before doing any work.
+ *
+ * Without this, createClient() throws somewhere deep in a handler and the
+ * handler's catch-all reports a generic "Internal server error", which looks
+ * identical to a real bug. Cloudflare Pages keeps Preview and Production
+ * variables as separate sets, so one environment can easily have none.
+ *
+ * @param {Object} env - Cloudflare env bindings
+ * @returns {string[]} names of the missing variables; empty when configured
+ */
+function missingSupabaseEnv(env) {
+  return ['SUPABASE_URL', 'SUPABASE_ANON_KEY'].filter(function (k) {
+    return !env || !env[k];
+  });
+}
+
+/**
+ * Standard 503 for an unconfigured deployment. Tells the operator exactly what
+ * is missing while giving the visitor something useful to do.
+ *
+ * @param {string[]} missing - from missingSupabaseEnv()
+ * @param {Object} headers - response headers to reuse
+ */
+function configErrorResponse(missing, headers) {
+  console.error('Missing environment variables:', missing.join(', '));
+  return new Response(JSON.stringify({
+    error: 'Service not configured',
+    message: 'This service is temporarily unavailable. Please try again later or call 01452 925209.',
+    missing: missing
+  }), { status: 503, headers: headers });
+}
+
 module.exports = {
   getClient,
   getAdminClient,
+  missingSupabaseEnv,
+  configErrorResponse,
   generateReportId,
   saveReport,
   getReport,

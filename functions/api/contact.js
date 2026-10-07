@@ -45,6 +45,9 @@ export async function onRequestPost(context) {
   const { env } = context;
   const headers = { ...buildCorsHeaders(context.request), 'Content-Type': 'application/json' };
 
+  const missing = supabaseClient.missingSupabaseEnv(env);
+  if (missing.length) return supabaseClient.configErrorResponse(missing, headers);
+
   // Spam rejections return success so bots see no signal to retry or adapt.
   const silentOk = () => new Response(JSON.stringify({ success: true }), { status: 200, headers });
 
@@ -115,15 +118,18 @@ export async function onRequestPost(context) {
       '12m+': 'more than 12 months',
       'unknown': 'already ended or unknown'
     };
+    // Not named `context`: that is the handler's own parameter, and a const of
+    // the same name shadows it for this whole block, putting the earlier
+    // `context.request` read into the temporal dead zone.
     let message = data.message ? data.message.trim() : '';
-    const context = [];
-    if (data.topic) context.push(`Enquiry topic: ${String(data.topic).slice(0, 40)}`);
+    const journeyNotes = [];
+    if (data.topic) journeyNotes.push(`Enquiry topic: ${String(data.topic).slice(0, 40)}`);
     if (data.deal_end) {
       const label = DEAL_END_LABELS[data.deal_end] || String(data.deal_end).slice(0, 40);
-      context.push(`Current deal ends: ${label}`);
+      journeyNotes.push(`Current deal ends: ${label}`);
     }
-    if (context.length) {
-      message = message ? `${message}\n\n---\n${context.join('\n')}` : context.join('\n');
+    if (journeyNotes.length) {
+      message = message ? `${message}\n\n---\n${journeyNotes.join('\n')}` : journeyNotes.join('\n');
     }
 
     // Save to Supabase

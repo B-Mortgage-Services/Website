@@ -31,6 +31,9 @@ export async function onRequestPost(context) {
   const { env } = context;
   const headers = { ...corsHeaders, 'Content-Type': 'application/json' };
 
+  const missing = supabaseClient.missingSupabaseEnv(env);
+  if (missing.length) return supabaseClient.configErrorResponse(missing, headers);
+
   try {
     // Parse request body
     const data = await context.request.json();

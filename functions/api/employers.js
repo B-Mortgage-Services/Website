@@ -28,6 +28,9 @@ export async function onRequestGet(context) {
   const { env } = context;
   const headers = { ...corsHeaders, 'Content-Type': 'application/json' };
 
+  const missing = supabaseClient.missingSupabaseEnv(env);
+  if (missing.length) return supabaseClient.configErrorResponse(missing, headers);
+
   try {
     const supabase = supabaseClient.getClient(env);
     const { data, error } = await supabase
