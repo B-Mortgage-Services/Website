@@ -9,6 +9,10 @@ package-lock.json
 # Environment variables
 .env
 .env.local
+# This is the file `wrangler pages dev` actually reads, not .env, so it holds
+# live Supabase keys. Must stay untracked.
+.dev.vars
+.dev.vars.*
 
 # Netlify
 .netlify/

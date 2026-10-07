@@ -254,15 +254,33 @@ This will install all required packages including:
 
 ### Function Returns 500 Error
 
-**Check:**
-- Are environment variables set correctly in Netlify?
-- Is Supabase project active (not paused)?
-- Check function logs in Netlify dashboard
+The handler catches everything and returns a generic
+`{"error":"Internal server error"}`, so the response never tells you the cause.
+Work down this list.
+
+**Check, in order:**
+1. **Are the environment variables set for the environment you are actually
+   hitting?** Cloudflare Pages keeps **Preview and Production variable sets
+   separate**. Setting them on Production leaves Preview empty, `createClient()`
+   throws on `undefined`, and you get this exact 500. This has been the cause
+   before. Workers & Pages → bms-website → Settings → Environment variables.
+2. **Did you redeploy after setting them?** Variables are only picked up on a
+   fresh build.
+3. Check the real-time function logs for that deployment — they show the actual
+   thrown error, which the HTTP response hides.
+4. Is the Supabase project active (free tier auto-pauses after inactivity)?
+
+**Quick way to tell config from code:** POST a valid payload directly to
+`/api/wellness-calculate` and check whether a row appears in `wellness_reports`.
+A 500 *with no new row* means it failed before reaching the database, which
+points at the environment variables rather than the schema or RLS.
 
 **Common fixes:**
-- Verify `SUPABASE_URL` doesn't have trailing slash
+- Verify `SUPABASE_URL` has no trailing slash
 - Verify `SUPABASE_ANON_KEY` is the anon key, not service_role
-- Check Supabase project is not paused (free tier auto-pauses after inactivity)
+- A revoked or rotated key looks valid (the JWT `exp` is years away) but fails
+  to authenticate. Test it with a plain `curl` against `/rest/v1/` before
+  assuming the key is fine.
 
 ### Database Insert Fails
 

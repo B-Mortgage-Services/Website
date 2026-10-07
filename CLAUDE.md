@@ -445,11 +445,40 @@ The affordability calculator on `/individuals/` saves data to sessionStorage (`b
 
 ## Environment Variables
 
-Set in **Cloudflare Pages dashboard** (Settings > Environment variables) for production. For local dev, create a `.dev.vars` file (Cloudflare's equivalent of `.env`):
-- `SUPABASE_URL` — Supabase project URL
-- `SUPABASE_ANON_KEY` — Public anon key (RLS enforced)
-- `SENDGRID_API_KEY` — Email delivery
-- `REPORT_BASE_URL` — `http://localhost:8788/wellness/report/` locally, `https://bmortgageservices.co.uk/wellness/report/` in production
+- `SUPABASE_URL` — Supabase project URL. **No trailing slash.**
+- `SUPABASE_ANON_KEY` — Public anon key (RLS enforced). Not the service_role key.
+- `SUPABASE_SERVICE_ROLE_KEY` — Optional. Without it `getAdminClient()` silently
+  falls back to the anon client, so storage and PDF writes fail on RLS rather
+  than erroring clearly.
+- `SENDGRID_API_KEY` — Email delivery (documented, not yet read by any function)
+- `REPORT_BASE_URL` — `http://localhost:8788/wellness/report/` locally,
+  the deployment's own origin otherwise
+
+### Cloudflare keeps Preview and Production variables separate
+
+This is the single most likely cause of a 500 from `/api/*`, and it has bitten
+this project once already. Setting variables on Production does **not** set them
+on Preview, so a preview deployment gets `undefined`, `createClient()` throws,
+and `functions/api/wellness-calculate.js` converts it into a generic
+`{"error":"Internal server error"}` that says nothing about the real cause.
+
+Set both sets under **Workers & Pages → bms-website → Settings → Environment
+variables**, then **redeploy** — Cloudflare only picks up variable changes on a
+fresh build.
+
+### Local development
+
+`npm run dev` is `wrangler pages dev public`, which reads **`.dev.vars`** — it
+does *not* read `.env`. The repo has a `.env` that wrangler ignores entirely;
+`.dev.vars` is the file that matters. Both are gitignored.
+
+Run `npm run build` first, or there is no `public/` for wrangler to serve.
+
+**Known limitation:** `wrangler pages dev` refuses to start while `wrangler.toml`
+declares the `[browser]` binding — "Browser Rendering is not supported locally".
+That binding is only used by the PDF generator. To run the rest of the functions
+locally you need `wrangler pages dev --remote`, or to temporarily comment the
+binding out.
 
 ## Development Phases
 
