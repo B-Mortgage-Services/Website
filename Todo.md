@@ -163,13 +163,22 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
   up as YouTube or Vimeo embeds.
 - [ ] Ask Jotform what `events.jotform.com` collects, and reflect the widget
       in the cookie policy page — it currently doesn't mention Jotform.
-- [ ] Consider adding 3–4 real reviews to `data/reviews.json` as a static,
-      crawlable fallback via the existing `reviews.html` partial. The widget
-      is invisible to crawlers that don't run JavaScript, which includes most
-      SEO audit tools and the AI crawlers that robots.txt explicitly invites.
-      Note this is **not** about star ratings in search results: Google has
-      not supported self-serving review rich results since 2019, so no on-page
-      markup will produce stars. Those come from the Google Business Profile.
+- [x] **Static reviews now act as the consent fallback.** No consent shows our
+      own curated reviews from `data/reviews.json`; consent swaps them for the
+      live Jotform feed. Search engines don't accept cookies, so they always
+      get the static version — which closes the gap where the widget's content
+      only existed after JavaScript ran.
+- [ ] **Supply 3–6 real reviews for `data/reviews.json`.** The mechanism is
+      built and tested but the file is deliberately empty, so the page
+      currently falls back to a card offering to load the widget. Fields:
+      `quote`, `name`, `context`, `rating`, `date`, `source`, `tags`
+      (`first-time-buyer`, `remortgage`, `moving-home`, `buy-to-let`,
+      `existing-client` — the sub-pages prefer their matching tag). Must be
+      real and quoted accurately; confirm permission first (brief question Q6).
+- Note this is **not** about star ratings in search results. Google has not
+  supported self-serving review rich results since 2019, so no amount of
+  on-page markup will produce stars. Those come from the Google Business
+  Profile, where the reviews already live.
 
 ### Compliance
 

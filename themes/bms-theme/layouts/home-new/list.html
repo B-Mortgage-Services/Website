@@ -262,32 +262,52 @@
   </div>
 </section>
 
-{{/* Reviews: live Google reviews via the Jotform widget, as on the current
-     homepage. The redesign brief had replaced this with the reviews.html
-     partial because the widget was leaving an empty heading next to a
-     "5-star rated on Google" claim — if it renders empty again, switch back.
-     See Todo.md. */}}
+{{/*
+  Reviews, two ways.
+
+  Consent given    → the Jotform widget, showing the live Google feed.
+  Consent withheld → our own curated reviews from data/reviews.json.
+
+  This is deliberate rather than a compromise. Search engines do not accept
+  cookies, so they always get the static version — which fixes the fact that
+  the widget's content only exists after JavaScript runs and is invisible to
+  crawlers that don't render. Visitors get social proof either way.
+
+  Both must be REAL reviews. If data/reviews.json is empty the fallback
+  degrades to a short card offering to load the widget.
+*/}}
+{{ $hasStaticReviews := gt (len (default (slice) site.Data.reviews.reviews)) 0 }}
+
 <section class="testimonials-section">
   <div class="container">
     <h2>What our clients say</h2>
 
     <div id="JFWebsiteWidget-019cf8a5b94f797cbba7fe73dd73a1b13992"></div>
 
-    {{/* Shown until consent is given; hidden by the consent script once it is. */}}
-    <div class="consent-embed" data-bms-consent-placeholder>
-      <svg class="consent-embed__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-        <path d="M12 3a9 9 0 109 9 4.5 4.5 0 01-4.5-4.5A4.5 4.5 0 0112 3z"/>
-        <circle cx="9" cy="12" r="1"/><circle cx="14" cy="15" r="1"/><circle cx="8.5" cy="16" r="1"/>
-      </svg>
-      <p class="consent-embed__text">
-        Our Google reviews are shown through Jotform. Loading them contacts Jotform,
-        so we ask first.
-      </p>
-      <p class="consent-embed__actions">
-        <button type="button" class="btn btn--primary" data-bms-consent-accept>Accept cookies and show reviews</button>
-      </p>
-      {{ with site.Params.googleReviewUrl }}
-      <p class="consent-embed__alt">Or <a href="{{ . }}" target="_blank" rel="noopener">read them on Google</a> instead.</p>
+    <div data-bms-consent-placeholder>
+      {{ if $hasStaticReviews }}
+        {{ partial "reviews.html" (dict "heading" "What our clients say" "bare" true "max" 3) }}
+        <p class="consent-embed__inline">
+          <button type="button" class="btn btn--secondary btn--small" data-bms-consent-accept>Accept cookies to see all our Google reviews</button>
+        </p>
+      {{ else }}
+        {{/* No curated reviews supplied yet — offer the widget instead. */}}
+        <div class="consent-embed">
+          <svg class="consent-embed__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M12 3a9 9 0 109 9 4.5 4.5 0 01-4.5-4.5A4.5 4.5 0 0112 3z"/>
+            <circle cx="9" cy="12" r="1"/><circle cx="14" cy="15" r="1"/><circle cx="8.5" cy="16" r="1"/>
+          </svg>
+          <p class="consent-embed__text">
+            Our Google reviews are shown through Jotform. Loading them contacts Jotform,
+            so we ask first.
+          </p>
+          <p class="consent-embed__actions">
+            <button type="button" class="btn btn--primary" data-bms-consent-accept>Accept cookies and show reviews</button>
+          </p>
+          {{ with site.Params.googleReviewUrl }}
+          <p class="consent-embed__alt">Or <a href="{{ . }}" target="_blank" rel="noopener">read them on Google</a> instead.</p>
+          {{ end }}
+        </div>
       {{ end }}
     </div>
 

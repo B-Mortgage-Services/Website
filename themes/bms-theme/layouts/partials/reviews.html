@@ -37,11 +37,16 @@
 {{ end }}
 {{ $ordered := first $max ($preferred | append $rest) }}
 
+{{/* bare: render just the cards, for embedding inside an existing section
+     (e.g. as the consent fallback for the Jotform widget, which supplies its
+     own heading). Otherwise render as a full section. */}}
+{{ $bare := default false .bare }}
+
 {{ if gt (len $ordered) 0 }}
-<section class="reviews section">
+{{ if not $bare }}<section class="reviews section">
   <div class="container">
     <h2 class="reviews__heading">{{ .heading }}</h2>
-
+{{ end }}
     <div class="reviews__grid">
       {{ range $ordered }}
       <figure class="review-card">
@@ -73,6 +78,7 @@
       </a>
     </p>
     {{ end }}
-  </div>
+{{ if not $bare }}  </div>
 </section>
+{{ end }}
 {{ end }}

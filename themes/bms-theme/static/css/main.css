@@ -9166,3 +9166,6 @@ video.wellness-cta-overlay__media {
 }
 .consent-embed__alt a { color: var(--brand-orange); font-weight: 600; }
 /* display is not set on .consent-embed, so [hidden] works unaided. */
+
+/* Accept prompt shown beneath the static fallback reviews. */
+.consent-embed__inline { text-align: center; margin-top: var(--space-xl); }
