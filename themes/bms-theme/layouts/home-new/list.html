@@ -12,9 +12,12 @@
   Journey sub-pages keep their URLs: /mortgages/first-time-buyers/ and
   /mortgages/remortgage/.
 
+  Moving home and buy-to-let now have their own pages. Self-employed/complex
+  income was dropped as a section — it is covered by a video in the carousel
+  and did not earn the space it took.
+
   At launch: move this into layouts/index.html, delete content/home-new/, and
-  change the #moving-home / #complex-income / #buy-to-let anchors in hugo.toml
-  from /home-new/ to /.
+  point the Mortgages dropdown parent in hugo.toml at / instead of /home-new/.
 */}}
 
 <div class="preview-banner">
@@ -77,7 +80,6 @@
           "body" "Support your people with mortgage and protection advice and a three-minute wellness check, at no cost to the organisation."
           "label" "For employers" "url" "/employers/"))
   "footLinks" (slice
-    (dict "lead" "Self-employed or complex income?" "label" "How we help" "url" "#complex-income")
     (dict "lead" "Investing in property?" "label" "Buy-to-let advice" "url" "/mortgages/buy-to-let/"))
 ) }}
 
@@ -177,52 +179,40 @@
 {{/*
   Explainer videos.
 
-  These replace the broker-vs-bank comparison table and the five-step process
-  list, which were the two most text-heavy blocks on the page. The content
-  moves into the videos rather than sitting alongside them — see Todo.md,
-  which notes that until the videos exist the homepage no longer explains
-  either in text.
+  These replace the broker-vs-bank comparison table, which was the most
+  text-heavy block on the page. The five-step process is NOT covered here —
+  it has its own section below, because a placeholder conveys nothing and the
+  page was missing that reassurance entirely.
 */}}
 {{ partial "video-carousel.html" (dict
   "heading" "Mortgage questions, answered."
-  "intro" "Four questions we get asked constantly, answered in a minute or two each."
+  "intro" "Three questions we get asked constantly, answered in a minute or two each."
   "videos" (slice
     (dict "title" "Bank or broker? What actually changes."
           "description" "Your bank offers its own mortgages. We compare a wide range of lenders, manage the application and stay with you afterwards.")
-    (dict "title" "From first call to front door."
-          "description" "The five steps between your first conversation and getting the keys, and what we handle at each one.")
     (dict "title" "Self-employed? What lenders actually look at."
           "description" "How contractors, company directors and people with several income streams are assessed, and which lenders are comfortable with it.")
     (dict "title" "Credit history isn’t simply pass or fail."
           "description" "Defaults, CCJs and missed payments don’t automatically rule you out. What matters is how recent, how large and what’s happened since."))
 ) }}
 
-<!-- Self-employed or complex income -->
-<section class="section" id="complex-income">
-  <div class="container container--narrow">
-    <h2>Self-employed or complex income? It&rsquo;s what we specialise in.</h2>
-    <p>If you&rsquo;re self-employed, a contractor, a company director or have several income streams, high-street banks can find your income hard to assess. We know which lenders are comfortable with your situation and how to present your figures, whether that&rsquo;s your latest tax calculations, net profit, salary and dividends, or a daily contract rate.</p>
-    <ul class="tick-list">
-      <li>Self-employed and sole traders</li>
-      <li>Contractors (day-rate assessments)</li>
-      <li>Limited company directors</li>
-      <li>Multiple or variable incomes, including bonuses and commission</li>
-    </ul>
-
-    {{/* Bev's quote sits here rather than in its own section: it is about
-         people whose situation was "different", which is exactly this
-         audience. INPUT NEEDED: Q7 — confirm the credit line and that
-         "hundreds of people" is accurate. */}}
-    <figure class="process__quote">
-      <blockquote><p>I&rsquo;ve helped hundreds of people who thought they couldn&rsquo;t get a mortgage because their situation was &lsquo;different.&rsquo;</p></blockquote>
-      <figcaption>Bev House, Founder</figcaption>
-    </figure>
-
-    <p class="section-actions">
-      <a href="/contact/?topic=complex-income" class="btn btn--primary">Talk to an adviser</a>
-    </p>
-  </div>
-</section>
+<!-- What happens after you get in touch -->
+{{ partial "process-stepper.html" (dict
+  "heading" "What happens after you get in touch"
+  "intro" "No hard sell, no jargon. Here’s exactly what to expect."
+  "variant" "full"
+  "steps" (slice
+    (dict "title" "We talk." "body" "A relaxed conversation, usually about 15 minutes, about what you’re trying to achieve.")
+    (dict "title" "We work out your options." "body" "We look at your income, circumstances and plans, and tell you honestly what’s realistic.")
+    (dict "title" "We find the right route." "body" "We compare mortgages that suit you and explain our recommendation in plain English.")
+    (dict "title" "We manage the process." "body" "From application to completion we keep things moving, chase lenders and solicitors, and keep you updated.")
+    (dict "title" "We’re still here afterwards." "body" "When your deal ends, you move, or your life changes, we’ll be in touch. Your mortgage isn’t the end of the relationship."))
+  "quote" (dict
+    "text" "I’ve helped hundreds of people who thought they couldn’t get a mortgage because their situation was ‘different.’"
+    "attribution" "Bev House, Founder")
+  "button" (dict "label" "Talk to an adviser" "url" "/contact/")
+) }}
+<!-- INPUT NEEDED: Q7 — confirm Bev's credit line and the "hundreds of people" claim. -->
 
 <!-- Fees -->
 <section class="fees" id="fees">

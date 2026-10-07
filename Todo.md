@@ -65,11 +65,20 @@ arrows appear only when the track actually scrolls.
       as a video.
 
 **Content removed from the homepage to make room.** The broker-vs-bank
-comparison table and the five-step process list are gone — they were the two
-most text-heavy blocks and their content is meant to live in the first two
-videos. Until those videos exist the homepage does not explain either in
-text. Both blocks are in git history (see the commit that added the carousel)
-if they need to come back or move to a sub-page.
+comparison table is gone — its content is meant to live in the first video,
+so until that video exists the homepage does not explain the difference in
+text. The table is in git history if it needs to come back or move to a
+sub-page.
+
+The five-step process was briefly removed too, then **reinstated** — a
+placeholder conveys nothing and the page was visibly missing that
+reassurance. It keeps Bev's quote, which belongs with it. The matching video
+was dropped from the carousel so the two don't duplicate.
+
+The self-employed / complex income section was **removed entirely**,
+including its dropdown menu item: it did not earn the space it took given the
+carousel video covers the same ground. The `?topic=complex-income` mapping on
+the contact page is left in place and still works if a link ever uses it.
 - [ ] Decide production route, aspect ratio and whether videos are hosted
       (YouTube/Vimeo embed) or self-hosted. Embeds will need a cookie-consent
       path, since the current banner gates third-party scripts.
