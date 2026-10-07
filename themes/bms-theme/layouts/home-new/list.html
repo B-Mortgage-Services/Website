@@ -315,6 +315,10 @@
     function scrollable() { return track.scrollWidth > track.clientWidth + 1; }
 
     function sync() {
+      // Centre the cards when there is nothing to scroll, so a track with
+      // fewer videos than columns doesn't sit left with a gap on the right.
+      track.classList.toggle('is-static', !scrollable());
+
       if (!scrollable()) { nav.hidden = true; return; }
       nav.hidden = false;
       var max = track.scrollWidth - track.clientWidth;

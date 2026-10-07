@@ -16,18 +16,8 @@
 <section class="vcar section">
   <div class="container">
     <div class="vcar__head">
-      <div>
-        <h2 class="vcar__heading">{{ .heading }}</h2>
-        {{ with .intro }}<p class="vcar__intro">{{ . }}</p>{{ end }}
-      </div>
-      <div class="vcar__nav" hidden>
-        <button type="button" class="vcar__arrow" data-dir="-1" aria-label="Previous videos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button type="button" class="vcar__arrow" data-dir="1" aria-label="More videos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
+      <h2 class="vcar__heading">{{ .heading }}</h2>
+      {{ with .intro }}<p class="vcar__intro">{{ . }}</p>{{ end }}
     </div>
 
     <ul class="vcar__track" tabindex="0" aria-label="{{ .heading }}">
@@ -44,5 +34,16 @@
       </li>
       {{ end }}
     </ul>
+
+    {{/* Below the track, not beside the heading, so the heading can centre.
+         Hidden unless the track actually scrolls — see video-carousel JS. */}}
+    <div class="vcar__nav" hidden>
+      <button type="button" class="vcar__arrow" data-dir="-1" aria-label="Previous videos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button type="button" class="vcar__arrow" data-dir="1" aria-label="More videos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
   </div>
 </section>
