@@ -466,6 +466,22 @@ Set both sets under **Workers & Pages → bms-website → Settings → Environme
 variables**, then **redeploy** — Cloudflare only picks up variable changes on a
 fresh build.
 
+As of 7 October 2026 both environments carry `SUPABASE_URL`,
+`SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `REPORT_BASE_URL` and
+`SENDGRID_API_KEY`. Preview had none of them, which is what broke the wellness
+tool and `/api/employers`. `REPORT_BASE_URL` differs per environment: it must
+point at the host serving the report.
+
+To inspect or change them without the dashboard:
+
+```bash
+npx wrangler pages secret list --project-name bms-website --env preview
+printf %s "VALUE" | npx wrangler pages secret put KEY --project-name bms-website --env preview
+```
+
+Setting a secret does **not** rebuild. Push a commit, or retry the deployment,
+before testing.
+
 ### Local development
 
 `npm run dev` is `wrangler pages dev public`, which reads **`.dev.vars`** — it
