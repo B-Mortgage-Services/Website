@@ -2,6 +2,23 @@
  * BMS Cookie Consent Banner
  * GDPR-compliant, two-button (Accept/Decline), no third-party dependencies.
  * Exposes window.BMSShowCookieBanner() for the footer "Manage Cookies" link.
+ *
+ * Third-party embeds
+ * ------------------
+ * Embeds that contact another domain must not load before consent, because the
+ * request alone discloses the visitor's IP address. Mark such a script as:
+ *
+ *   <script type="text/plain" data-bms-consent-src="https://example.com/x.js"></script>
+ *
+ * A browser will not execute a script with a non-JavaScript type, so nothing
+ * is requested until activateConsentedEmbeds() swaps in a real script tag.
+ *
+ * Alongside it, add a placeholder to show while the embed is blocked:
+ *
+ *   <div data-bms-consent-placeholder>…explain, offer an Accept button…</div>
+ *
+ * Any button inside carrying data-bms-consent-accept grants consent and loads
+ * the embed in place, without the visitor hunting for the banner.
  */
 (function() {
   'use strict';
@@ -20,6 +37,40 @@
       '; path=/' +
       '; SameSite=Lax' +
       secure;
+  }
+
+  /**
+   * Replace every neutered embed script with a real one, and hide the
+   * placeholders. Safe to call more than once — each script is swapped at
+   * most once.
+   */
+  function activateConsentedEmbeds() {
+    var pending = document.querySelectorAll('script[data-bms-consent-src]');
+    for (var i = 0; i < pending.length; i++) {
+      var placeholderScript = pending[i];
+      var real = document.createElement('script');
+      real.src = placeholderScript.getAttribute('data-bms-consent-src');
+      real.async = true;
+      // Carry over any other data- attributes the embed may rely on.
+      for (var a = 0; a < placeholderScript.attributes.length; a++) {
+        var attr = placeholderScript.attributes[a];
+        if (attr.name.indexOf('data-') === 0 && attr.name !== 'data-bms-consent-src') {
+          real.setAttribute(attr.name, attr.value);
+        }
+      }
+      placeholderScript.parentNode.replaceChild(real, placeholderScript);
+    }
+
+    var placeholders = document.querySelectorAll('[data-bms-consent-placeholder]');
+    for (var j = 0; j < placeholders.length; j++) {
+      placeholders[j].hidden = true;
+    }
+  }
+
+  function grantConsent() {
+    setCookie('bms_consent', '1', 365);
+    if (typeof BMSTracker !== 'undefined') BMSTracker.setConsent(true);
+    activateConsentedEmbeds();
   }
 
   function createBanner() {
@@ -45,9 +96,8 @@
     acceptBtn.className = 'btn btn--primary cookie-banner__btn';
     acceptBtn.textContent = 'Accept';
     acceptBtn.addEventListener('click', function() {
-      setCookie('bms_consent', '1', 365);
       dismissBanner(banner);
-      if (typeof BMSTracker !== 'undefined') BMSTracker.setConsent(true);
+      grantConsent();
     });
 
     var declineBtn = document.createElement('button');
@@ -76,11 +126,28 @@
     }, 400);
   }
 
-  // Show banner on first visit (no consent cookie set)
   document.addEventListener('DOMContentLoaded', function() {
     var consent = getCookie('bms_consent');
+
+    // Show the banner on a first visit only.
     if (consent === null) {
       createBanner();
+    }
+
+    if (consent === '1') {
+      // Already consented on a previous visit — load the embeds now.
+      activateConsentedEmbeds();
+    } else {
+      // Let a placeholder grant consent in place, so the visitor doesn't have
+      // to go looking for the banner to see what they clicked for.
+      var buttons = document.querySelectorAll('[data-bms-consent-accept]');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function() {
+          var banner = document.getElementById('bms-cookie-banner');
+          if (banner) dismissBanner(banner);
+          grantConsent();
+        });
+      }
     }
   });
 

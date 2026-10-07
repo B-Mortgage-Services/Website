@@ -270,8 +270,31 @@
 <section class="testimonials-section">
   <div class="container">
     <h2>What our clients say</h2>
+
     <div id="JFWebsiteWidget-019cf8a5b94f797cbba7fe73dd73a1b13992"></div>
-    <script src='https://www.jotform.com/website-widgets/embed/019cf8a5b94f797cbba7fe73dd73a1b13992'></script>
+
+    {{/* Shown until consent is given; hidden by the consent script once it is. */}}
+    <div class="consent-embed" data-bms-consent-placeholder>
+      <svg class="consent-embed__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M12 3a9 9 0 109 9 4.5 4.5 0 01-4.5-4.5A4.5 4.5 0 0112 3z"/>
+        <circle cx="9" cy="12" r="1"/><circle cx="14" cy="15" r="1"/><circle cx="8.5" cy="16" r="1"/>
+      </svg>
+      <p class="consent-embed__text">
+        Our Google reviews are shown through Jotform. Loading them contacts Jotform,
+        so we ask first.
+      </p>
+      <p class="consent-embed__actions">
+        <button type="button" class="btn btn--primary" data-bms-consent-accept>Accept cookies and show reviews</button>
+      </p>
+      {{ with site.Params.googleReviewUrl }}
+      <p class="consent-embed__alt">Or <a href="{{ . }}" target="_blank" rel="noopener">read them on Google</a> instead.</p>
+      {{ end }}
+    </div>
+
+    {{/* Neutered until consent — a browser will not run a non-JS script type,
+         so nothing is requested from Jotform until it is swapped for a real
+         tag. See bms-cookie-consent.js. */}}
+    <script type="text/plain" data-bms-consent-src="https://www.jotform.com/website-widgets/embed/019cf8a5b94f797cbba7fe73dd73a1b13992"></script>
   </div>
 </section>
 

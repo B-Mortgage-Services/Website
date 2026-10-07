@@ -9136,3 +9136,33 @@ video.wellness-cta-overlay__media {
   margin-top: 0.15rem;
   color: var(--brand-orange);
 }
+
+/* --- Consent-gated embed placeholder --- */
+.consent-embed {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+  background: var(--white);
+  border: 1px dashed var(--medium-grey);
+  border-radius: var(--radius-lg);
+}
+.consent-embed__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--brand-orange);
+  margin-bottom: var(--space-md);
+}
+.consent-embed__text {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+.consent-embed__actions { margin: 0; }
+.consent-embed__alt {
+  margin-top: var(--space-md);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.consent-embed__alt a { color: var(--brand-orange); font-weight: 600; }
+/* display is not set on .consent-embed, so [hidden] works unaided. */

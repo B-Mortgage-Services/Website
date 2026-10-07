@@ -147,6 +147,30 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
       /wellness/ rather than a dead button, but it is still worth getting
       right.
 
+### Third-party embeds and consent
+
+- [x] **The Jotform reviews widget is now gated behind cookie consent.** It
+      previously contacted www.jotform.com, events.jotform.com and
+      files.jotform.com on page load, before the visitor had answered the
+      banner. No cookies were set, but the request alone discloses the
+      visitor's IP, and "events." implies analytics. Inconsistent for a
+      regulated firm running a consent banner.
+- The mechanism is reusable. Any third-party embed can be gated the same way:
+  `<script type="text/plain" data-bms-consent-src="…">` plus a
+  `[data-bms-consent-placeholder]` block, optionally containing a
+  `[data-bms-consent-accept]` button. See the comment at the top of
+  `bms-cookie-consent.js`. **Use this for the explainer videos** if they end
+  up as YouTube or Vimeo embeds.
+- [ ] Ask Jotform what `events.jotform.com` collects, and reflect the widget
+      in the cookie policy page — it currently doesn't mention Jotform.
+- [ ] Consider adding 3–4 real reviews to `data/reviews.json` as a static,
+      crawlable fallback via the existing `reviews.html` partial. The widget
+      is invisible to crawlers that don't run JavaScript, which includes most
+      SEO audit tools and the AI crawlers that robots.txt explicitly invites.
+      Note this is **not** about star ratings in search results: Google has
+      not supported self-serving review rich results since 2019, so no on-page
+      markup will produce stars. Those come from the Google Business Profile.
+
 ### Compliance
 
 - [x] **Openwork approval line is always shown in the footer**, on all 18
