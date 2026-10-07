@@ -298,7 +298,27 @@ section {
   list-style: none;
 }
 
-.nav__item--dropdown:hover .nav__dropdown,
+/* Bridges the 0.5rem gap between the trigger and the panel. Without it the
+   pointer passes over dead space on its way down to the first link, which is
+   neither the trigger nor the panel, so :hover drops and the menu closes. */
+.nav__dropdown::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+}
+
+/* Hover only where there is a real pointer. On touch, :hover sticks after a
+   tap, so those devices use the click handler in main.js instead. */
+@media (hover: hover) and (pointer: fine) {
+  .nav__item--dropdown:hover .nav__dropdown,
+  .nav__item--dropdown:focus-within .nav__dropdown {
+    display: block;
+  }
+}
+
 .nav__item--open .nav__dropdown {
   display: block;
 }
@@ -377,6 +397,11 @@ section {
     padding: 0 0 0 1rem;
     border-left: 2px solid var(--brand-orange);
     margin-top: 0.5rem;
+  }
+
+  /* Panel is static here, so the desktop hover bridge has nothing to bridge. */
+  .nav__dropdown::before {
+    display: none;
   }
 
   .nav__item--dropdown:hover .nav__dropdown {
