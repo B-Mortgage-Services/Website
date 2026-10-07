@@ -168,13 +168,19 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
       live Jotform feed. Search engines don't accept cookies, so they always
       get the static version — which closes the gap where the widget's content
       only existed after JavaScript ran.
-- [ ] **Supply 3–6 real reviews for `data/reviews.json`.** The mechanism is
-      built and tested but the file is deliberately empty, so the page
-      currently falls back to a card offering to load the widget. Fields:
-      `quote`, `name`, `context`, `rating`, `date`, `source`, `tags`
-      (`first-time-buyer`, `remortgage`, `moving-home`, `buy-to-let`,
-      `existing-client` — the sub-pages prefer their matching tag). Must be
-      real and quoted accurately; confirm permission first (brief question Q6).
+- [x] **Four real Google reviews added to `data/reviews.json`**, all naming
+      Bev, quoted verbatim, taken from the live widget on 7 October 2026.
+      Tagged so the first-time-buyer and remortgage pages each lead with a
+      matching review.
+- [ ] **Confirm permission to quote these four by name** (brief question Q6).
+      Google reviews are public, but naming individuals on a regulated firm's
+      marketing page is something Openwork will likely ask about.
+- [ ] Reviews deliberately left out, and why, in case anyone wonders:
+      Richard Grainger ("the best possible mortgage deal on the market") and
+      Nicky Reed ("the perfect mortgage deal") both make superlative claims
+      the brief's copy rules rule out; Salisu Wada credits "Brunsdon
+      Financial", the old entity the brief says to remove everywhere. Another
+      18 reviews mention Bev if a different selection is wanted.
 - Note this is **not** about star ratings in search results. Google has not
   supported self-serving review rich results since 2019, so no amount of
   on-page markup will produce stars. Those come from the Google Business

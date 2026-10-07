@@ -1,3 +1,35 @@
 {
-  "reviews": []
+  "_comment": "Real Google reviews, quoted verbatim, taken from the firm's Google profile via the Jotform widget on 7 October 2026. Only reviews naming Bev are included. Star ratings were verified individually rather than inferred from the 5.0 average. Do not add anything here that is not a real review, and do not edit the quotes: they are other people's words. Tags steer which review surfaces on which page - see reviews.html.",
+  "reviews": [
+    {
+      "quote": "Bev has been superb. She was patient with us, talked us through all our options and consistently kept us update with any changes. I cannot recommend her services enough.",
+      "name": "Jonah Philpott",
+      "rating": 5,
+      "source": "Google",
+      "tags": []
+    },
+    {
+      "quote": "Bev helped us through our application for a first time buyer mortgage and the support she gave was great. Easy to contact and made everything easy to understand. Would recommend to others!",
+      "name": "Taylor Gilmour",
+      "context": "First-time buyer",
+      "rating": 5,
+      "source": "Google",
+      "tags": ["first-time-buyer"]
+    },
+    {
+      "quote": "Very professional, courteous service, keeping us in the loop at all times and answering questions quickly so that obtaining our re-mortgage was as painless as possible. Thanks Bev and the team!",
+      "name": "Clare Ford",
+      "context": "Remortgage",
+      "rating": 5,
+      "source": "Google",
+      "tags": ["remortgage"]
+    },
+    {
+      "quote": "Excellent service by Bev. Very knowledgeable and professional and easy to deal with. Everything answered and assured us with confidence. Would highly recommend.",
+      "name": "Eamonn Colbert",
+      "rating": 5,
+      "source": "Google",
+      "tags": []
+    }
+  ]
 }
