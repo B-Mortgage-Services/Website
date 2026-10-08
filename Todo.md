@@ -225,4 +225,12 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
   as the fallback if the widget is ever dropped. Brief question Q6 (supplying
   static reviews) is therefore moot unless that happens.
 
+### Bugs found incidentally
+
+- [ ] **Missing favicon.** `baseof.html:32` points at `images/favicon.png`,
+      but that file exists nowhere in the repo — not in `static/images/` nor
+      `themes/bms-theme/static/images/`. Every page therefore 404s on its
+      favicon and browsers show a blank icon. The markup is already correct;
+      it just needs the asset adding.
+
 ---

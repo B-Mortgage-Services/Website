@@ -1,0 +1,53 @@
+{{/*
+  Mortgage calculator configuration, injected from the data files.
+
+  Emits two globals, TAX_CONFIG and AFFORDABILITY_CONFIG, consumed by
+  static/js/mortgage-calcs.js. Include this before any script that calls
+  BMSCalcs, on every page that does.
+
+  Single source of truth: data/annual_rates.json and data/affordability.json.
+  Never hardcode a rate, multiplier or stamp duty band in a layout — stamp
+  duty bands in particular change at Budget and were two years stale once
+  already, understating the bill in every case.
+
+  Uses the global `site` rather than `.Site` so it works from any context.
+*/}}
+<script>
+const TAX_CONFIG = {
+  personalAllowance: {{ site.Data.annual_rates.incomeTax.personalAllowance }},
+  basicRateLimit: {{ site.Data.annual_rates.incomeTax.basicRateLimit }},
+  higherRateLimit: {{ site.Data.annual_rates.incomeTax.higherRateLimit }},
+  basicRate: {{ (index site.Data.annual_rates.incomeTax.bands 0).rate }},
+  higherRate: {{ (index site.Data.annual_rates.incomeTax.bands 1).rate }},
+  additionalRate: {{ (index site.Data.annual_rates.incomeTax.bands 2).rate }},
+  taperStart: {{ site.Data.annual_rates.incomeTax.personalAllowanceTaperStart }},
+  taperRate: {{ site.Data.annual_rates.incomeTax.personalAllowanceTaperRate }},
+  niThreshold: {{ site.Data.annual_rates.nationalInsurance.threshold }},
+  niUpperLimit: {{ site.Data.annual_rates.nationalInsurance.upperLimit }},
+  niMainRate: {{ site.Data.annual_rates.nationalInsurance.mainRate }},
+  niAdditionalRate: {{ site.Data.annual_rates.nationalInsurance.additionalRate }}
+};
+const AFFORDABILITY_CONFIG = {
+  multipliers: {{ site.Data.affordability.incomeMultipliers.tiers | jsonify | safeJS }},
+  rates: {
+    repaymentLow: {{ site.Data.affordability.interestRates.repaymentLow }},
+    repaymentHigh: {{ site.Data.affordability.interestRates.repaymentHigh }},
+    movingCostDefault: {{ site.Data.affordability.interestRates.movingCostDefault }}
+  },
+  creditCardCommitmentRate: {{ site.Data.affordability.affordabilityTest.creditCardCommitmentRate }},
+  maxPaymentRatio: {{ site.Data.affordability.affordabilityTest.maxPaymentRatio }},
+  stampDuty: {{ site.Data.affordability.stampDuty | jsonify | safeJS }},
+  movingCosts: {
+    purchaseLegalFees: {{ site.Data.affordability.movingCosts.purchaseLegalFees }},
+    sellingLegalFees: {{ site.Data.affordability.movingCosts.sellingLegalFees }},
+    surveyCost: {{ site.Data.affordability.movingCosts.surveyCost }},
+    estateAgentFeePercent: {{ site.Data.affordability.movingCosts.estateAgentFeePercent }},
+    estateAgentVatMultiplier: {{ site.Data.affordability.movingCosts.estateAgentVatMultiplier }}
+  },
+  mortgageTerm: {
+    minYears: {{ site.Data.affordability.mortgageTerm.minYears }},
+    defaultYears: {{ site.Data.affordability.mortgageTerm.defaultYears }},
+    maxYears: {{ site.Data.affordability.mortgageTerm.maxYears }}
+  }
+};
+</script>

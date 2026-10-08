@@ -385,40 +385,15 @@
 {{ end }}
 
 {{ define "scripts" }}
+{{/* TAX_CONFIG and AFFORDABILITY_CONFIG, from data/annual_rates.json and
+     data/affordability.json. Shared with the first-time buyer wizard. */}}
+{{ partial "calc-config.html" . }}
+<script src="{{ "js/mortgage-calcs.js" | relURL }}"></script>
 <script>
-// Configuration injected from Hugo data files (data/annual_rates.json, data/affordability.json)
-const TAX_CONFIG = {
-  personalAllowance: {{ .Site.Data.annual_rates.incomeTax.personalAllowance }},
-  basicRateLimit: {{ .Site.Data.annual_rates.incomeTax.basicRateLimit }},
-  higherRateLimit: {{ .Site.Data.annual_rates.incomeTax.higherRateLimit }},
-  basicRate: {{ (index .Site.Data.annual_rates.incomeTax.bands 0).rate }},
-  higherRate: {{ (index .Site.Data.annual_rates.incomeTax.bands 1).rate }},
-  additionalRate: {{ (index .Site.Data.annual_rates.incomeTax.bands 2).rate }},
-  taperStart: {{ .Site.Data.annual_rates.incomeTax.personalAllowanceTaperStart }},
-  taperRate: {{ .Site.Data.annual_rates.incomeTax.personalAllowanceTaperRate }},
-  niThreshold: {{ .Site.Data.annual_rates.nationalInsurance.threshold }},
-  niUpperLimit: {{ .Site.Data.annual_rates.nationalInsurance.upperLimit }},
-  niMainRate: {{ .Site.Data.annual_rates.nationalInsurance.mainRate }},
-  niAdditionalRate: {{ .Site.Data.annual_rates.nationalInsurance.additionalRate }}
-};
-const AFFORDABILITY_CONFIG = {
-  multipliers: {{ .Site.Data.affordability.incomeMultipliers.tiers | jsonify | safeJS }},
-  rates: {
-    repaymentLow: {{ .Site.Data.affordability.interestRates.repaymentLow }},
-    repaymentHigh: {{ .Site.Data.affordability.interestRates.repaymentHigh }},
-    movingCostDefault: {{ .Site.Data.affordability.interestRates.movingCostDefault }}
-  },
-  creditCardCommitmentRate: {{ .Site.Data.affordability.affordabilityTest.creditCardCommitmentRate }},
-  maxPaymentRatio: {{ .Site.Data.affordability.affordabilityTest.maxPaymentRatio }},
-  stampDuty: {{ .Site.Data.affordability.stampDuty | jsonify | safeJS }},
-  movingCosts: {
-    purchaseLegalFees: {{ .Site.Data.affordability.movingCosts.purchaseLegalFees }},
-    sellingLegalFees: {{ .Site.Data.affordability.movingCosts.sellingLegalFees }},
-    surveyCost: {{ .Site.Data.affordability.movingCosts.surveyCost }},
-    estateAgentFeePercent: {{ .Site.Data.affordability.movingCosts.estateAgentFeePercent }},
-    estateAgentVatMultiplier: {{ .Site.Data.affordability.movingCosts.estateAgentVatMultiplier }}
-  }
-};
+// The maths lives in static/js/mortgage-calcs.js as pure functions. The
+// functions below are the DOM adapters: they read the inputs, call BMSCalcs,
+// and write the results back out. Keep calculation out of this file so the
+// wizard and this page cannot drift apart.
 
 let applicationType = 'single';
 
@@ -482,71 +457,17 @@ function formatInput(input) {
   }
 }
 
-function parseFormattedNumber(str) {
-  if (!str) return 0;
-  return parseInt(str.replace(/,/g, '')) || 0;
-}
-
-function formatCurrency(num) {
-  return '£' + num.toLocaleString('en-GB', { maximumFractionDigits: 0 });
-}
-
-function calculateNetPay(grossAnnual) {
-  if (grossAnnual <= 0) return 0;
-
-  const personalAllowance = TAX_CONFIG.personalAllowance;
-  const basicRateLimit = TAX_CONFIG.basicRateLimit;
-  const higherRateLimit = TAX_CONFIG.higherRateLimit;
-  const basicRate = TAX_CONFIG.basicRate;
-  const higherRate = TAX_CONFIG.higherRate;
-  const additionalRate = TAX_CONFIG.additionalRate;
-  const niThreshold = TAX_CONFIG.niThreshold;
-  const niUpperLimit = TAX_CONFIG.niUpperLimit;
-  const niMainRate = TAX_CONFIG.niMainRate;
-  const niAdditionalRate = TAX_CONFIG.niAdditionalRate;
-
-  // Calculate Income Tax
-  let incomeTax = 0;
-
-  // Reduce personal allowance for high earners
-  let adjustedAllowance = personalAllowance;
-  if (grossAnnual > TAX_CONFIG.taperStart) {
-    adjustedAllowance = Math.max(0, personalAllowance - ((grossAnnual - TAX_CONFIG.taperStart) * TAX_CONFIG.taperRate));
-  }
-
-  let taxableIncome = Math.max(0, grossAnnual - adjustedAllowance);
-
-  if (taxableIncome > 0) {
-    const basicBandLimit = basicRateLimit - adjustedAllowance;
-    const basicTaxable = Math.min(taxableIncome, basicBandLimit);
-    incomeTax += basicTaxable * basicRate;
-
-    if (taxableIncome > basicBandLimit) {
-      const higherBandLimit = higherRateLimit - adjustedAllowance;
-      const higherTaxable = Math.min(taxableIncome - basicBandLimit, higherBandLimit - basicBandLimit);
-      incomeTax += higherTaxable * higherRate;
-
-      if (taxableIncome > higherBandLimit) {
-        const additionalTaxable = taxableIncome - higherBandLimit;
-        incomeTax += additionalTaxable * additionalRate;
-      }
-    }
-  }
-
-  // Calculate National Insurance
-  let nationalInsurance = 0;
-
-  if (grossAnnual > niThreshold) {
-    const niMainBand = Math.min(grossAnnual, niUpperLimit) - niThreshold;
-    nationalInsurance += niMainBand * niMainRate;
-
-    if (grossAnnual > niUpperLimit) {
-      nationalInsurance += (grossAnnual - niUpperLimit) * niAdditionalRate;
-    }
-  }
-
-  return grossAnnual - incomeTax - nationalInsurance;
-}
+// Thin wrappers over BMSCalcs, keeping the existing call signatures so the
+// rest of this page is unchanged. Config is supplied here, once.
+const parseFormattedNumber = (str) => BMSCalcs.parseFormattedNumber(str);
+const formatCurrency = (num) => BMSCalcs.formatCurrency(num);
+const calculateNetPay = (grossAnnual) => BMSCalcs.calculateNetPay(grossAnnual, TAX_CONFIG);
+const calculateMonthlyRepayment = (principal, annualRate, years) =>
+  BMSCalcs.calculateMonthlyRepayment(principal, annualRate, years);
+const calculateMaxMortgageFromPayment = (monthlyPayment, annualRate, years) =>
+  BMSCalcs.calculateMaxMortgageFromPayment(monthlyPayment, annualRate, years);
+const calculateStampDuty = (price, isFirstTimeBuyer) =>
+  BMSCalcs.calculateStampDuty(price, isFirstTimeBuyer, AFFORDABILITY_CONFIG.stampDuty);
 
 function updateNetPayDisplay(inputId, displayId) {
   const gross = parseFormattedNumber(document.getElementById(inputId).value);
@@ -559,24 +480,6 @@ function updateNetPayDisplay(inputId, displayId) {
   } else {
     displayEl.innerHTML = '';
   }
-}
-
-function calculateMonthlyRepayment(principal, annualRate, years) {
-  if (principal <= 0) return 0;
-  const monthlyRate = annualRate / 100 / 12;
-  const numPayments = years * 12;
-  // Standard mortgage formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
-  const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
-  return Math.round(payment);
-}
-
-function calculateMaxMortgageFromPayment(monthlyPayment, annualRate, years) {
-  if (monthlyPayment <= 0) return 0;
-  const monthlyRate = annualRate / 100 / 12;
-  const numPayments = years * 12;
-  // Reverse mortgage formula: P = M * [(1+r)^n - 1] / [r(1+r)^n]
-  const principal = monthlyPayment * (Math.pow(1 + monthlyRate, numPayments) - 1) / (monthlyRate * Math.pow(1 + monthlyRate, numPayments));
-  return Math.round(principal);
 }
 
 function updateRepaymentDisplay(elementId, principal, years) {
@@ -611,55 +514,31 @@ function updateMovingMortgageTerm(value) {
   calculateMovingCosts();
 }
 
+/** Read the affordability panel, compute, write the results back. */
+function readAffordabilityInputs() {
+  return {
+    yourIncome: parseFormattedNumber(document.getElementById('yourIncome').value),
+    partnerIncome: parseFormattedNumber(document.getElementById('partnerIncome').value),
+    applicationType: applicationType,
+    creditCards: parseFormattedNumber(document.getElementById('creditCards').value),
+    loansHP: parseFormattedNumber(document.getElementById('loansHP').value),
+    otherOutgoings: parseFormattedNumber(document.getElementById('otherOutgoings').value),
+    termYears: parseInt(document.getElementById('mortgageTerm').value) || 30,
+    config: AFFORDABILITY_CONFIG,
+    taxConfig: TAX_CONFIG
+  };
+}
+
 function calculateAffordability(track) {
-  const yourIncome = parseFormattedNumber(document.getElementById('yourIncome').value);
-  const partnerIncome = applicationType === 'joint'
-    ? parseFormattedNumber(document.getElementById('partnerIncome').value)
-    : 0;
+  const r = BMSCalcs.computeAffordability(readAffordabilityInputs());
 
-  // Get commitments (monthly values)
-  const creditCards = parseFormattedNumber(document.getElementById('creditCards').value);
-  const loansHP = parseFormattedNumber(document.getElementById('loansHP').value);
-  const otherOutgoings = parseFormattedNumber(document.getElementById('otherOutgoings').value);
+  document.getElementById('result-conservative').textContent = formatCurrency(r.conservative);
+  document.getElementById('result-standard').textContent = formatCurrency(r.standard);
+  document.getElementById('result-maximum').textContent = formatCurrency(Math.max(0, r.maximum));
 
-  // Total gross income
-  const totalIncome = yourIncome + partnerIncome;
-
-  // Calculate net income for both applicants
-  const yourNetAnnual = calculateNetPay(yourIncome);
-  const partnerNetAnnual = applicationType === 'joint' ? calculateNetPay(partnerIncome) : 0;
-  const totalNetMonthly = (yourNetAnnual + partnerNetAnnual) / 12;
-
-  // Calculate monthly commitments for affordability
-  const cardCommitment = creditCards * AFFORDABILITY_CONFIG.creditCardCommitmentRate;
-  const totalCommitments = loansHP + otherOutgoings + cardCommitment;
-
-  // Calculate the income multiplier tiers from config
-  const conservative = totalIncome * AFFORDABILITY_CONFIG.multipliers[0].multiplier;
-  const standard = totalIncome * AFFORDABILITY_CONFIG.multipliers[1].multiplier;
-  const incomeMultiplierMax = totalIncome * AFFORDABILITY_CONFIG.multipliers[2].multiplier;
-
-  // Calculate affordability-based maximum
-  const disposableIncome = totalNetMonthly - totalCommitments;
-  const maxAffordablePayment = disposableIncome * AFFORDABILITY_CONFIG.maxPaymentRatio;
-
-  // Get mortgage term and calculate max mortgage from affordability
-  const termYears = parseInt(document.getElementById('mortgageTerm').value) || 30;
-  const highRate = AFFORDABILITY_CONFIG.rates.repaymentHigh;
-  const affordabilityMax = calculateMaxMortgageFromPayment(maxAffordablePayment, highRate, termYears);
-
-  // Maximum is the lower of affordability-based or 6x income
-  const maximum = Math.min(affordabilityMax, incomeMultiplierMax);
-
-  // Update display
-  document.getElementById('result-conservative').textContent = formatCurrency(conservative);
-  document.getElementById('result-standard').textContent = formatCurrency(standard);
-  document.getElementById('result-maximum').textContent = formatCurrency(Math.max(0, maximum));
-
-  // Calculate repayments for each tier
-  updateRepaymentDisplay('repayment-conservative', conservative, termYears);
-  updateRepaymentDisplay('repayment-standard', standard, termYears);
-  updateRepaymentDisplay('repayment-maximum', maximum, termYears);
+  updateRepaymentDisplay('repayment-conservative', r.conservative, r.termYears);
+  updateRepaymentDisplay('repayment-standard', r.standard, r.termYears);
+  updateRepaymentDisplay('repayment-maximum', r.maximum, r.termYears);
 
   // Save to sessionStorage for wellness assessment pre-fill
   saveAffordabilityToSession();
@@ -667,53 +546,21 @@ function calculateAffordability(track) {
   // Visitor tracking — only on an explicit Calculate click with real input.
   // This function also runs on page load and on every keystroke; tracking those
   // recorded a completed result for every bot that loaded the page.
-  if (track && totalIncome > 0 && typeof BMSTracker !== 'undefined') {
+  if (track && r.totalIncome > 0 && typeof BMSTracker !== 'undefined') {
     try {
       if (!_affordCalcStarted) {
         BMSTracker.trackToolStart('affordability_calculator');
         _affordCalcStarted = true;
       }
-      var trackSummary = 'Conservative: ' + formatCurrency(conservative) + ', Standard: ' + formatCurrency(standard) + ', Maximum: ' + formatCurrency(Math.max(0, maximum));
+      var trackSummary = 'Conservative: ' + formatCurrency(r.conservative) + ', Standard: ' + formatCurrency(r.standard) + ', Maximum: ' + formatCurrency(Math.max(0, r.maximum));
       BMSTracker.trackToolComplete('affordability_calculator', {
-        conservative: conservative,
-        standard: standard,
-        maximum: Math.max(0, maximum),
-        totalIncome: totalIncome
+        conservative: r.conservative,
+        standard: r.standard,
+        maximum: Math.max(0, r.maximum),
+        totalIncome: r.totalIncome
       }, trackSummary);
     } catch(e) {}
   }
-}
-
-// Stamp Duty Calculator — rates from data/affordability.json
-function calculateStampDuty(price, isFirstTimeBuyer) {
-  if (price <= 0) return 0;
-
-  var sdConfig = AFFORDABILITY_CONFIG.stampDuty;
-  let stampDuty = 0;
-
-  if (isFirstTimeBuyer) {
-    var ftb = sdConfig.firstTimeBuyer;
-    if (price <= ftb.reliefMaxPrice) {
-      if (price > ftb.nilRateThreshold) {
-        stampDuty = (price - ftb.nilRateThreshold) * ftb.rateAboveThreshold;
-      }
-      return Math.round(stampDuty);
-    }
-    // Falls through to standard rates if above relief max
-  }
-
-  // Standard rates from config bands
-  var bands = sdConfig.standard.bands;
-  for (var i = 1; i < bands.length; i++) {
-    var bandFrom = bands[i].from - 1; // bands[i].from is the start of this rate band
-    var bandTo = bands[i].to || Infinity;
-    if (price > bandFrom) {
-      var taxable = Math.min(price, bandTo) - bandFrom;
-      stampDuty += taxable * bands[i].rate;
-    }
-  }
-
-  return Math.round(stampDuty);
 }
 
 function formatAndCalculateMovingCosts(input) {
@@ -733,65 +580,48 @@ function formatMovingInput(input) {
   input.value = value;
 }
 
-function calculateMovingCosts(track) {
+/** Read the moving cost panel, compute, write the breakdown back. */
+function readMovingCostInputs() {
   const mortgagePurpose = document.getElementById('mortgagePurpose').value;
-  const isFirstTimeBuyer = mortgagePurpose === 'first-time';
-  const isMover = mortgagePurpose === 'moving';
+  return {
+    housePrice: parseFormattedNumber(document.getElementById('housePrice').value),
+    salePrice: parseFormattedNumber(document.getElementById('salePrice').value),
+    deposit: parseFormattedNumber(document.getElementById('depositAmount').value),
+    rate: parseFloat(document.getElementById('movingInterestRate').value) || 0,
+    termYears: parseInt(document.getElementById('movingMortgageTerm').value) || 30,
+    isFirstTimeBuyer: mortgagePurpose === 'first-time',
+    isMover: mortgagePurpose === 'moving',
+    config: AFFORDABILITY_CONFIG
+  };
+}
 
-  const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
-  const salePrice = parseFormattedNumber(document.getElementById('salePrice').value);
-  const deposit = parseFormattedNumber(document.getElementById('depositAmount').value);
-  const interestRate = parseFloat(document.getElementById('movingInterestRate').value) || AFFORDABILITY_CONFIG.rates.movingCostDefault;
-  const termYears = parseInt(document.getElementById('movingMortgageTerm').value) || 30;
+function calculateMovingCosts(track) {
+  const inputs = readMovingCostInputs();
+  const r = BMSCalcs.computeMovingCosts(inputs);
+  const housePrice = inputs.housePrice;
 
-  // Calculate mortgage amount
-  const mortgageAmount = Math.max(0, housePrice - deposit);
-
-  // Calculate LTV
-  const ltv = housePrice > 0 ? ((mortgageAmount / housePrice) * 100).toFixed(0) : 0;
   const ltvDisplay = document.getElementById('depositLtv');
-  if (housePrice > 0 && deposit > 0) {
-    ltvDisplay.innerHTML = 'LTV: <strong>' + ltv + '%</strong> (Deposit: ' + ((deposit / housePrice) * 100).toFixed(0) + '%)';
+  if (housePrice > 0 && inputs.deposit > 0) {
+    ltvDisplay.innerHTML = 'LTV: <strong>' + r.ltvPercent + '%</strong> (Deposit: ' + r.depositPercent + '%)';
   } else {
     ltvDisplay.innerHTML = '';
   }
 
-  // Calculate monthly payment
-  const monthlyPayment = calculateMonthlyRepayment(mortgageAmount, interestRate, termYears);
+  document.getElementById('mortgageAmount').textContent = formatCurrency(r.mortgageAmount);
+  document.getElementById('monthlyMortgagePayment').textContent = formatCurrency(r.monthlyPayment);
+  document.getElementById('stampDuty').textContent = formatCurrency(r.stampDuty);
+  document.getElementById('estateAgentFees').textContent = formatCurrency(r.estateAgentFees);
+  document.getElementById('purchaseLegalFees').textContent = formatCurrency(r.purchaseLegalFees);
+  document.getElementById('surveyCost').textContent = formatCurrency(r.surveyCost);
+  document.getElementById('totalMovingCosts').textContent = formatCurrency(r.totalCosts);
 
-  // Calculate stamp duty
-  const stampDuty = calculateStampDuty(housePrice, isFirstTimeBuyer);
+  // Written from config rather than left as markup, so changing the fee in
+  // data/affordability.json cannot leave a stale figure on the page.
+  document.getElementById('sellingLegalFees').textContent =
+    formatCurrency(AFFORDABILITY_CONFIG.movingCosts.sellingLegalFees);
 
-  // Calculate other costs from config
-  var mc = AFFORDABILITY_CONFIG.movingCosts;
-  let estateAgentFees = 0;
-  let sellingLegalFees = 0;
-  const purchaseLegalFees = mc.purchaseLegalFees;
-  const surveyCost = mc.surveyCost;
-
-  if (isMover) {
-    estateAgentFees = Math.round(salePrice * mc.estateAgentFeePercent * mc.estateAgentVatMultiplier);
-    sellingLegalFees = mc.sellingLegalFees;
-  }
-
-  // Calculate total costs
-  const totalCosts = stampDuty + estateAgentFees + sellingLegalFees + purchaseLegalFees + surveyCost;
-
-  // Update display
-  document.getElementById('mortgageAmount').textContent = formatCurrency(mortgageAmount);
-  document.getElementById('monthlyMortgagePayment').textContent = formatCurrency(monthlyPayment);
-  document.getElementById('stampDuty').textContent = formatCurrency(stampDuty);
-  document.getElementById('estateAgentFees').textContent = formatCurrency(estateAgentFees);
-  document.getElementById('purchaseLegalFees').textContent = formatCurrency(purchaseLegalFees);
-  document.getElementById('surveyCost').textContent = formatCurrency(surveyCost);
-  document.getElementById('totalMovingCosts').textContent = formatCurrency(totalCosts);
-
-  // Update label for legal fees
-  if (isMover) {
-    document.getElementById('legalFeesLabel').textContent = 'Purchase Legal Fees';
-  } else {
-    document.getElementById('legalFeesLabel').textContent = 'Legal Fees';
-  }
+  document.getElementById('legalFeesLabel').textContent =
+    inputs.isMover ? 'Purchase Legal Fees' : 'Legal Fees';
 
   // Visitor tracking — only on an explicit Calculate click with real input.
   // See the note in calculateAffordability().
@@ -801,15 +631,15 @@ function calculateMovingCosts(track) {
         BMSTracker.trackToolStart('moving_cost_calculator');
         _movingCostStarted = true;
       }
-      var movingSummary = 'Mortgage: ' + formatCurrency(mortgageAmount) + ', Stamp Duty: ' + formatCurrency(stampDuty) + ', Total Costs: ' + formatCurrency(totalCosts) + ', LTV: ' + ltv + '%';
+      var movingSummary = 'Mortgage: ' + formatCurrency(r.mortgageAmount) + ', Stamp Duty: ' + formatCurrency(r.stampDuty) + ', Total Costs: ' + formatCurrency(r.totalCosts) + ', LTV: ' + r.ltvPercent + '%';
       BMSTracker.trackToolComplete('moving_cost_calculator', {
-        mortgageAmount: mortgageAmount,
-        monthlyPayment: monthlyPayment,
-        stampDuty: stampDuty,
-        totalCosts: totalCosts,
-        ltv: parseFloat(ltv),
+        mortgageAmount: r.mortgageAmount,
+        monthlyPayment: r.monthlyPayment,
+        stampDuty: r.stampDuty,
+        totalCosts: r.totalCosts,
+        ltv: r.ltvPercent,
         housePrice: housePrice,
-        deposit: deposit
+        deposit: inputs.deposit
       }, movingSummary);
     } catch(e) {}
   }
@@ -828,8 +658,11 @@ function saveAffordabilityToSession() {
       applicant1Gross: yourIncome,
       applicant1NetMonthly: Math.round(calculateNetPay(yourIncome) / 12),
       mortgagePurpose: document.getElementById('mortgagePurpose').value,
+      // Card rate from config, not a literal — it was hardcoded at 3% here
+      // while the calculator above read it from data/affordability.json, so
+      // the two could silently disagree.
       totalMonthlyCommitments: Math.round(
-        parseFormattedNumber(document.getElementById('creditCards').value) * 0.03 +
+        parseFormattedNumber(document.getElementById('creditCards').value) * AFFORDABILITY_CONFIG.creditCardCommitmentRate +
         parseFormattedNumber(document.getElementById('loansHP').value) +
         parseFormattedNumber(document.getElementById('otherOutgoings').value)
       )
