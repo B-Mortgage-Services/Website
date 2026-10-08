@@ -7361,16 +7361,23 @@ video.wellness-cta-overlay__media {
   color: var(--brand-charcoal);
 }
 
-.ftb-summary__actions {
+/* The two things that can happen after the summary: email the results, or
+   book a call. Equal weight, side by side where there is room. */
+.ftb-capture__actions {
   display: flex;
   gap: var(--space-md);
   flex-wrap: wrap;
-  margin-bottom: var(--space-xl);
+  margin-top: var(--space-lg);
 }
 
-.ftb-summary__actions .btn {
-  flex: 1 1 14rem;
+.ftb-capture__actions .btn {
+  flex: 1 1 13rem;
   justify-content: center;
+}
+
+.ftb-capture__actions .btn[disabled] {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 .ftb-capture {
@@ -7471,8 +7478,67 @@ video.wellness-cta-overlay__media {
     display: none;
   }
 
-  .ftb-summary__actions .btn {
+  /* Stacked, so neither action is cramped to half a narrow screen. */
+  .ftb-capture__actions .btn {
     flex-basis: 100%;
+  }
+}
+
+/* The wizard has no print button — people can use the browser's own. That only
+   produces something useful if the modal prints properly, which by default it
+   does not: it is position: fixed inside a scrolling container, so printing
+   gives one clipped screenful on top of the page behind it.
+   These rules apply only while the wizard is open. */
+@media print {
+  /* .ftb-wizard-open is put on <body> while the wizard is open, rather than
+     using :has(), so this does not depend on selector support to work. */
+  body.ftb-wizard-open > *:not(.ftb-wizard) {
+    display: none !important;
+  }
+
+  .ftb-wizard.wellness-modal--open {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    display: block;
+  }
+
+  .ftb-wizard.wellness-modal--open .wellness-modal__overlay,
+  .ftb-wizard.wellness-modal--open .wellness-modal__close,
+  .ftb-wizard.wellness-modal--open .ftb-capture,
+  .ftb-wizard.wellness-modal--open .ftb-wizard__intro {
+    display: none !important;
+  }
+
+  .ftb-wizard.wellness-modal--open .wellness-modal__container {
+    position: static;
+    max-width: none;
+    width: auto;
+    max-height: none;
+    box-shadow: none;
+    border-radius: 0;
+    transform: none;
+    overflow: visible;
+  }
+
+  /* Let the whole summary flow across pages instead of clipping to one screen. */
+  .ftb-wizard.wellness-modal--open .wellness-modal__scroll {
+    overflow: visible;
+    max-height: none;
+    padding: 0;
+  }
+
+  .ftb-wizard.wellness-modal--open .wizard-panel {
+    break-inside: avoid;
+  }
+
+  /* Printing mid-wizard should still give the figures, not a blank form. */
+  .ftb-wizard.wellness-modal--open .wizard-panel:not(.active) {
+    display: none;
+  }
+
+  .ftb-summary__section {
+    break-inside: avoid;
   }
 }
 

@@ -225,6 +225,30 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
   as the fallback if the widget is ever dropped. Brief question Q6 (supplying
   static reviews) is therefore moot unless that happens.
 
+### Automated email delivery (next piece of work)
+
+The first-time buyer wizard's **"Email my results to me"** button saves the
+figures to `contact_enquiries` and tells the visitor *an adviser will email
+your results shortly*. That is deliberate and currently true — **nothing in
+this project sends email**. Decided 2026-10-08 to ship adviser-sends first and
+build real delivery next.
+
+- [ ] Build `functions/api/send-results.js` so the button does what it says.
+      Groundwork already in place:
+      - `SENDGRID_API_KEY` is already set as a **Production** secret in
+        Cloudflare, but **no code reads it**. It will also need adding to
+        **Preview**, which is a separate set of variables — that exact gap
+        caused the wellness tool outage.
+      - The figures are already assembled as text in `resultsAsText()` in
+        `ftb-wizard.html`; an HTML email template can reuse it.
+      - Needs a verified sender domain in SendGrid before anything will
+        deliver, plus deliverability testing (SPF/DKIM on the domain).
+- [ ] When it ships, update the success copy in `ftb-wizard.html`
+      (`#ftbCaptureSuccessMsg`, and the comment above it) from "an adviser
+      will email" to something like "check your inbox", and the same line in
+      `CLAUDE.md`. **Do not change that copy before the sending works** — it
+      is the only thing stopping the site promising an email it cannot send.
+
 ### Bugs found incidentally
 
 - [ ] **Twelve pages still have doubled titles.** `seoTitle` was added to the

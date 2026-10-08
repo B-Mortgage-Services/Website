@@ -279,32 +279,23 @@
       <div class="wizard-panel" data-panel="4">
         <div class="wizard-panel__header">
           <h2>Your summary</h2>
-          <p>Everything together. Print it, or have an adviser go through it with you.</p>
+          <p>Everything together, and two ways to take it further.</p>
         </div>
 
         <div class="ftb-summary" id="ftbSummary"></div>
 
-        <div class="ftb-summary__actions">
-          <button type="button" class="btn btn--outline" id="ftbPrintBtn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="6 9 6 2 18 2 18 9"/>
-              <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
-              <rect x="6" y="14" width="12" height="8"/>
-            </svg>
-            Print or save as PDF
-          </button>
-          <a class="btn btn--primary" href="/contact/?topic=first-time-buyer">Talk to an adviser</a>
-        </div>
+        {{/* One set of details, two things that can happen next. Both record
+             the figures against the visitor in the CRM; "arrange a call" then
+             opens Calendly with the name and email already filled in.
 
-        {{/* There is no automated email in this project, so this is framed as
-             an adviser sending the figures over — a promise the site can keep.
-             It posts to the existing, spam-protected /api/contact. */}}
+             Calendly needs a name and email to book anyway, and the CRM's
+             contact_enquiries table requires both at database level, so asking
+             here costs the visitor no extra typing — it saves them some. */}}
         <div class="ftb-capture" id="ftbCapture">
-          <h3 class="ftb-capture__title">Would you like these figures sent over?</h3>
+          <h3 class="ftb-capture__title">What would you like to do next?</h3>
           <p class="ftb-capture__intro">
-            Leave your details and an adviser will send your results with a note
-            on what they mean for you. Optional — you can print the summary and
-            leave it there.
+            Leave your details once, then choose. Either way your figures come
+            with you, so you won't have to go through them again.
           </p>
           <form id="ftbCaptureForm" novalidate>
             <div class="form-group">
@@ -325,8 +316,27 @@
               <label for="ftbCaptureWebsite">Website</label>
               <input type="text" id="ftbCaptureWebsite" name="website" tabindex="-1" autocomplete="off">
             </div>
+
             <div class="ftb-capture__error" id="ftbCaptureError" hidden></div>
-            <button type="submit" class="btn btn--primary" id="ftbCaptureSubmit">Send me my results</button>
+
+            <div class="ftb-capture__actions">
+              {{/* type=submit so Enter in a field does the most common thing. */}}
+              <button type="submit" class="btn btn--primary" id="ftbEmailBtn" data-ftb-action="email">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Email my results to me
+              </button>
+              <button type="button" class="btn btn--secondary" id="ftbCallBtn" data-ftb-action="call">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                Arrange a call
+              </button>
+            </div>
+
             <p class="ftb-capture__privacy">
               We use your details to respond to this enquiry. See our
               <a href="/privacy-policy/">privacy policy</a>.
@@ -336,7 +346,13 @@
 
         <div class="ftb-capture ftb-capture--done" id="ftbCaptureSuccess" hidden>
           <h3 class="ftb-capture__title">Thank you</h3>
-          <p>Your details are with us and an adviser will be in touch with your results.</p>
+          {{/* Deliberately "an adviser will email" and not "check your inbox":
+               nothing in this project sends email yet, so a human does it.
+               If automated sending is built, update this copy with it. */}}
+          <p id="ftbCaptureSuccessMsg">
+            Your figures are with us. An adviser will email your results shortly,
+            with a note on what they mean for you.
+          </p>
         </div>
 
         <p class="ftb-note ftb-note--risk">
@@ -387,8 +403,11 @@
     applicationType: 'single',
     openedAt: 0,
     tracked: false,
-    mounted: false
+    mounted: false,
+    action: 'email'   // which summary button was pressed: 'email' or 'call'
   };
+
+  var CALENDLY_URL = 'https://calendly.com/bev-shaw/mortgage-advice';
 
   var root = null;
 
@@ -459,7 +478,19 @@
 
     $('ftbPrevBtn').addEventListener('click', function () { changeStep(-1); });
     $('ftbNextBtn').addEventListener('click', function () { changeStep(1); });
-    $('ftbPrintBtn').addEventListener('click', printSummary);
+
+    // Captured before anything can overwrite them with progress text.
+    state.emailBtnLabel = $('ftbEmailBtn').innerHTML;
+    state.callBtnLabel = $('ftbCallBtn').innerHTML;
+
+    // Which button was pressed decides what happens after the save, so record
+    // it before the form's submit handler runs.
+    $('ftbEmailBtn').addEventListener('click', function () { state.action = 'email'; });
+    // type="button", so it never submits the form — it calls the handler itself.
+    $('ftbCallBtn').addEventListener('click', function () {
+      state.action = 'call';
+      submitCapture();
+    });
     $('ftbCaptureForm').addEventListener('submit', submitCapture);
 
     return root;
@@ -487,6 +518,10 @@
 
     state.openedAt = Date.now();
     window._scrollLockY = window.pageYOffset;
+    // Lets the print stylesheet hide the page behind the wizard, so the
+    // browser's own print command produces the summary rather than a clipped
+    // modal over the page. There is no print button; this is how people save it.
+    document.body.classList.add('ftb-wizard-open');
     document.body.style.position = 'fixed';
     document.body.style.top = '-' + window._scrollLockY + 'px';
     document.body.style.left = '0';
@@ -508,6 +543,7 @@
     }
 
     root.classList.remove('wellness-modal--open');
+    document.body.classList.remove('ftb-wizard-open');
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.left = '';
@@ -541,11 +577,11 @@
     $('ftbCapture').hidden = false;
     $('ftbCaptureSuccess').hidden = true;
     $('ftbCaptureError').hidden = true;
-    var submit = $('ftbCaptureSubmit');
-    submit.disabled = false;
-    submit.textContent = 'Send me my results';
+    restoreButtonLabels();
+    setButtonsDisabled(false);
 
     state.tracked = false;
+    state.action = 'email';
     setApplicationType('single');
     goToStep(1);
     refresh();
@@ -800,108 +836,12 @@
     });
   }
 
-  /**
-   * Print via a standalone document in a new window, the same approach as
-   * printCalculatorResults() on the calculator page. The modal itself cannot
-   * be printed directly: the global @media print rules hide .btn and the
-   * modal chrome, and a scrolling container prints only its visible portion.
-   */
-  function printSummary() {
-    var f = summaryFigures();
-    var win = window.open('', '_blank');
-    if (!win) return;
+  // ------------------------------------------------- saving the results to CRM
 
-    var costsHtml = '';
-    if (f.cIn.housePrice > 0) {
-      costsHtml =
-        '<div class="section"><h3>Buying a home at ' + esc(money(f.cIn.housePrice)) + '</h3>' +
-        row('Deposit', money(f.cIn.deposit)) +
-        row('Mortgage needed', money(f.c.mortgageAmount)) +
-        row('Loan to value', f.c.ltvPercent + '%') +
-        row('Monthly payment at ' + f.c.rate + '%', money(f.c.monthlyPayment)) +
-        '</div>' +
-        '<div class="section"><h3>Upfront costs, excluding your deposit</h3>' +
-        row(f.cIn.isFirstTimeBuyer ? 'Stamp duty (first-time buyer relief)' : 'Stamp duty (standard rates)', money(f.c.stampDuty)) +
-        row('Legal fees', money(f.c.purchaseLegalFees)) +
-        row('Survey', money(f.c.surveyCost)) +
-        row('Total', money(f.c.totalCosts), true) +
-        '</div>';
-    }
-
-    win.document.write(
-      '<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8">' +
-      '<title>First-time buyer estimate — B Mortgage Services</title><style>' +
-      '*{box-sizing:border-box;margin:0;padding:0}' +
-      'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:40px;max-width:800px;margin:0 auto;color:#2D2D2D}' +
-      '.header{text-align:center;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #F05B28}' +
-      '.header h2{color:#F05B28;margin-bottom:4px;font-size:1.75rem}' +
-      '.header p{color:#666}' +
-      '.section{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid #ddd;page-break-inside:avoid}' +
-      '.section h3{font-size:1.15rem;margin-bottom:12px}' +
-      '.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0}' +
-      '.row span:first-child{color:#666}' +
-      '.row span:last-child{font-weight:600}' +
-      '.row--total{border-bottom:none;border-top:2px solid #2D2D2D;margin-top:6px;padding-top:12px}' +
-      '.row--total span{font-weight:700}' +
-      '.row--total span:last-child{color:#F05B28;font-size:1.1rem}' +
-      '.footer{margin-top:28px;text-align:center}' +
-      '.footer p{font-size:0.8rem;color:#666;margin-bottom:8px}' +
-      '.warning{font-weight:700;font-size:0.85rem;margin-top:12px;padding:12px;background:#FEF6F0;border:1px solid #F05B28;border-radius:4px}' +
-      '@media print{body{padding:20px}}' +
-      '</style></head><body>' +
-      '<div class="header"><h2>B Mortgage Services</h2><p>Your first-time buyer estimate</p></div>' +
-      '<div class="section"><h3>What you could borrow</h3>' +
-      row('Cautious estimate', money(f.a.conservative)) +
-      row('Typical estimate', money(f.a.standard)) +
-      row('Stretch estimate', money(Math.max(0, f.a.maximum))) +
-      row('Over a term of', f.a.termYears + ' years') +
-      '</div>' +
-      costsHtml +
-      '<div class="footer">' +
-      '<p>An estimate for guidance only — not a mortgage offer or advice. What you can borrow depends on a full assessment of your circumstances and the lender\'s criteria.</p>' +
-      '<p>Stamp duty shown for England and Northern Ireland. Scotland and Wales differ.</p>' +
-      '<p>Generated on ' + new Date().toLocaleDateString('en-GB') + '</p>' +
-      '<div class="warning">YOUR HOME MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE</div>' +
-      '</div></body></html>'
-    );
-    win.document.close();
-    win.print();
-
-    if (typeof BMSTracker !== 'undefined') {
-      try { BMSTracker.trackCTA('ftb_wizard_print'); } catch (e) {}
-    }
-  }
-
-  function row(label, value, isTotal) {
-    return '<div class="row' + (isTotal ? ' row--total' : '') + '">' +
-      '<span>' + esc(label) + '</span><span>' + esc(value) + '</span></div>';
-  }
-
-  // ----------------------------------------------------------- email capture
-
-  function submitCapture(e) {
-    e.preventDefault();
-
-    var errorBox = $('ftbCaptureError');
-    errorBox.hidden = true;
-
-    var name = ($('ftbCaptureName').value || '').trim();
-    var email = ($('ftbCaptureEmail').value || '').trim();
-
-    if (!name) { showCaptureError('Please add your name.'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showCaptureError('Please check your email address.');
-      return;
-    }
-
-    var submit = $('ftbCaptureSubmit');
-    submit.disabled = true;
-    submit.textContent = 'Sending…';
-
+  /** The figures, written out for an adviser to read in the enquiry. */
+  function resultsAsText() {
     var f = summaryFigures();
     var lines = [
-      'Sent from the first-time buyer wizard.',
-      '',
       'Could borrow — cautious ' + money(f.a.conservative) +
         ', typical ' + money(f.a.standard) +
         ', stretch ' + money(Math.max(0, f.a.maximum)) +
@@ -925,16 +865,48 @@
     } else {
       lines.push('No property price entered.');
     }
+    return lines;
+  }
+
+  /**
+   * Both summary buttons come through here. The figures are saved against the
+   * visitor either way; state.action decides what happens afterwards —
+   * a confirmation, or the Calendly booking popup.
+   */
+  function submitCapture(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    $('ftbCaptureError').hidden = true;
+
+    var name = ($('ftbCaptureName').value || '').trim();
+    var email = ($('ftbCaptureEmail').value || '').trim();
+    var wantsCall = state.action === 'call';
+
+    if (!name) { showCaptureError('Please add your name.'); focusField('ftbCaptureName'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showCaptureError('Please check your email address.');
+      focusField('ftbCaptureEmail');
+      return;
+    }
+
+    var pressed = $(wantsCall ? 'ftbCallBtn' : 'ftbEmailBtn');
+    setButtonsDisabled(true);
+    pressed.textContent = wantsCall ? 'Opening the calendar…' : 'Sending…';
+
+    var intro = wantsCall
+      ? 'Asked to arrange a call, from the first-time buyer wizard.'
+      : 'Asked for their results by email, from the first-time buyer wizard.';
 
     var payload = {
       name: name,
       email: email,
       phone: ($('ftbCapturePhone').value || '').trim() || null,
       enquiry_type: 'first-time-buyer',
-      topic: 'first-time-buyer-wizard',
-      message: lines.join('\n'),
+      topic: wantsCall ? 'first-time-buyer-wizard-call' : 'first-time-buyer-wizard-email',
+      message: [intro, ''].concat(resultsAsText()).join('\n'),
       website: $('ftbCaptureWebsite').value || '',
       elapsed_ms: Date.now() - state.openedAt,
+      // Ties the enquiry to everything else this visitor did on the site.
       visitor_id: trackerId('getVisitorId'),
       session_id: trackerId('getSessionId')
     };
@@ -947,19 +919,63 @@
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (!data.success) throw new Error(data.error || 'Something went wrong');
+
+        if (typeof BMSTracker !== 'undefined') {
+          try { BMSTracker.trackCTA(wantsCall ? 'ftb_wizard_call' : 'ftb_wizard_email'); } catch (err) {}
+        }
+
         $('ftbCapture').hidden = true;
         $('ftbCaptureSuccess').hidden = false;
-        if (typeof BMSTracker !== 'undefined') {
-          try { BMSTracker.trackCTA('ftb_wizard_capture'); } catch (err) {}
-        }
+        $('ftbCaptureSuccessMsg').textContent = wantsCall
+          ? 'Your figures are with us. Pick a time that suits you in the calendar — your adviser will have your results in front of them.'
+          : 'Your figures are with us. An adviser will email your results shortly, with a note on what they mean for you.';
+
+        if (wantsCall) openCalendly(name, email);
       })
       .catch(function (err) {
-        submit.disabled = false;
-        submit.textContent = 'Send me my results';
+        restoreButtonLabels();
+        setButtonsDisabled(false);
         showCaptureError(err.message === 'Failed to fetch'
           ? 'We could not reach the server. Please try again, or call 01452 925209.'
           : err.message);
       });
+  }
+
+  /**
+   * Calendly's popup, the same widget the rest of the site uses, pre-filled so
+   * nobody retypes what they just gave us. If the widget script has not loaded
+   * (blocked, offline), fall back to opening the booking page directly rather
+   * than leaving the button doing nothing.
+   */
+  function openCalendly(name, email) {
+    if (typeof Calendly !== 'undefined' && Calendly.initPopupWidget) {
+      Calendly.initPopupWidget({
+        url: CALENDLY_URL,
+        prefill: { name: name, email: email }
+      });
+    } else {
+      window.open(CALENDLY_URL, '_blank', 'noopener');
+    }
+  }
+
+  function setButtonsDisabled(disabled) {
+    $('ftbEmailBtn').disabled = disabled;
+    $('ftbCallBtn').disabled = disabled;
+  }
+
+  /**
+   * Put the labels back. Showing progress overwrites a button's contents,
+   * including its icon, so the original markup is kept from mount time rather
+   * than rebuilt from a string here.
+   */
+  function restoreButtonLabels() {
+    $('ftbEmailBtn').innerHTML = state.emailBtnLabel;
+    $('ftbCallBtn').innerHTML = state.callBtnLabel;
+  }
+
+  function focusField(id) {
+    var el = $(id);
+    if (el) el.focus();
   }
 
   function showCaptureError(message) {

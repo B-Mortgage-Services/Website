@@ -459,7 +459,11 @@ First-time buyer relief requires that **every** buyer is a first-time buyer, so 
 - The root carries `class="wellness-modal ftb-wizard"`. `.wellness-modal` is the shared modal chrome; the name is historical and means "modal", not "wellness".
 - Triggers are ordinary links to `/affordability-calculator/` carrying `data-ftb-open`, so they still work with JavaScript off.
 - Tracking is step-gated: `trackToolComplete` fires once, on reaching the summary with a real income, latched so revisiting the step cannot fire it again.
-- Email capture posts to `/api/contact`. **There is no email sending in this project** — it is deliberately worded as an adviser sending the results over, not an automated email. Do not reword it to promise an automated email unless that is actually built.
+- The summary offers two actions, **Email my results to me** and **Arrange a call**. Both save the figures to `contact_enquiries` via `/api/contact` with the `visitor_id` attached, so the enquiry ties back to everything else that visitor did. They differ only in `topic` and in what happens next.
+- **Arrange a call** then opens the Calendly popup (`Calendly.initPopupWidget`, the same widget the rest of the site uses) pre-filled with the name and email just entered. The page must load the Calendly assets in its `head` block. If the widget script has not loaded, it falls back to opening the booking page in a new tab.
+- Details are collected *before* Calendly rather than after. That is not an extra hurdle: Calendly needs a name and email to book anyway, and `contact_enquiries` requires both at database level, so there is no way to record the enquiry without them. Collecting them first means they are pre-filled into Calendly, so the visitor types less, not more.
+- **There is no email sending in this project.** `SENDGRID_API_KEY` is set as a Production secret but no code reads it. The success copy therefore says *an adviser will email your results*, which is true. **Do not reword it to promise an automated email until that is actually built** — see Todo.md.
+- There is no print button. The browser's own print command is handled by print rules keyed off `body.ftb-wizard-open`, which hide the page behind the modal and let the summary flow across pages. Without them printing gives one clipped screenful over the page behind.
 
 ### Watch out: unscoped selectors across modals
 
