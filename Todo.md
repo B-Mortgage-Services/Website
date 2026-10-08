@@ -227,6 +227,16 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
 
 ### Bugs found incidentally
 
+- [ ] **Twelve pages still have doubled titles.** `seoTitle` was added to the
+      new mortgage pages but not the rest, so these still render as
+      `<page> | B Mortgage Services | Expert Mortgage & Protection Advice` —
+      around 80 characters, where Google truncates near 60, so the useful half
+      is cut off. Affected: budget-planner, affordability-calculator,
+      overpayment-calculator, contact, wellness, wellness/report, individuals,
+      individuals/protection, employers, cookie-policy, tags, categories.
+      Fix by adding `seoTitle` to each page's front matter. Worth deciding the
+      wording per page rather than applying one pattern.
+
 - [ ] **`--text-light` is used but never defined.** Eight rules in `main.css`
       set `color: var(--text-light)` (lines 4806, 6398, 6419, 6462, 6501,
       6528, 6619, 6760) but the variable is absent from `:root`, which only
