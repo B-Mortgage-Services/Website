@@ -6,9 +6,13 @@
 
   Params:
     heading (string, required)
-    cards   (slice of dicts: title, body, label, url, icon)
+    cards   (slice of dicts: title, body, label, url, icon, ftbOpen)
 
   icon is one of: home, refresh, truck, briefcase, building
+
+  ftbOpen (optional) emits data-ftb-open, which makes the card open the
+  first-time buyer wizard instead of following its href. The href stays as the
+  no-JavaScript fallback, so set it to something that works on its own.
 */}}
 <section class="journeys section">
   <div class="container">
@@ -17,7 +21,7 @@
     <ul class="journeys__grid">
       {{ range .cards }}
       <li class="journey-card">
-        <a class="journey-card__link" href="{{ .url }}">
+        <a class="journey-card__link" href="{{ .url }}"{{ with .ftbOpen }} data-ftb-open="{{ . }}"{{ end }}>
           <span class="journey-card__icon" aria-hidden="true">
             {{ if eq .icon "home" }}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H10v6H4a1 1 0 01-1-1V9.5z"/></svg>

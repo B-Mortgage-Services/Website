@@ -539,6 +539,13 @@ section {
   inset: 0;
   overflow: hidden;
   z-index: 1;
+  /* Decoration only — it contains nothing but blurred blobs. Without this it
+     covers its entire section at z-index 1, and any hero content positioned
+     without a z-index of its own (.mhero__inner, for one) sits beneath it, so
+     the glow swallowed every click aimed at the hero buttons. That left the
+     CTAs on the first-time buyer, moving home and buy-to-let heroes
+     completely dead. */
+  pointer-events: none;
 }
 
 .ambient-glow__blob {
@@ -7005,6 +7012,467 @@ video.wellness-cta-overlay__media {
   .wellness-modal__close {
     top: var(--space-md);
     right: var(--space-md);
+  }
+}
+
+/* ================================================
+   TWO-ROUTE CHOICE (first-time buyer funnel)
+   Two equal entry points — the online tool and a
+   conversation — so neither reads as the fallback.
+   ================================================ */
+
+.route-choice__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+  align-items: stretch;
+}
+
+.route-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--medium-grey);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+}
+
+.route-card--primary {
+  border-color: var(--brand-orange);
+  background: var(--cream);
+}
+
+.route-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  /* Light grey, not white — the card itself is white, so a white tile would
+     be invisible. */
+  background: var(--light-grey);
+  color: var(--brand-orange);
+  margin-bottom: var(--space-lg);
+}
+
+.route-card--primary .route-card__icon {
+  background: var(--brand-orange);
+  color: var(--white);
+}
+
+.route-card__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.route-card__title {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-sm);
+  color: var(--brand-charcoal);
+}
+
+.route-card__body {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: var(--space-lg);
+}
+
+.route-card__points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-xl);
+}
+
+.route-card__points li {
+  position: relative;
+  padding-left: var(--space-xl);
+  margin-bottom: var(--space-sm);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.route-card__points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid var(--brand-orange);
+  border-bottom: 2px solid var(--brand-orange);
+  transform: rotate(-45deg);
+}
+
+/* Pushed to the bottom so both cards' buttons line up regardless of how much
+   text sits above them. */
+.route-card__cta {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+  .route-choice__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+  }
+
+  .route-card {
+    padding: var(--space-xl);
+  }
+
+  .route-card__cta {
+    align-self: stretch;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* ================================================
+   FIRST-TIME BUYER WIZARD
+   Only this wizard's own rules. The modal chrome
+   (.wellness-modal*) and the step chrome
+   (.wizard-progress / .wizard-panel / .wizard-nav)
+   are shared components, defined above.
+   ================================================ */
+
+.ftb-wizard__title {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+  color: var(--brand-charcoal);
+  padding-right: var(--space-2xl); /* clear of the close button */
+}
+
+.ftb-wizard__intro {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-xl);
+}
+
+/* The wizard's panel headers sit inside a modal, so they need less air and a
+   smaller heading than the full-page budget planner. */
+.ftb-wizard .wizard-panel__header {
+  margin-bottom: var(--space-xl);
+}
+
+.ftb-wizard .wizard-panel__header h2 {
+  font-size: 1.25rem;
+}
+
+.ftb-wizard .wizard-panel__header p {
+  font-size: 0.9rem;
+}
+
+.ftb-toggle {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* --- Step 2: borrowing results --- */
+
+.ftb-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.ftb-result {
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  border-top: 3px solid var(--medium-grey);
+  padding: var(--space-lg) var(--space-md);
+  text-align: center;
+}
+
+.ftb-result--highlight {
+  background: var(--cream);
+  border-top-color: var(--brand-orange);
+}
+
+.ftb-result__label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.ftb-result__amount {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--brand-charcoal);
+  line-height: 1.2;
+}
+
+.ftb-result--highlight .ftb-result__amount {
+  color: var(--brand-orange);
+}
+
+.ftb-result__repayment {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+  min-height: 1.2em;
+}
+
+.ftb-result__note {
+  font-size: 0.75rem;
+  color: var(--dark-grey);
+  margin-top: var(--space-sm);
+}
+
+.ftb-callout {
+  background: var(--cream);
+  border-left: 4px solid var(--brand-orange);
+  border-radius: var(--radius-sm);
+  padding: var(--space-lg);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.ftb-callout strong {
+  display: block;
+  color: var(--brand-charcoal);
+  margin-bottom: var(--space-xs);
+}
+
+/* --- Step 3: the first-time buyer confirmation and breakdown --- */
+
+.ftb-confirm {
+  background: var(--cream);
+  border: 1px solid var(--brand-orange);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.ftb-confirm__label {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.ftb-confirm__label input {
+  /* Flush with the first line of text, and large enough to tap. */
+  width: 20px;
+  height: 20px;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  accent-color: var(--brand-orange);
+}
+
+.ftb-confirm__label strong {
+  display: block;
+  color: var(--brand-charcoal);
+  margin-bottom: 2px;
+}
+
+.ftb-breakdown {
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.ftb-breakdown__title {
+  font-size: 1rem;
+  margin-bottom: var(--space-md);
+  color: var(--brand-charcoal);
+}
+
+.ftb-breakdown__row,
+.ftb-summary__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--medium-grey);
+  font-size: 0.9rem;
+}
+
+.ftb-breakdown__row > span:first-child,
+.ftb-summary__row > span:first-child {
+  color: var(--text-secondary);
+}
+
+.ftb-breakdown__row > span:last-child,
+.ftb-summary__row > span:last-child {
+  font-weight: 600;
+  color: var(--brand-charcoal);
+  white-space: nowrap;
+}
+
+.ftb-breakdown__row--total,
+.ftb-summary__row--total {
+  border-bottom: none;
+  border-top: 2px solid var(--brand-charcoal);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-md);
+}
+
+.ftb-breakdown__row--total > span,
+.ftb-summary__row--total > span {
+  font-weight: 700;
+  color: var(--brand-charcoal);
+}
+
+.ftb-breakdown__row--total > span:last-child,
+.ftb-summary__row--total > span:last-child {
+  color: var(--brand-orange);
+  font-size: 1.05rem;
+}
+
+.ftb-note {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+  line-height: 1.5;
+  margin-top: var(--space-md);
+}
+
+.ftb-note--risk {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--medium-grey);
+}
+
+.ftb-note--risk strong {
+  display: block;
+  margin-top: var(--space-sm);
+  color: var(--brand-charcoal);
+}
+
+/* --- Step 4: summary, print and capture --- */
+
+.ftb-summary__section {
+  margin-bottom: var(--space-xl);
+}
+
+.ftb-summary__section h3 {
+  font-size: 1rem;
+  margin-bottom: var(--space-sm);
+  color: var(--brand-charcoal);
+}
+
+.ftb-summary__actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
+}
+
+.ftb-summary__actions .btn {
+  flex: 1 1 14rem;
+  justify-content: center;
+}
+
+.ftb-capture {
+  background: var(--light-grey);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.ftb-capture--done {
+  background: var(--cream);
+  border: 1px solid var(--brand-orange);
+}
+
+.ftb-capture__title {
+  font-size: 1rem;
+  margin-bottom: var(--space-xs);
+  color: var(--brand-charcoal);
+}
+
+.ftb-capture__intro {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  line-height: 1.5;
+}
+
+.ftb-capture__error {
+  background: #FEE2E2;
+  border: 1px solid #DC2626;
+  color: #991B1B;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-md);
+}
+
+.ftb-capture__privacy {
+  font-size: 0.75rem;
+  color: var(--dark-grey);
+  margin-top: var(--space-md);
+}
+
+.ftb-optional {
+  font-weight: 400;
+  color: var(--dark-grey);
+}
+
+/* Honeypot: off-screen rather than display:none, since some bots skip hidden
+   fields but not positioned ones. Never shown to a person — no visible label,
+   not in the tab order, and aria-hidden on the wrapper. */
+.ftb-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  /* Four results would be 80px wide each at 375px. Stack them. */
+  .ftb-results {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .ftb-result {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label  amount"
+      "note   repay";
+    text-align: left;
+    align-items: center;
+    gap: 0 var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .ftb-result__label  { grid-area: label; margin-bottom: 0; }
+  .ftb-result__amount { grid-area: amount; text-align: right; }
+  .ftb-result__note   { grid-area: note; margin-top: 2px; }
+  .ftb-result__repayment {
+    grid-area: repay;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  .ftb-wizard__title { font-size: 1.25rem; }
+
+  /* The shared component hides the whole step row on mobile, which suits the
+     budget planner's eight steps but leaves this four-step wizard with an
+     empty gap and no sense of position. Four numbered dots fit at 375px, so
+     bring the row back and drop only the labels. */
+  .ftb-wizard .wizard-progress__steps {
+    display: flex;
+  }
+
+  .ftb-wizard .wizard-step__label {
+    display: none;
+  }
+
+  .ftb-summary__actions .btn {
+    flex-basis: 100%;
   }
 }
 

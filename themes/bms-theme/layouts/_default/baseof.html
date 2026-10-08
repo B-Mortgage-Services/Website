@@ -69,5 +69,12 @@
   {{ if .Params.wellnessModal }}
   {{ partial "wellness-modal.html" . }}
   {{ end }}
+
+  {{/* Same arrangement for the first-time buyer wizard: set ftbWizard: true
+       in front matter. A page that gains a trigger without the param still
+       works — openFtbWizard falls back to /affordability-calculator/. */}}
+  {{ if .Params.ftbWizard }}
+  {{ partial "ftb-wizard.html" . }}
+  {{ end }}
 </body>
 </html>

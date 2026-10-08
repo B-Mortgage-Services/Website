@@ -12,8 +12,10 @@
       <h1 class="mhero__title">Buying your first home can feel complicated. It doesn&rsquo;t have to be.</h1>
       <p class="mhero__sub">We&rsquo;ll help you understand what you could borrow, what you&rsquo;ll need to save, and exactly what happens between &ldquo;we&rsquo;d love to buy a house&rdquo; and getting the keys. You&rsquo;ll have one adviser with you the whole way.</p>
 
+      {{/* data-ftb-open opens the four-step wizard. The href is a real
+           fallback, so this still works with JavaScript off. */}}
       <div class="mhero__actions">
-        <a href="/affordability-calculator/" class="btn btn--primary btn--large">Check what I could borrow</a>
+        <a href="/affordability-calculator/" class="btn btn--primary btn--large" data-ftb-open="ftb_hero">Check what I could borrow</a>
         <a href="/contact/?topic=first-time-buyer" class="btn btn--secondary btn--large">Talk to an adviser</a>
       </div>
 
@@ -25,6 +27,55 @@
       <!-- INPUT NEEDED: Q12 — image slot intentionally left empty. Brief recommends
            no photo until real photography exists (a couple at a kitchen table with a
            laptop and paperwork). Do not use clientmeeting.jpg or key-holding stock. -->
+    </div>
+  </div>
+</section>
+
+<!-- 5.1b Two ways to start — presented as equals, so neither route feels like
+     the lesser option. The online tool suits people who want a figure before
+     they talk to anyone; the conversation suits people who would rather ask. -->
+<section class="section route-choice">
+  <div class="container">
+    <h2 class="text-center">Two ways to start</h2>
+    <p class="section-intro text-center">Whichever you pick, there&rsquo;s no cost and no commitment.</p>
+
+    <div class="route-choice__grid">
+      <div class="route-card route-card--primary">
+        <span class="route-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+        </span>
+        <h3 class="route-card__title">Work it out online</h3>
+        <p class="route-card__body">
+          Four short questions and you&rsquo;ll see what you could borrow, what
+          the monthly payment might be, and the upfront costs on top of your
+          deposit &mdash; including stamp duty at first-time buyer rates.
+        </p>
+        <ul class="route-card__points">
+          <li>Takes about three minutes</li>
+          <li>No credit check and nothing submitted</li>
+          <li>Print your figures or keep them to yourself</li>
+        </ul>
+        <a href="/affordability-calculator/" class="btn btn--primary btn--large route-card__cta" data-ftb-open="ftb_route_card">Start the calculator</a>
+      </div>
+
+      <div class="route-card">
+        <span class="route-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </span>
+        <h3 class="route-card__title">Talk it through with someone</h3>
+        <p class="route-card__body">
+          A calculator can&rsquo;t ask follow-up questions. If your situation has
+          anything unusual in it &mdash; self-employment, a thin credit file,
+          family helping with the deposit &mdash; a conversation will get you
+          further than a form.
+        </p>
+        <ul class="route-card__points">
+          <li>One adviser, start to finish</li>
+          <li>Free first conversation, no obligation</li>
+          <li>No impact on your credit score</li>
+        </ul>
+        <a href="/contact/?topic=first-time-buyer" class="btn btn--secondary btn--large route-card__cta">Talk to an adviser</a>
+      </div>
     </div>
   </div>
 </section>
@@ -164,8 +215,9 @@
   "heading" "Helpful tools"
   "cards" (slice
     (dict "icon" "building" "title" "How much could I borrow?"
-          "body" "Our affordability calculator gives you an indicative figure based on your income and outgoings."
-          "label" "Try the calculator" "url" "/affordability-calculator/")
+          "body" "Four short steps gives you an indicative figure, your likely monthly payment, and the upfront costs on top of your deposit."
+          "label" "Work out my figures" "url" "/affordability-calculator/"
+          "ftbOpen" "ftb_tools_card")
     (dict "icon" "briefcase" "title" "What could I comfortably afford each month?"
           "body" "The budget planner helps you see what a mortgage payment would feel like alongside everything else."
           "label" "Plan my budget" "url" "/budget-planner/")

@@ -227,6 +227,15 @@ are the pattern to follow — hero, what we help with, process, FAQs, CTA.
 
 ### Bugs found incidentally
 
+- [ ] **`--text-light` is used but never defined.** Eight rules in `main.css`
+      set `color: var(--text-light)` (lines 4806, 6398, 6419, 6462, 6501,
+      6528, 6619, 6760) but the variable is absent from `:root`, which only
+      defines `--text-primary` and `--text-secondary`. With no fallback value
+      those rules do nothing and the text inherits whatever colour its parent
+      has — mostly on the budget planner. Either add the variable or change
+      those eight rules to `--dark-grey` (#666). Needs a look at the affected
+      pages to decide which, since adding it will change how they render.
+
 - [ ] **Missing favicon.** `baseof.html:32` points at `images/favicon.png`,
       but that file exists nowhere in the repo — not in `static/images/` nor
       `themes/bms-theme/static/images/`. Every page therefore 404s on its

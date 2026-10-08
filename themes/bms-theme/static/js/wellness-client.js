@@ -122,7 +122,7 @@ function closeWellnessModal() {
  */
 function resetWellnessForm() {
   // Reset all steps to hidden except step 1
-  var steps = document.querySelectorAll('.wellness-step');
+  var steps = document.querySelectorAll('#wellnessModal .wellness-step');
   for (var i = 0; i < steps.length; i++) {
     steps[i].style.display = 'none';
   }
@@ -130,7 +130,7 @@ function resetWellnessForm() {
   if (step1) step1.style.display = 'block';
 
   // Reset progress dots
-  var dots = document.querySelectorAll('.step-dot');
+  var dots = document.querySelectorAll('#wellnessModal .step-dot');
   for (var j = 0; j < dots.length; j++) {
     dots[j].classList.toggle('step-dot--active', j === 0);
   }
@@ -395,7 +395,7 @@ async function submitWellnessCheck(formData) {
  */
 function displayResults(data) {
   // Hide all steps
-  var steps = document.querySelectorAll('.wellness-step');
+  var steps = document.querySelectorAll('#wellnessModal .wellness-step');
   for (var i = 0; i < steps.length; i++) {
     steps[i].style.display = 'none';
   }
@@ -406,12 +406,14 @@ function displayResults(data) {
     resultsSection.style.display = 'block';
   }
 
-  // Scroll modal container to top
-  var scrollEl = document.querySelector('.wellness-modal__scroll');
+  // Scroll modal container to top. Scoped to #wellnessModal: other modals
+  // reuse the .wellness-modal styling, so an unscoped class lookup would
+  // match whichever one happened to mount into <body> first.
+  var scrollEl = document.querySelector('#wellnessModal .wellness-modal__scroll');
   if (scrollEl) scrollEl.scrollTo(0, 0);
 
   // Update progress dots to show all complete
-  var dots = document.querySelectorAll('.step-dot');
+  var dots = document.querySelectorAll('#wellnessModal .step-dot');
   for (var j = 0; j < dots.length; j++) {
     dots[j].classList.add('step-dot--active');
   }
@@ -1268,7 +1270,7 @@ async function calculateScore() {
  * Navigate between wizard steps
  */
 function nextStep(step) {
-  var steps = document.querySelectorAll('.wellness-step');
+  var steps = document.querySelectorAll('#wellnessModal .wellness-step');
   for (var i = 0; i < steps.length; i++) {
     steps[i].style.display = 'none';
   }
@@ -1276,13 +1278,13 @@ function nextStep(step) {
   if (target) target.style.display = 'block';
 
   // Update progress dots
-  var dots = document.querySelectorAll('.step-dot');
+  var dots = document.querySelectorAll('#wellnessModal .step-dot');
   for (var j = 0; j < dots.length; j++) {
     dots[j].classList.toggle('step-dot--active', j < step);
   }
 
-  // Scroll modal container to top
-  var scrollEl = document.querySelector('.wellness-modal__scroll');
+  // Scroll modal container to top (scoped — see note in displayResults)
+  var scrollEl = document.querySelector('#wellnessModal .wellness-modal__scroll');
   if (scrollEl) scrollEl.scrollTo(0, 0);
 }
 

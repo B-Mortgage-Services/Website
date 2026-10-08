@@ -1,0 +1,1034 @@
+{{/*
+  First-time buyer wizard — the affordability and moving cost calculators
+  packaged as a four-step modal, with first-time buyer status assumed.
+
+  Held in a <template> rather than live markup, for the same reasons as
+  wellness-modal.html: roughly twenty form fields, a dozen headings and four
+  panels would otherwise sit in the DOM, the accessibility tree and the
+  crawlable content of a page most visitors never open. Template content is
+  inert until ftbWizard() clones it into <body> on first open.
+
+  The root carries BOTH .wellness-modal and .ftb-wizard. The first is the
+  shared modal chrome — overlay, container, scroll area, close button, form
+  fields and the mobile bottom-sheet treatment, some of which is keyed to a
+  .wellness-modal ancestor (main.css:6961). The name is historical and means
+  "modal", not "wellness"; .ftb-wizard carries this wizard's own rules.
+
+  The step chrome (.wizard-progress / .wizard-panel / .wizard-nav) is the
+  budget planner's component, reused unchanged.
+
+  Include via the ftbWizard front-matter param, gated in baseof.html.
+*/}}
+<template id="ftb-wizard-template">
+<div class="wellness-modal ftb-wizard" id="ftbWizard" role="dialog" aria-modal="true" aria-labelledby="ftbWizardTitle">
+  <div class="wellness-modal__overlay" data-ftb-close></div>
+  <div class="wellness-modal__container">
+    <button type="button" class="wellness-modal__close" data-ftb-close aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <div class="wellness-modal__scroll">
+
+      <h2 class="ftb-wizard__title" id="ftbWizardTitle">What could you afford?</h2>
+      <p class="ftb-wizard__intro">
+        Four short steps. Nothing is submitted and no credit check is run —
+        this is an estimate to help you plan.
+      </p>
+
+      <div class="wizard-progress">
+        <div class="wizard-progress__bar">
+          <div class="wizard-progress__fill" id="ftbProgressFill"></div>
+        </div>
+        <div class="wizard-progress__steps">
+          <div class="wizard-step active" data-step="1">
+            <span class="wizard-step__number">1</span>
+            <span class="wizard-step__label">About you</span>
+          </div>
+          <div class="wizard-step" data-step="2">
+            <span class="wizard-step__number">2</span>
+            <span class="wizard-step__label">Borrowing</span>
+          </div>
+          <div class="wizard-step" data-step="3">
+            <span class="wizard-step__number">3</span>
+            <span class="wizard-step__label">Buying costs</span>
+          </div>
+          <div class="wizard-step" data-step="4">
+            <span class="wizard-step__number">4</span>
+            <span class="wizard-step__label">Summary</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ Step 1: About you ============ -->
+      <div class="wizard-panel active" data-panel="1">
+        <div class="wizard-panel__header">
+          <h2>About you</h2>
+          <p>Your income and existing commitments. Rounded figures are fine.</p>
+        </div>
+
+        <div class="form-group">
+          <label id="ftbAppTypeLabel" class="form-label">Who is buying?</label>
+          <div class="ftb-toggle" role="group" aria-labelledby="ftbAppTypeLabel">
+            <button type="button" class="toggle-btn toggle-btn--active" data-ftb-type="single" aria-pressed="true">Just me</button>
+            <button type="button" class="toggle-btn" data-ftb-type="joint" aria-pressed="false">Me and someone else</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ftbYourIncome" class="form-label">Your annual income before tax</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbYourIncome" class="form-input" inputmode="numeric" autocomplete="off" placeholder="32,000">
+          </div>
+          <div class="form-hint" id="ftbYourNetPay"></div>
+        </div>
+
+        <div class="form-group" id="ftbPartnerIncomeGroup" hidden>
+          <label for="ftbPartnerIncome" class="form-label">Their annual income before tax</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbPartnerIncome" class="form-input" inputmode="numeric" autocomplete="off" placeholder="28,000">
+          </div>
+          <div class="form-hint" id="ftbPartnerNetPay"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="ftbCreditCards" class="form-label">Credit card balances</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbCreditCards" class="form-input" inputmode="numeric" autocomplete="off" placeholder="0">
+          </div>
+          <div class="form-hint">
+            The total you owe, not the monthly payment. Lenders treat the
+            balance as an ongoing commitment.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ftbLoansHP" class="form-label">Loan and car finance payments</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbLoansHP" class="form-input" inputmode="numeric" autocomplete="off" placeholder="0">
+          </div>
+          <div class="form-hint">Per month.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="ftbOtherOutgoings" class="form-label">Other regular commitments</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbOtherOutgoings" class="form-input" inputmode="numeric" autocomplete="off" placeholder="0">
+          </div>
+          <div class="form-hint">
+            Per month — childcare, maintenance, student loan. Not your rent or
+            food shop.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="term-slider">
+            <div class="term-slider__header">
+              <label for="ftbTerm" class="term-slider__label">Mortgage term</label>
+              <span class="term-slider__value"><span id="ftbTermValue">{{ site.Data.affordability.mortgageTerm.defaultYears }}</span> years</span>
+            </div>
+            <input type="range" id="ftbTerm" class="term-slider__input" step="1"
+                   min="{{ site.Data.affordability.mortgageTerm.minYears }}"
+                   max="{{ site.Data.affordability.mortgageTerm.maxYears }}"
+                   value="{{ site.Data.affordability.mortgageTerm.defaultYears }}">
+            <div class="term-slider__range">
+              <span>{{ site.Data.affordability.mortgageTerm.minYears }} years</span>
+              <span>{{ site.Data.affordability.mortgageTerm.maxYears }} years</span>
+            </div>
+          </div>
+          <div class="form-hint">A longer term lowers the monthly payment but costs more overall.</div>
+        </div>
+      </div>
+
+      <!-- ============ Step 2: Borrowing ============ -->
+      <div class="wizard-panel" data-panel="2">
+        <div class="wizard-panel__header">
+          <h2>What you could borrow</h2>
+          <p>Three estimates, because lenders differ. Most first-time buyers land near the middle one.</p>
+        </div>
+
+        <div class="ftb-results">
+          <div class="ftb-result">
+            <div class="ftb-result__label">Cautious</div>
+            <div class="ftb-result__amount" id="ftbResultConservative">£0</div>
+            <div class="ftb-result__repayment" id="ftbRepaymentConservative"></div>
+            <div class="ftb-result__note">Comfortable with almost any lender.</div>
+          </div>
+          <div class="ftb-result ftb-result--highlight">
+            <div class="ftb-result__label">Typical</div>
+            <div class="ftb-result__amount" id="ftbResultStandard">£0</div>
+            <div class="ftb-result__repayment" id="ftbRepaymentStandard"></div>
+            <div class="ftb-result__note">The most common lending criteria.</div>
+          </div>
+          <div class="ftb-result">
+            <div class="ftb-result__label">Stretch</div>
+            <div class="ftb-result__amount" id="ftbResultMaximum">£0</div>
+            <div class="ftb-result__repayment" id="ftbRepaymentMaximum"></div>
+            <div class="ftb-result__note">Needs a strong file and a specific lender.</div>
+          </div>
+        </div>
+
+        <p class="ftb-note" id="ftbBorrowingEmpty" hidden>
+          Add an income on the previous step to see an estimate.
+        </p>
+
+        <div class="ftb-callout">
+          <strong>Why the range is wide.</strong>
+          Lenders weigh income type, credit history, dependants and existing
+          commitments differently, and some will lend considerably more than
+          others on identical figures. Finding which one suits your
+          circumstances is the part an adviser does.
+        </div>
+      </div>
+
+      <!-- ============ Step 3: Buying costs ============ -->
+      <div class="wizard-panel" data-panel="3">
+        <div class="wizard-panel__header">
+          <h2>The cost of buying</h2>
+          <p>The one-off costs on top of your deposit — the part that catches most first-time buyers out.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="ftbHousePrice" class="form-label">Property price</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbHousePrice" class="form-input" inputmode="numeric" autocomplete="off" placeholder="250,000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ftbDeposit" class="form-label">Your deposit</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">£</span>
+            <input type="text" id="ftbDeposit" class="form-input" inputmode="numeric" autocomplete="off" placeholder="25,000">
+          </div>
+          <div class="form-hint" id="ftbDepositLtv"></div>
+        </div>
+
+        <div class="form-group">
+          <div class="term-slider">
+            <div class="term-slider__header">
+              <label for="ftbRate" class="term-slider__label">Interest rate</label>
+              <span class="term-slider__value"><span id="ftbRateValue">{{ site.Data.affordability.interestRates.movingCostDefault }}</span>%</span>
+            </div>
+            <input type="range" id="ftbRate" class="term-slider__input" min="1" max="8" step="0.25"
+                   value="{{ site.Data.affordability.interestRates.movingCostDefault }}">
+            <div class="term-slider__range">
+              <span>1%</span>
+              <span>8%</span>
+            </div>
+          </div>
+          <div class="form-hint">An assumption for the estimate, not a rate we are offering.</div>
+        </div>
+
+        {{/* GOV.UK: relief applies only if "you and anyone else you're buying
+             with are first-time buyers". Unticked means standard rates, which
+             is the safe default — it overstates rather than understates. */}}
+        <div class="ftb-confirm">
+          <label class="ftb-confirm__label">
+            <input type="checkbox" id="ftbAllFirstTimeBuyers">
+            <span>
+              <strong>Everyone buying this home is a first-time buyer.</strong>
+              First-time buyer stamp duty relief only applies if that is true of
+              every buyer, so we assume standard rates until you confirm it.
+            </span>
+          </label>
+        </div>
+
+        <div class="ftb-breakdown">
+          <h3 class="ftb-breakdown__title">Your estimate</h3>
+          <div class="ftb-breakdown__row">
+            <span>Mortgage needed</span>
+            <span id="ftbMortgageAmount">£0</span>
+          </div>
+          <div class="ftb-breakdown__row">
+            <span>Monthly payment</span>
+            <span id="ftbMonthlyPayment">£0</span>
+          </div>
+          <div class="ftb-breakdown__row">
+            <span id="ftbStampDutyLabel">Stamp duty (standard rates)</span>
+            <span id="ftbStampDuty">£0</span>
+          </div>
+          <div class="ftb-breakdown__row">
+            <span>Legal fees</span>
+            <span id="ftbLegalFees">£0</span>
+          </div>
+          <div class="ftb-breakdown__row">
+            <span>Survey</span>
+            <span id="ftbSurvey">£0</span>
+          </div>
+          <div class="ftb-breakdown__row ftb-breakdown__row--total">
+            <span>Upfront costs, excluding deposit</span>
+            <span id="ftbTotalCosts">£0</span>
+          </div>
+        </div>
+
+        <p class="ftb-note">
+          Stamp duty figures are for England and Northern Ireland. Scotland and
+          Wales charge different taxes at different thresholds.
+        </p>
+      </div>
+
+      <!-- ============ Step 4: Summary ============ -->
+      <div class="wizard-panel" data-panel="4">
+        <div class="wizard-panel__header">
+          <h2>Your summary</h2>
+          <p>Everything together. Print it, or have an adviser go through it with you.</p>
+        </div>
+
+        <div class="ftb-summary" id="ftbSummary"></div>
+
+        <div class="ftb-summary__actions">
+          <button type="button" class="btn btn--outline" id="ftbPrintBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Print or save as PDF
+          </button>
+          <a class="btn btn--primary" href="/contact/?topic=first-time-buyer">Talk to an adviser</a>
+        </div>
+
+        {{/* There is no automated email in this project, so this is framed as
+             an adviser sending the figures over — a promise the site can keep.
+             It posts to the existing, spam-protected /api/contact. */}}
+        <div class="ftb-capture" id="ftbCapture">
+          <h3 class="ftb-capture__title">Would you like these figures sent over?</h3>
+          <p class="ftb-capture__intro">
+            Leave your details and an adviser will send your results with a note
+            on what they mean for you. Optional — you can print the summary and
+            leave it there.
+          </p>
+          <form id="ftbCaptureForm" novalidate>
+            <div class="form-group">
+              <label for="ftbCaptureName" class="form-label">Your name</label>
+              <input type="text" id="ftbCaptureName" class="form-input" autocomplete="name" required>
+            </div>
+            <div class="form-group">
+              <label for="ftbCaptureEmail" class="form-label">Email</label>
+              <input type="email" id="ftbCaptureEmail" class="form-input" autocomplete="email" required>
+            </div>
+            <div class="form-group">
+              <label for="ftbCapturePhone" class="form-label">Phone <span class="ftb-optional">(optional)</span></label>
+              <input type="tel" id="ftbCapturePhone" class="form-input" autocomplete="tel">
+            </div>
+            {{/* Honeypot: hidden from people, irresistible to bots. Matches the
+                 `website` field functions/api/contact.js checks. */}}
+            <div class="ftb-honeypot" aria-hidden="true">
+              <label for="ftbCaptureWebsite">Website</label>
+              <input type="text" id="ftbCaptureWebsite" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <div class="ftb-capture__error" id="ftbCaptureError" hidden></div>
+            <button type="submit" class="btn btn--primary" id="ftbCaptureSubmit">Send me my results</button>
+            <p class="ftb-capture__privacy">
+              We use your details to respond to this enquiry. See our
+              <a href="/privacy-policy/">privacy policy</a>.
+            </p>
+          </form>
+        </div>
+
+        <div class="ftb-capture ftb-capture--done" id="ftbCaptureSuccess" hidden>
+          <h3 class="ftb-capture__title">Thank you</h3>
+          <p>Your details are with us and an adviser will be in touch with your results.</p>
+        </div>
+
+        <p class="ftb-note ftb-note--risk">
+          These figures are an estimate for guidance only, not a mortgage offer
+          or advice. What you can actually borrow depends on a full assessment
+          of your circumstances and the lender's criteria.
+          <strong>Your home may be repossessed if you do not keep up repayments
+          on your mortgage.</strong>
+        </p>
+      </div>
+
+      <div class="wizard-nav">
+        <button type="button" class="btn btn--outline" id="ftbPrevBtn" style="visibility: hidden;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+        <button type="button" class="btn btn--primary btn--large" id="ftbNextBtn">
+          Next
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</template>
+
+{{/* Config for the maths. Harmless if the page already includes it. */}}
+{{ partial "calc-config.html" . }}
+<script src="{{ "js/mortgage-calcs.js" | relURL }}"></script>
+
+{{/* Deliberately outside the <template> — script inside template content is
+     never executed, so these definitions must live in the page. */}}
+<script>
+(function () {
+  'use strict';
+
+  var TOTAL_STEPS = 4;
+
+  // All wizard state lives here rather than in page-level globals, so nothing
+  // can collide with the calculator page or the wellness modal.
+  var state = {
+    step: 1,
+    applicationType: 'single',
+    openedAt: 0,
+    tracked: false,
+    mounted: false
+  };
+
+  var root = null;
+
+  /** Scoped lookups. Never query the document for wizard elements. */
+  function $(id) { return root ? root.querySelector('#' + id) : null; }
+  function $$(sel) { return root ? root.querySelectorAll(sel) : []; }
+
+  function val(id) { return BMSCalcs.parseFormattedNumber(($(id) || {}).value); }
+  function money(n) { return BMSCalcs.formatCurrency(n); }
+
+  // ---------------------------------------------------------------- mounting
+
+  /**
+   * Clone the template into <body> on first open and wire up its listeners.
+   * Everything is bound here rather than with inline onclick so the handlers
+   * stay inside this closure.
+   */
+  function ensureWizard() {
+    if (state.mounted && root) return root;
+
+    var tpl = document.getElementById('ftb-wizard-template');
+    if (!tpl || !tpl.content) return null;
+
+    document.body.appendChild(tpl.content.cloneNode(true));
+    root = document.getElementById('ftbWizard');
+    if (!root) return null;
+    state.mounted = true;
+
+    // Close controls
+    var closers = $$('[data-ftb-close]');
+    for (var i = 0; i < closers.length; i++) {
+      closers[i].addEventListener('click', closeWizard);
+    }
+
+    // Application type toggle
+    var toggles = $$('[data-ftb-type]');
+    for (var j = 0; j < toggles.length; j++) {
+      toggles[j].addEventListener('click', function () {
+        setApplicationType(this.getAttribute('data-ftb-type'));
+      });
+    }
+
+    // Money inputs: reformat with thousands separators, then recalculate.
+    ['ftbYourIncome', 'ftbPartnerIncome', 'ftbCreditCards', 'ftbLoansHP',
+     'ftbOtherOutgoings', 'ftbHousePrice', 'ftbDeposit'].forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('input', function () {
+        formatMoneyInput(el);
+        refresh();
+      });
+    });
+
+    var term = $('ftbTerm');
+    if (term) term.addEventListener('input', function () {
+      $('ftbTermValue').textContent = term.value;
+      refresh();
+    });
+
+    var rate = $('ftbRate');
+    if (rate) rate.addEventListener('input', function () {
+      $('ftbRateValue').textContent = rate.value;
+      refresh();
+    });
+
+    var ftbTick = $('ftbAllFirstTimeBuyers');
+    if (ftbTick) ftbTick.addEventListener('change', refresh);
+
+    $('ftbPrevBtn').addEventListener('click', function () { changeStep(-1); });
+    $('ftbNextBtn').addEventListener('click', function () { changeStep(1); });
+    $('ftbPrintBtn').addEventListener('click', printSummary);
+    $('ftbCaptureForm').addEventListener('submit', submitCapture);
+
+    return root;
+  }
+
+  /** "32000" -> "32,000", preserving nothing but digits. */
+  function formatMoneyInput(el) {
+    var digits = el.value.replace(/[^0-9]/g, '');
+    el.value = digits ? parseInt(digits, 10).toLocaleString('en-GB') : '';
+  }
+
+  // ------------------------------------------------------------- open / close
+
+  function openWizard(options) {
+    options = options || {};
+    if (!ensureWizard()) {
+      // The page did not ship the template. Send them to the full calculator
+      // rather than having the button do nothing.
+      window.location.href = '/affordability-calculator/';
+      return;
+    }
+
+    reset();
+    root.classList.add('wellness-modal--open');
+
+    state.openedAt = Date.now();
+    window._scrollLockY = window.pageYOffset;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + window._scrollLockY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+
+    if (options.source) root.dataset.source = options.source;
+
+    var first = $('ftbYourIncome');
+    if (first) first.focus();
+  }
+
+  function closeWizard() {
+    if (!root) return;
+
+    // Only warn if they are mid-way and have actually entered something.
+    if (state.step > 1 && state.step < TOTAL_STEPS && val('ftbYourIncome') > 0) {
+      if (!confirm('You have an estimate in progress. Close it anyway?')) return;
+    }
+
+    root.classList.remove('wellness-modal--open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, window._scrollLockY || 0);
+  }
+
+  function reset() {
+    ['ftbYourIncome', 'ftbPartnerIncome', 'ftbCreditCards', 'ftbLoansHP',
+     'ftbOtherOutgoings', 'ftbHousePrice', 'ftbDeposit', 'ftbCaptureName',
+     'ftbCaptureEmail', 'ftbCapturePhone', 'ftbCaptureWebsite'].forEach(function (id) {
+      var el = $(id);
+      if (el) el.value = '';
+    });
+
+    var tick = $('ftbAllFirstTimeBuyers');
+    if (tick) tick.checked = false;
+
+    var term = $('ftbTerm');
+    if (term) {
+      term.value = AFFORDABILITY_CONFIG.mortgageTerm.defaultYears;
+      $('ftbTermValue').textContent = term.value;
+    }
+    var rate = $('ftbRate');
+    if (rate) {
+      rate.value = AFFORDABILITY_CONFIG.rates.movingCostDefault;
+      $('ftbRateValue').textContent = rate.value;
+    }
+
+    $('ftbCapture').hidden = false;
+    $('ftbCaptureSuccess').hidden = true;
+    $('ftbCaptureError').hidden = true;
+    var submit = $('ftbCaptureSubmit');
+    submit.disabled = false;
+    submit.textContent = 'Send me my results';
+
+    state.tracked = false;
+    setApplicationType('single');
+    goToStep(1);
+    refresh();
+  }
+
+  // ---------------------------------------------------------------- stepping
+
+  function setApplicationType(type) {
+    state.applicationType = type;
+
+    var toggles = $$('[data-ftb-type]');
+    for (var i = 0; i < toggles.length; i++) {
+      var isActive = toggles[i].getAttribute('data-ftb-type') === type;
+      toggles[i].classList.toggle('toggle-btn--active', isActive);
+      toggles[i].setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    }
+
+    var group = $('ftbPartnerIncomeGroup');
+    if (group) {
+      group.hidden = type !== 'joint';
+      if (type !== 'joint') {
+        $('ftbPartnerIncome').value = '';
+        $('ftbPartnerNetPay').textContent = '';
+      }
+    }
+    refresh();
+  }
+
+  function goToStep(step) {
+    state.step = step;
+
+    for (var i = 1; i <= TOTAL_STEPS; i++) {
+      var panel = root.querySelector('.wizard-panel[data-panel="' + i + '"]');
+      var marker = root.querySelector('.wizard-step[data-step="' + i + '"]');
+      panel.classList.toggle('active', i === step);
+      marker.classList.toggle('active', i === step);
+      marker.classList.toggle('completed', i < step);
+    }
+
+    $('ftbProgressFill').style.width = (((step - 1) / (TOTAL_STEPS - 1)) * 100) + '%';
+    $('ftbPrevBtn').style.visibility = step === 1 ? 'hidden' : 'visible';
+    $('ftbNextBtn').style.display = step === TOTAL_STEPS ? 'none' : 'inline-flex';
+
+    var scroll = root.querySelector('.wellness-modal__scroll');
+    if (scroll) scroll.scrollTo(0, 0);
+  }
+
+  function changeStep(direction) {
+    var next = state.step + direction;
+    if (next < 1 || next > TOTAL_STEPS) return;
+
+    goToStep(next);
+    refresh();
+
+    if (next === TOTAL_STEPS) {
+      buildSummary();
+      trackCompletion();
+    }
+  }
+
+  // -------------------------------------------------------------- calculating
+
+  function affordabilityInputs() {
+    return {
+      yourIncome: val('ftbYourIncome'),
+      partnerIncome: val('ftbPartnerIncome'),
+      applicationType: state.applicationType,
+      creditCards: val('ftbCreditCards'),
+      loansHP: val('ftbLoansHP'),
+      otherOutgoings: val('ftbOtherOutgoings'),
+      termYears: parseInt(($('ftbTerm') || {}).value, 10) || AFFORDABILITY_CONFIG.mortgageTerm.defaultYears,
+      config: AFFORDABILITY_CONFIG,
+      taxConfig: TAX_CONFIG
+    };
+  }
+
+  function costInputs() {
+    return {
+      housePrice: val('ftbHousePrice'),
+      salePrice: 0,
+      deposit: val('ftbDeposit'),
+      rate: parseFloat(($('ftbRate') || {}).value) || 0,
+      termYears: parseInt(($('ftbTerm') || {}).value, 10) || AFFORDABILITY_CONFIG.mortgageTerm.defaultYears,
+      // A first-time buyer by definition has nothing to sell, so there are no
+      // estate agent or sale conveyancing fees.
+      isMover: false,
+      isFirstTimeBuyer: !!($('ftbAllFirstTimeBuyers') || {}).checked,
+      config: AFFORDABILITY_CONFIG
+    };
+  }
+
+  /** Recompute everything and repaint. Cheap enough to run on every keystroke. */
+  function refresh() {
+    if (!root) return;
+
+    var aIn = affordabilityInputs();
+    var a = BMSCalcs.computeAffordability(aIn);
+
+    netPayHint('ftbYourIncome', 'ftbYourNetPay');
+    if (state.applicationType === 'joint') netPayHint('ftbPartnerIncome', 'ftbPartnerNetPay');
+
+    $('ftbResultConservative').textContent = money(a.conservative);
+    $('ftbResultStandard').textContent = money(a.standard);
+    $('ftbResultMaximum').textContent = money(Math.max(0, a.maximum));
+    repaymentHint('ftbRepaymentConservative', a.conservative, a.termYears);
+    repaymentHint('ftbRepaymentStandard', a.standard, a.termYears);
+    repaymentHint('ftbRepaymentMaximum', a.maximum, a.termYears);
+    $('ftbBorrowingEmpty').hidden = a.totalIncome > 0;
+
+    var cIn = costInputs();
+    var c = BMSCalcs.computeMovingCosts(cIn);
+
+    $('ftbDepositLtv').innerHTML = (cIn.housePrice > 0 && cIn.deposit > 0)
+      ? 'You would borrow <strong>' + c.ltvPercent + '%</strong> of the price (a ' + c.depositPercent + '% deposit)'
+      : '';
+
+    $('ftbMortgageAmount').textContent = money(c.mortgageAmount);
+    $('ftbMonthlyPayment').textContent = money(c.monthlyPayment);
+    $('ftbStampDuty').textContent = money(c.stampDuty);
+    $('ftbStampDutyLabel').textContent = cIn.isFirstTimeBuyer
+      ? 'Stamp duty (first-time buyer relief)'
+      : 'Stamp duty (standard rates)';
+    $('ftbLegalFees').textContent = money(c.purchaseLegalFees);
+    $('ftbSurvey').textContent = money(c.surveyCost);
+    $('ftbTotalCosts').textContent = money(c.totalCosts);
+
+    saveToSession(aIn, a, cIn);
+  }
+
+  function netPayHint(inputId, hintId) {
+    var gross = val(inputId);
+    var el = $(hintId);
+    if (!el) return;
+    if (gross > 0) {
+      var net = BMSCalcs.calculateNetPay(gross, TAX_CONFIG);
+      el.innerHTML = 'Take-home roughly <strong>' + money(Math.round(net / 12)) + ' a month</strong>';
+    } else {
+      el.textContent = '';
+    }
+  }
+
+  function repaymentHint(id, principal, years) {
+    var el = $(id);
+    if (!el) return;
+    if (principal > 0) {
+      var low = BMSCalcs.calculateMonthlyRepayment(principal, AFFORDABILITY_CONFIG.rates.repaymentLow, years);
+      var high = BMSCalcs.calculateMonthlyRepayment(principal, AFFORDABILITY_CONFIG.rates.repaymentHigh, years);
+      el.textContent = money(low) + ' – ' + money(high) + ' a month';
+    } else {
+      el.textContent = '';
+    }
+  }
+
+  /**
+   * Keep writing bms_affordability_data so the wellness modal's pre-fill still
+   * finds it. Same key and shape as the calculator page writes.
+   */
+  function saveToSession(aIn, a, cIn) {
+    try {
+      var data = {
+        timestamp: Date.now(),
+        source: 'ftb-wizard',
+        applicationType: state.applicationType,
+        applicant1Gross: aIn.yourIncome,
+        applicant1NetMonthly: Math.round(a.yourNetAnnual / 12),
+        mortgagePurpose: 'first-time',
+        totalMonthlyCommitments: Math.round(a.totalCommitments)
+      };
+
+      if (state.applicationType === 'joint') {
+        data.applicant2Gross = aIn.partnerIncome;
+        data.applicant2NetMonthly = Math.round(a.partnerNetAnnual / 12);
+      }
+
+      // The calculator gates these on its moving panel being visible; here the
+      // equivalent condition is simply having entered a price.
+      if (cIn.housePrice > 0) {
+        data.propertyValue = cIn.housePrice;
+        if (cIn.deposit > 0) {
+          data.deposit = cIn.deposit;
+          data.mortgageAmount = Math.max(0, cIn.housePrice - cIn.deposit);
+        }
+        data.mortgageTerm = cIn.termYears;
+        data.interestRate = cIn.rate;
+      }
+
+      sessionStorage.setItem('bms_affordability_data', JSON.stringify(data));
+    } catch (e) {
+      // Pre-fill is a nice-to-have; never let it break the wizard.
+    }
+  }
+
+  // ----------------------------------------------------------------- summary
+
+  function summaryFigures() {
+    var aIn = affordabilityInputs();
+    var cIn = costInputs();
+    return {
+      aIn: aIn,
+      cIn: cIn,
+      a: BMSCalcs.computeAffordability(aIn),
+      c: BMSCalcs.computeMovingCosts(cIn)
+    };
+  }
+
+  function buildSummary() {
+    var f = summaryFigures();
+    var rows = [];
+
+    rows.push(section('What you could borrow', [
+      ['Cautious estimate', money(f.a.conservative)],
+      ['Typical estimate', money(f.a.standard)],
+      ['Stretch estimate', money(Math.max(0, f.a.maximum))],
+      ['Over a term of', f.a.termYears + ' years']
+    ]));
+
+    if (f.cIn.housePrice > 0) {
+      rows.push(section('Buying a home at ' + money(f.cIn.housePrice), [
+        ['Deposit', money(f.cIn.deposit)],
+        ['Mortgage needed', money(f.c.mortgageAmount)],
+        ['Loan to value', f.c.ltvPercent + '%'],
+        ['Monthly payment at ' + f.c.rate + '%', money(f.c.monthlyPayment)]
+      ]));
+
+      rows.push(section('Upfront costs, excluding your deposit', [
+        [f.cIn.isFirstTimeBuyer
+          ? 'Stamp duty (first-time buyer relief)'
+          : 'Stamp duty (standard rates)', money(f.c.stampDuty)],
+        ['Legal fees', money(f.c.purchaseLegalFees)],
+        ['Survey', money(f.c.surveyCost)],
+        ['Total', money(f.c.totalCosts), true]
+      ]));
+    } else {
+      rows.push('<p class="ftb-note">Add a property price on the previous step to see the cost of buying.</p>');
+    }
+
+    $('ftbSummary').innerHTML = rows.join('');
+  }
+
+  function section(title, items) {
+    var html = '<div class="ftb-summary__section"><h3>' + esc(title) + '</h3>';
+    items.forEach(function (item) {
+      html += '<div class="ftb-summary__row' + (item[2] ? ' ftb-summary__row--total' : '') + '">' +
+        '<span>' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>';
+    });
+    return html + '</div>';
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  /**
+   * Print via a standalone document in a new window, the same approach as
+   * printCalculatorResults() on the calculator page. The modal itself cannot
+   * be printed directly: the global @media print rules hide .btn and the
+   * modal chrome, and a scrolling container prints only its visible portion.
+   */
+  function printSummary() {
+    var f = summaryFigures();
+    var win = window.open('', '_blank');
+    if (!win) return;
+
+    var costsHtml = '';
+    if (f.cIn.housePrice > 0) {
+      costsHtml =
+        '<div class="section"><h3>Buying a home at ' + esc(money(f.cIn.housePrice)) + '</h3>' +
+        row('Deposit', money(f.cIn.deposit)) +
+        row('Mortgage needed', money(f.c.mortgageAmount)) +
+        row('Loan to value', f.c.ltvPercent + '%') +
+        row('Monthly payment at ' + f.c.rate + '%', money(f.c.monthlyPayment)) +
+        '</div>' +
+        '<div class="section"><h3>Upfront costs, excluding your deposit</h3>' +
+        row(f.cIn.isFirstTimeBuyer ? 'Stamp duty (first-time buyer relief)' : 'Stamp duty (standard rates)', money(f.c.stampDuty)) +
+        row('Legal fees', money(f.c.purchaseLegalFees)) +
+        row('Survey', money(f.c.surveyCost)) +
+        row('Total', money(f.c.totalCosts), true) +
+        '</div>';
+    }
+
+    win.document.write(
+      '<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8">' +
+      '<title>First-time buyer estimate — B Mortgage Services</title><style>' +
+      '*{box-sizing:border-box;margin:0;padding:0}' +
+      'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:40px;max-width:800px;margin:0 auto;color:#2D2D2D}' +
+      '.header{text-align:center;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #F05B28}' +
+      '.header h2{color:#F05B28;margin-bottom:4px;font-size:1.75rem}' +
+      '.header p{color:#666}' +
+      '.section{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid #ddd;page-break-inside:avoid}' +
+      '.section h3{font-size:1.15rem;margin-bottom:12px}' +
+      '.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0}' +
+      '.row span:first-child{color:#666}' +
+      '.row span:last-child{font-weight:600}' +
+      '.row--total{border-bottom:none;border-top:2px solid #2D2D2D;margin-top:6px;padding-top:12px}' +
+      '.row--total span{font-weight:700}' +
+      '.row--total span:last-child{color:#F05B28;font-size:1.1rem}' +
+      '.footer{margin-top:28px;text-align:center}' +
+      '.footer p{font-size:0.8rem;color:#666;margin-bottom:8px}' +
+      '.warning{font-weight:700;font-size:0.85rem;margin-top:12px;padding:12px;background:#FEF6F0;border:1px solid #F05B28;border-radius:4px}' +
+      '@media print{body{padding:20px}}' +
+      '</style></head><body>' +
+      '<div class="header"><h2>B Mortgage Services</h2><p>Your first-time buyer estimate</p></div>' +
+      '<div class="section"><h3>What you could borrow</h3>' +
+      row('Cautious estimate', money(f.a.conservative)) +
+      row('Typical estimate', money(f.a.standard)) +
+      row('Stretch estimate', money(Math.max(0, f.a.maximum))) +
+      row('Over a term of', f.a.termYears + ' years') +
+      '</div>' +
+      costsHtml +
+      '<div class="footer">' +
+      '<p>An estimate for guidance only — not a mortgage offer or advice. What you can borrow depends on a full assessment of your circumstances and the lender\'s criteria.</p>' +
+      '<p>Stamp duty shown for England and Northern Ireland. Scotland and Wales differ.</p>' +
+      '<p>Generated on ' + new Date().toLocaleDateString('en-GB') + '</p>' +
+      '<div class="warning">YOUR HOME MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE</div>' +
+      '</div></body></html>'
+    );
+    win.document.close();
+    win.print();
+
+    if (typeof BMSTracker !== 'undefined') {
+      try { BMSTracker.trackCTA('ftb_wizard_print'); } catch (e) {}
+    }
+  }
+
+  function row(label, value, isTotal) {
+    return '<div class="row' + (isTotal ? ' row--total' : '') + '">' +
+      '<span>' + esc(label) + '</span><span>' + esc(value) + '</span></div>';
+  }
+
+  // ----------------------------------------------------------- email capture
+
+  function submitCapture(e) {
+    e.preventDefault();
+
+    var errorBox = $('ftbCaptureError');
+    errorBox.hidden = true;
+
+    var name = ($('ftbCaptureName').value || '').trim();
+    var email = ($('ftbCaptureEmail').value || '').trim();
+
+    if (!name) { showCaptureError('Please add your name.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showCaptureError('Please check your email address.');
+      return;
+    }
+
+    var submit = $('ftbCaptureSubmit');
+    submit.disabled = true;
+    submit.textContent = 'Sending…';
+
+    var f = summaryFigures();
+    var lines = [
+      'Sent from the first-time buyer wizard.',
+      '',
+      'Could borrow — cautious ' + money(f.a.conservative) +
+        ', typical ' + money(f.a.standard) +
+        ', stretch ' + money(Math.max(0, f.a.maximum)) +
+        ' over ' + f.a.termYears + ' years.'
+    ];
+    if (f.cIn.housePrice > 0) {
+      lines.push(
+        'Property ' + money(f.cIn.housePrice) +
+        ', deposit ' + money(f.cIn.deposit) +
+        ', mortgage ' + money(f.c.mortgageAmount) +
+        ' at ' + f.c.ltvPercent + '% LTV' +
+        ' (' + money(f.c.monthlyPayment) + '/month at ' + f.c.rate + '%).'
+      );
+      lines.push(
+        'Upfront costs ' + money(f.c.totalCosts) +
+        ', including stamp duty ' + money(f.c.stampDuty) +
+        (f.cIn.isFirstTimeBuyer
+          ? ' with first-time buyer relief (confirmed all buyers are first-time buyers).'
+          : ' at standard rates (FTB relief not confirmed).')
+      );
+    } else {
+      lines.push('No property price entered.');
+    }
+
+    var payload = {
+      name: name,
+      email: email,
+      phone: ($('ftbCapturePhone').value || '').trim() || null,
+      enquiry_type: 'first-time-buyer',
+      topic: 'first-time-buyer-wizard',
+      message: lines.join('\n'),
+      website: $('ftbCaptureWebsite').value || '',
+      elapsed_ms: Date.now() - state.openedAt,
+      visitor_id: trackerId('getVisitorId'),
+      session_id: trackerId('getSessionId')
+    };
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data.success) throw new Error(data.error || 'Something went wrong');
+        $('ftbCapture').hidden = true;
+        $('ftbCaptureSuccess').hidden = false;
+        if (typeof BMSTracker !== 'undefined') {
+          try { BMSTracker.trackCTA('ftb_wizard_capture'); } catch (err) {}
+        }
+      })
+      .catch(function (err) {
+        submit.disabled = false;
+        submit.textContent = 'Send me my results';
+        showCaptureError(err.message === 'Failed to fetch'
+          ? 'We could not reach the server. Please try again, or call 01452 925209.'
+          : err.message);
+      });
+  }
+
+  function showCaptureError(message) {
+    var box = $('ftbCaptureError');
+    box.textContent = message;
+    box.hidden = false;
+  }
+
+  function trackerId(method) {
+    if (typeof BMSTracker === 'undefined') return null;
+    try { return BMSTracker[method]() || null; } catch (e) { return null; }
+  }
+
+  // ---------------------------------------------------------------- tracking
+
+  /**
+   * Step-gated, like the budget planner: one result per completed run, only on
+   * reaching the summary with a real income. Firing on open or per keystroke is
+   * what filled visitor_tool_results with all-zero rows from bots.
+   */
+  function trackCompletion() {
+    if (state.tracked || typeof BMSTracker === 'undefined') return;
+
+    var f = summaryFigures();
+    if (f.a.totalIncome <= 0) return;
+
+    try {
+      BMSTracker.trackToolStart('ftb_wizard');
+      BMSTracker.trackToolComplete('ftb_wizard', {
+        conservative: f.a.conservative,
+        standard: f.a.standard,
+        maximum: Math.max(0, f.a.maximum),
+        totalIncome: f.a.totalIncome,
+        housePrice: f.cIn.housePrice,
+        deposit: f.cIn.deposit,
+        stampDuty: f.c.stampDuty,
+        totalUpfrontCosts: f.c.totalCosts,
+        ltv: f.c.ltvPercent,
+        allFirstTimeBuyers: f.cIn.isFirstTimeBuyer
+      }, 'Could borrow ' + money(f.a.standard) + ' (typical), buying at ' +
+         money(f.cIn.housePrice) + ' with ' + money(f.c.totalCosts) + ' upfront costs');
+      state.tracked = true;
+    } catch (e) {}
+  }
+
+  // Escape closes, matching the other modals.
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && root && root.classList.contains('wellness-modal--open')) {
+      closeWizard();
+    }
+  });
+
+  /**
+   * Triggers are ordinary links to /affordability-calculator/ marked with
+   * data-ftb-open. With JavaScript they open the wizard; without it they stay
+   * working links to the full calculator. Delegated from the document so
+   * triggers anywhere on the page work, including any added later.
+   */
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest ? e.target.closest('[data-ftb-open]') : null;
+    if (!trigger) return;
+    // Let modified clicks (new tab, new window) behave normally.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    openWizard({ source: trigger.getAttribute('data-ftb-open') || 'page' });
+  });
+
+  // The only two names this partial adds to the page.
+  window.openFtbWizard = openWizard;
+  window.closeFtbWizard = closeWizard;
+})();
+</script>
