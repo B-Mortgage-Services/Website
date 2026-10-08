@@ -38,7 +38,7 @@ These are cleared automatically when you close your browser. They do not persist
 | `bms_utm_source` | Marketing attribution — which channel brought you here |
 | `bms_utm_medium` | Marketing attribution — the type of link (e.g. email, social) |
 | `bms_utm_campaign` | Marketing attribution — the specific campaign name |
-| `bms_affordability_data` | Temporarily stores your affordability calculator inputs so they can pre-fill the wellness assessment (expires after 30 minutes) |
+| `bms_affordability_data` | Temporarily stores what you enter into our affordability calculator or first-time buyer tool, so it can pre-fill the wellness assessment (expires after 30 minutes) |
 
 ## How to Manage Cookies
 

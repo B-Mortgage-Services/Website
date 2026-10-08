@@ -435,6 +435,36 @@ When LTI/DTI data is unavailable, `maxPossibleScore` decreases (72-90 range) so 
 
 The affordability calculator on `/individuals/` saves data to sessionStorage (`bms_affordability_data` key, 30-min expiry) which pre-fills the wellness modal form. Fields include income, property value, deposit, gross income, mortgage term, interest rate, and commitments.
 
+The first-time buyer wizard writes the same key in the same shape (with `source: 'ftb-wizard'`), so the pre-fill works from either tool. If you change the shape, change both writers and `applySessionData()` in `wellness-client.js`, and update `content/cookie-policy/_index.md`.
+
+## Mortgage Calculations
+
+**All mortgage maths lives in `themes/bms-theme/static/js/mortgage-calcs.js`** as pure functions — they take their inputs and their config as arguments, touch no DOM and read no globals. `computeAffordability()` and `computeMovingCosts()` are the two entry points, alongside helpers for net pay, repayments and stamp duty.
+
+Configuration comes from `data/affordability.json` and `data/annual_rates.json` via the `calc-config.html` partial, which emits `AFFORDABILITY_CONFIG` and `TAX_CONFIG`. Include that partial on any page calling `BMSCalcs`.
+
+Consumers are thin DOM adapters: read the inputs, call `BMSCalcs`, write the results back. `/affordability-calculator/` and the first-time buyer wizard both work this way.
+
+**Never hardcode a rate, multiplier or stamp duty band in a layout.** Stamp duty bands change at Budget and were once two years stale, understating the bill in every case — a first-time buyer at £350k was told they owed nothing when the real figure was £2,500. Re-check against [GOV.UK](https://www.gov.uk/stamp-duty-land-tax/residential-property-rates) after each Budget and update `stampDuty.verifiedOn`.
+
+Stamp duty here is England & Northern Ireland only. Scotland (LBTT) and Wales (LTT) are different taxes and are not handled.
+
+First-time buyer relief requires that **every** buyer is a first-time buyer, so the wizard gates it behind an explicit confirmation. Unticked means standard rates, which overstates rather than understates the bill.
+
+## First-Time Buyer Wizard
+
+`themes/bms-theme/layouts/partials/ftb-wizard.html` — a four-step modal (about you → borrowing → buying costs → summary) included on pages with `ftbWizard: true` in front matter, gated in `baseof.html` alongside the wellness modal.
+
+- Markup lives in a `<template>` and is cloned into `<body>` on first open, so it stays out of the DOM, the accessibility tree and crawlable content until used. Scripts must stay **outside** the template — script inside template content never executes.
+- The root carries `class="wellness-modal ftb-wizard"`. `.wellness-modal` is the shared modal chrome; the name is historical and means "modal", not "wellness".
+- Triggers are ordinary links to `/affordability-calculator/` carrying `data-ftb-open`, so they still work with JavaScript off.
+- Tracking is step-gated: `trackToolComplete` fires once, on reaching the summary with a real income, latched so revisiting the step cannot fire it again.
+- Email capture posts to `/api/contact`. **There is no email sending in this project** — it is deliberately worded as an adviser sending the results over, not an automated email. Do not reword it to promise an automated email unless that is actually built.
+
+### Watch out: unscoped selectors across modals
+
+`wellness-client.js` queried `.wellness-step`, `.step-dot` and `.wellness-modal__scroll` against the whole document. Since the wizard reuses `.wellness-modal` for its chrome, whichever modal mounted into `<body>` first would have won. These are now scoped to `#wellnessModal`. **Scope every modal query to its own container.**
+
 ## Conventions
 
 - **CSS**: BEM notation, CSS custom properties (e.g. `var(--brand-orange)`, `var(--radius-lg)`). Brand orange: `#F05B28`, brand charcoal: `#2D2D2D`.
@@ -579,6 +609,9 @@ Track what has been built, key decisions, and gotchas so future sessions can pic
 - **wrangler.toml validity**: Must include `pages_build_output_dir` or Cloudflare silently ignores the entire file (no error, just no bindings/flags applied).
 - **No `new Function()` in Workers**: Handlebars, lodash templates, and similar libraries that compile strings to functions will throw `EvalError`. Use template literals instead.
 - **Cloudflare env vars**: Only available inside request handlers via `context.env`, not at module scope. Supabase client uses lazy initialization pattern.
+- **`.ambient-glow` must keep `pointer-events: none`**: it is an absolutely positioned decorative overlay at `z-index: 1` covering its whole hero. Hero content positioned without a z-index of its own (`.mhero__inner`) sits beneath it, so without that rule the glow swallows every click aimed at the hero buttons. This left five CTAs across the first-time buyer, moving home and buy-to-let pages completely dead until 2026-10-08. If you add a decorative overlay, give it `pointer-events: none`.
+- **`--text-light` is undefined**: eight rules in `main.css` use `var(--text-light)` but `:root` only defines `--text-primary` and `--text-secondary`, so those rules silently do nothing. Use `--dark-grey` or `--text-secondary` in new code. See Todo.md.
+- **Hidden elements still swallow clicks in tests**: when a click seems to do nothing, check `document.elementFromPoint()` at the element's centre before assuming the handler is wrong. That is how the `.ambient-glow` bug was found.
 
 ### Pending / TODO
 
